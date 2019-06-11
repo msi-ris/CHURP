@@ -41,7 +41,7 @@ dup_summary <- read.table(paste(params["workdir"], "allsamples", "Dup_Stats.txt"
 names(dup_summary) <- c("SampleName", "R1_Dup", "R2_Dup")
 bbduk_summary <- read.table(paste(params["workdir"], "allsamples", "rRNA_kmers.txt", sep="/"), header=F)
 names(bbduk_summary) <- c("SampleName", "rRNA_Fragments", "rRNA_Pct")
-rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F)
+rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F, sep="\t")
 names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
 # Assume that the first sample is part of the same dataset as the others
 first_read <- as.character(sheet$V3[1])
