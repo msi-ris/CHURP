@@ -41,7 +41,7 @@ dup_summary <- read.table(paste(params["workdir"], "allsamples", "Dup_Stats.txt"
 names(dup_summary) <- c("SampleName", "R1_Dup", "R2_Dup")
 bbduk_summary <- read.table(paste(params["workdir"], "allsamples", "rRNA_kmers.txt", sep="/"), header=F)
 names(bbduk_summary) <- c("SampleName", "rRNA_Fragments", "rRNA_Pct")
-rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F, sep="\t")
+rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F, sep="\t", quote=NULL)
 names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
 # Assume that the first sample is part of the same dataset as the others
 first_read <- as.character(sheet$V3[1])
@@ -828,7 +828,6 @@ par(mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
 dup_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Duplicate Rate of Mapped"])
 at <- barplot(
     dup_dat,
-    beside=TRUE,
     axes=FALSE,
     horiz=TRUE,
     xlim=c(0, 1),
@@ -888,7 +887,6 @@ par(mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
 rrna_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "rRNA Rate"])
 at <- barplot(
     rrna_dat,
-    beside=TRUE,
     axes=FALSE,
     horiz=TRUE,
     xlim=c(0, 1),
