@@ -836,7 +836,7 @@ at <- barplot(
     main="Sequence Duplication Levels",
     ylab="",
     col="#1f78b4")
-axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
+axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
 axis(side=1)
 ```
 
@@ -896,7 +896,7 @@ at <- barplot(
     main="rRNA Mapping Rate",
     ylab="",
     col="#e41a1c")
-axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
+axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
 axis(side=1)
 
 ```
