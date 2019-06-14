@@ -486,7 +486,7 @@ if [ ! -f rnaseqc.done ]; then
         ${RNASEQC_OPTIONS}
         2>> "${LOG_FNAME}"
     echo "# ${PBS_JOBID} $(date '+%F %T'): Collecting stranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
-    RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM}_Unstranded --legacy"
+    RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM} --legacy"
     if [ "${STRAND}" = "2" ]; then
         RNASEQC_OPTIONS="${RNASEQC_OPTIONS} --stranded=RF"
     elif [ "${STRAND}" = "1" ]; then
