@@ -1643,12 +1643,12 @@ if(large_dataset) {
 }
 
 hisat_prop <- data.frame(
-    SN=as.character(hisat_summary$V1),
+    SN=as.character(hisat_summary$SampleName),
     TO=rep("100%", nrow(hisat_summary)),
-    UNM=paste(as.character(round((hisat_summary$V3/hisat_summary$V2)*100, digits=2)), "%", sep=""),
-    SM=paste(as.character(round((hisat_summary$V4/hisat_summary$V2)*100, digits=2)), "%", sep=""),
-    MM=paste(as.character(round((hisat_summary$V5/hisat_summary$V2)*100, digits=2)), "%", sep=""),
-    DM=paste(as.character(round((hisat_summary$V6/hisat_summary$V2)*100, digits=2)), "%", sep=""))
+    UNM=paste(as.character(round((hisat_summary$Unmapped/hisat_summary$Total)*100, digits=2)), "%", sep=""),
+    SM=paste(as.character(round((hisat_summary$UniqueMapped/hisat_summary$Total)*100, digits=2)), "%", sep=""),
+    MM=paste(as.character(round((hisat_summary$MultiMapped/hisat_summary$Total)*100, digits=2)), "%", sep=""),
+    DM=paste(as.character(round((hisat_summary$DiscoMapped/hisat_summary$Total)*100, digits=2)), "%", sep=""))
 names(hisat_prop) <- c(
     "Sample Name",
     "Total Fragments",
