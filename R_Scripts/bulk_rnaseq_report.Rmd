@@ -37,8 +37,6 @@ Sys.setenv(firstrun=firstrun)
 nsamp <- length(samplenames)
 hisat_summary <- read.table(paste(params["workdir"], "allsamples", "HISAT_Stats.txt", sep="/"), header=F)
 names(hisat_summary) <- c("SampleName", "Total", "Unmapped", "UniqueMapped", "MultiMapped", "DiscoMapped")
-dup_summary <- read.table(paste(params["workdir"], "allsamples", "Dup_Stats.txt", sep="/"), header=F)
-names(dup_summary) <- c("SampleName", "R1_Dup", "R2_Dup")
 bbduk_summary <- read.table(paste(params["workdir"], "allsamples", "rRNA_kmers.txt", sep="/"), header=F)
 names(bbduk_summary) <- c("SampleName", "rRNA_Fragments", "rRNA_Pct")
 rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F, sep="\t", quote=NULL)
@@ -839,7 +837,7 @@ axis(side=1)
 ```
 
 ### Duplication
-This plot shows the proportion of fragments that are positional duplicates in
+This plot shows the proportion of alignments that are positional duplicates in
 each sample, as determined in the default algorithm of the
 [Picard MarkDuplicates](https://broadinstitute.github.io/picard/command-line-overview.html#MarkDuplicates) tool.
 
@@ -860,8 +858,8 @@ axis(side=1)
 ```
 
 ### gDNA and Strand Agreement
-This plot shows the proportion of fragments that map to exons, introns, and
-between genes.
+This plot shows the proportion of alignments that that are in exons, introns,
+and between genes.
 
 ```{r gdna_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=0.8*nrow(sheet)}
 par(mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
@@ -900,7 +898,7 @@ or your library is not strand-specific, then it is likely that you have high
 levels of genomic DNA contamination in your library.
 
 ### rRNA
-This plot will show the proportion of bases that map to annotated rRNA features.
+This plot shows the proportion of alignments that are in annotated rRNA features.
 
 ```{r rrna_map_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=0.4*nrow(sheet)}
 par(mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
