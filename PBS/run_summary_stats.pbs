@@ -221,6 +221,7 @@ rm -f \
     "${WORKDIR}/allsamples/HISAT_Stats.txt" \
     "${WORKDIR}/allsamples/IS_Stats.txt" \
     "${WORKDIR}/allsamples/RNASeq_Metrics.txt" \
+    "${WORKDIR}/allsamples/RNASeq_Metrics_Unstranded.txt" \
     "${WORKDIR}/allsamples/rRNA_kmers.txt"
 # Use find to dig up all singlesample directories in the work director
 SDIRS=($(find "${WORKDIR}/singlesamples" -maxdepth 1 -mindepth 1 -type d | sort -V))
@@ -276,6 +277,7 @@ do
     fi
     # And collect the RNAseq metrics into a single file for summarization
     sed -e "s/^/${sample}\\t/g" <(tail -n +2 "${WORKDIR}/singlesamples/${sample}/RNASeQC_Out/${sample}.metrics.tsv") >> "${WORKDIR}/allsamples/RNASeq_Metrics.txt"
+    sed -e "s/^/${sample}\\t/g" <(tail -n +2 "${WORKDIR}/singlesamples/${sample}/RNASeQC_Out/${sample}_Unstranded.metrics.tsv") >> "${WORKDIR}/allsamples/RNASeq_Metrics_Unstranded.txt"
 done
 
 # We will generate an HTML report
