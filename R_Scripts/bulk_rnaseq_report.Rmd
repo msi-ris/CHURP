@@ -525,6 +525,7 @@ if(large_dataset) {
             axes=FALSE)
         axis(side=2)
         axis(side=1, at=at, labels=names(subread_counts)[idx], las=2, cex.axis=0.7)
+        cat("\n\n")
     }
 } else {
     at <- barplot(
@@ -879,6 +880,7 @@ if(large_dataset) {
             main="K-mer Based rRNA Contamination",
             axes=FALSE,
             add=TRUE)
+        cat("\n\n")
     }
 } else {
     cat("### Plot\n")
@@ -955,6 +957,7 @@ if(large_dataset) {
             col="#1f78b4")
         axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
         axis(side=1)
+        cat("\n\n")
     }
 } else {
     at <- barplot(
@@ -996,6 +999,7 @@ if(large_dataset) {
             col="#1f78b4")
         axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
         axis(side=1)
+        cat("\n\n")
     }
 } else {
     at <- barplot(
@@ -1081,6 +1085,7 @@ if(large_dataset) {
         axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1)
+        cat("\n\n")
     }
 } else {
     at <- barplot(
@@ -1144,6 +1149,7 @@ if(large_dataset) {
             col="#e41a1c")
         axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
         axis(side=1)
+        cat("\n\n")
     }
 } else {
     at <- barplot(
@@ -1469,6 +1475,7 @@ if(large_dataset) {
         cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subsamp <- samplenames[idx]
         plt_out <- sapply(subsamp, plotqual)
+        cat("\n\n")
     }
 } else {
     plt_out <- sapply(samplenames, plotqual)
@@ -1526,6 +1533,7 @@ if(length(trim_samp) > 0) {
             cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
             subsamp <- trim_samp[idx]
             plt_out <- sapply(subsamp, plotqual)
+            cat("\n\n")
         }
     } else {
         plt_out <- sapply(trim_samp, plotqual)
@@ -1765,6 +1773,7 @@ if(large_dataset) {
         axis(side=2, at=apply(at, 2, mean), labels=colnames(subread_sum[-c(1)])[idx], las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         legend("right", categories, fill=bar_cols, xpd=TRUE)
+        cat("\n\n")
     }
 } else {
     at <- barplot(
@@ -1808,6 +1817,7 @@ if(large_dataset) {
         axis(side=2, at=at, labels=colnames(subread_sum[-c(1)])[idx], las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         legend("right", categories, fill=bar_cols, xpd=TRUE)
+        cat("\n\n")
     }
 } else {
     at <- barplot(
@@ -1858,6 +1868,7 @@ if(large_dataset) {
             axes=FALSE)
         axis(side=2)
         axis(side=1, at=at, labels=names(subread_counts)[idx], las=2, cex.axis=0.7)
+        cat("\n\n")
     }
 } else {
     at <- barplot(
