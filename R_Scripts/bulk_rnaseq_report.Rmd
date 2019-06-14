@@ -1171,6 +1171,7 @@ Click on the tab headers to show plots of raw and trimmed read qualities.
 
 ### Raw Read Qualities (Compact style)
 These plots show the read qualities as they came off the sequencing instrument.
+
 ```{r raw_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.7*nrow(sheet), 0.7*24), results="asis"}
 plotqual_first <- function(sn) {
     allquals <- matrix(0:45)
@@ -1266,10 +1267,10 @@ plotqual_last <- function(sn) {
 }
 
 if(large_dataset) {
-    cat("### Raw Reads {.tabset}\n")
+    cat("#### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subsamp <- samplenames[idx]
         nsubsamp <- length(subsamp)
         cat("\n\n")
@@ -1297,6 +1298,7 @@ if(large_dataset) {
 
 ### Trimmed Read Qualities (Compact style)
 These plots show read qualities post-trimming, if it was performed.
+
 ```{r trim_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.7*nrow(sheet), 0.7*24), results="asis"}
 if(length(trim_samp) > 0) {
     plotqual_first <- function(sn) {
@@ -1392,10 +1394,10 @@ if(length(trim_samp) > 0) {
         }
     }
     if(large_dataset) {
-        cat("### Trimmed Reads {.tabset}\n")
+        cat("#### Plots {.tabset}\n")
         for(i in unique(chunks)) {
             idx <- which(chunks == i)
-            cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
             subsamp <- trim_samp[idx]
             nsubsamp <- length(subsamp)
             cat("\n\n")
@@ -1410,7 +1412,6 @@ if(length(trim_samp) > 0) {
             cat("\n\n")
         }
     } else {
-        cat("### Trimmed Reads\n")
         par(mfrow=c(nsamp+1, 2))
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
@@ -1421,7 +1422,7 @@ if(length(trim_samp) > 0) {
         dummy <- plotqual_last(trim_samp[nsamp])
     }
 } else {
-        cat("### Trimmed Reads\n\nNo trimming performed.")
+        cat("\nNo trimming performed.")
     }
 ```
 
