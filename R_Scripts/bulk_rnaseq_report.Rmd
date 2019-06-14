@@ -426,7 +426,7 @@ if(large_dataset) {
             main="HISAT2 Count Plot",
             axes=FALSE)
         axis(side=2)
-        axis(side=1, at=at, labels=as.character(subdat$SampleName), cex.axis=0.6, las=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName)[idx], cex.axis=0.6, las=2)
         legend(
             "top",
             c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
@@ -476,7 +476,7 @@ if(large_dataset) {
             main="HISAT2 Proportion Plot",
             axes=FALSE)
         axis(side=2)
-        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName), cex.axis=0.6, las=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName)[idx], cex.axis=0.6, las=2)
         legend(
             "top",
             c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
@@ -1559,7 +1559,7 @@ if(large_dataset) {
             main="HISAT2 Count Plot",
             axes=FALSE)
         axis(side=2)
-        axis(side=1, at=at, labels=as.character(subdat$SampleName), cex.axis=0.6, las=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName)[idx], cex.axis=0.6, las=2)
         legend(
             "top",
             c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
@@ -1613,7 +1613,7 @@ if(large_dataset) {
             main="HISAT2 Proportion Plot",
             axes=FALSE)
         axis(side=2)
-        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName), cex.axis=0.6, las=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName)[idx], cex.axis=0.6, las=2)
         legend(
             "top",
             c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
