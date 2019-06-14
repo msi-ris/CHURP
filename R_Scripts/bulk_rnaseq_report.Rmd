@@ -458,17 +458,16 @@ if(large_dataset) {
 
 ### Proportions
 ```{r hisat2_prop_sum, echo=FALSE, message=FALSE}
-count_dat <- as.matrix(hisat_summary[,c("UniqueMapped", "MultiMapped", "DiscoMapped", "Unmapped")])
 # Then make a proportion plot
-prop_dat <- count_dat / hisat_summary$Total
+prop_dat <- count_dat / as.numeric(hisat_summary$Total)
 if(large_dataset) {
-    cat("### Fragment Proportions Plots {.tabset}\n")
+    cat("#### Fragment Proportions Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subdat <- prop_dat[idx,]
         at <- barplot(
-            t(subdat)/1000000,
+            t(subdat),
             beside=FALSE,
             col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
             ylim=c(0, 1.2),
@@ -488,7 +487,7 @@ if(large_dataset) {
 } else {
     cat("### Fragment Counts Plot\n")
     at <- barplot(
-        t(prop_dat)/1000000,
+        t(prop_dat),
         beside=FALSE,
         col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
         ylim=c(0, 1.2),
@@ -1597,7 +1596,7 @@ kable(hisat_tab, caption="Summary of alignment from HISAT2 based on fragment cou
 ```{r hisat2_prop, echo=FALSE, message=FALSE}
 library(knitr)
 # Then make a proportion plot
-prop_dat <- count_dat / hisat_summary$Total
+prop_dat <- count_dat / as.numeric(hisat_summary$Total)
 if(large_dataset) {
     cat("#### Fragment Proportions Plots {.tabset}\n")
     for(i in unique(chunks)) {
@@ -1806,7 +1805,7 @@ if(large_dataset) {
             xlab="Proportions",
             main="Subread Summary",
             horiz=TRUE)
-        axis(side=2, at=apply(at, 2, mean), labels=colnames(subread_sum[-c(1)])[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=2, at=at, labels=colnames(subread_sum[-c(1)])[idx], las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         legend("right", categories, fill=bar_cols, xpd=TRUE)
     }
@@ -1821,7 +1820,7 @@ if(large_dataset) {
         xlab="Proportions",
         main="Subread Summary",
         horiz=TRUE)
-    axis(side=2, at=apply(at, 2, mean), labels=colnames(subread_sum[-c(1)]), las=2, cex.axis=0.6, lty=0)
+    axis(side=2, at=at, labels=colnames(subread_sum[-c(1)]), las=2, cex.axis=0.6, lty=0)
     axis(side=1)
     legend("right", categories, fill=bar_cols, xpd=TRUE)
 }
