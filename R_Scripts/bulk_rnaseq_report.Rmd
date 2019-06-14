@@ -1127,14 +1127,6 @@ if(large_dataset) {
 }
 ```
 
-#### Strand Agreement
-If the sum of the exon proportion and intron proportion is approximately 50%,
-then it is possible that you have have not given the correct strand-specifity
-to the pipeline. If you supplied `RF`, try re-running with `FR`, and
-*vice versa*. If you have already tried giving the opposite strand-specifity,
-or your library is not strand-specific, then it is likely that you have high
-levels of genomic DNA contamination in your library.
-
 ### rRNA
 This plot shows the proportion of alignments that are in annotated rRNA features.
 
