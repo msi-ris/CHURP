@@ -42,7 +42,7 @@ names(bbduk_summary) <- c("SampleName", "rRNA_Fragments", "rRNA_Pct")
 rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F, sep="\t", quote=NULL)
 names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
 rnaseqc_summary_uns <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics_Unstranded.txt", sep="/"), header=F, sep="\t", quote=NULL)
-names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
+names(rnaseqc_summary_uns) <- c("SampleName", "Statistic", "Value")
 # Assume that the first sample is part of the same dataset as the others
 first_read <- as.character(sheet$V3[1])
 fastq_dir <- dirname(first_read)
