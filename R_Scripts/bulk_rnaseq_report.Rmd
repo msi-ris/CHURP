@@ -458,15 +458,14 @@ if(large_dataset) {
 }
 ```
 
-### Proportions
 ```{r hisat2_prop_sum, echo=FALSE, message=FALSE, results="asis"}
 # Then make a proportion plot
 prop_dat <- count_dat / as.numeric(hisat_summary$Total)
 if(large_dataset) {
-    cat("#### Fragment Proportions Plots {.tabset}\n")
+    cat("### Fragment Proportions Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subdat <- prop_dat[idx,]
         at <- barplot(
             t(subdat),
@@ -940,7 +939,7 @@ This plot shows the proportion of high-quality alignments that are in exons. For
 messenger RNA libraries, this value is expected to be close to 1.
 
 ```{r epe_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
-par(mar=c(4, 3.5, 4, 0.5), mgp=c(2.5, 0.75, 0))
+par(mar=c(4, 4, 5, 0.5), mgp=c(2.5, 0.75, 0))
 epe_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Expression Profiling Efficiency"])
 if(large_dataset) {
     cat("#### Plots {.tabset}\n")
@@ -984,7 +983,7 @@ each sample, as determined in the default algorithm of the
 [Picard MarkDuplicates](https://broadinstitute.github.io/picard/command-line-overview.html#MarkDuplicates) tool.
 
 ```{r dup_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
-par(mar=c(4, 3.5, 4, 0.5), mgp=c(2.5, 0.75, 0))
+par(mar=c(4, 4, 5, 0.5), mgp=c(2.5, 0.75, 0))
 dup_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Duplicate Rate of Mapped"])
 if(large_dataset) {
     cat("#### Plots {.tabset}\n")
@@ -1036,7 +1035,7 @@ If the plots look similar in terms of assignment proportions, then you have
 given the correct strand-specificity.
 
 ```{r gdna_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.6*nrow(sheet), 0.6*lg_cutoff), results="asis"}
-par(mar=c(4, 3.5, 4, 0.5), mgp=c(2.5, 0.75, 0), mfrow=c(1, 2))
+par(mar=c(4, 4, 5, 0.5), mgp=c(2.5, 0.75, 0), mfrow=c(1, 2))
 gdna_dat <- matrix(
     c(
         as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Exonic Rate"]),
@@ -1077,7 +1076,7 @@ if(large_dataset) {
         axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         axis(side=3)
-        legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1)
+        legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
 
         at <- barplot(
             subdat_uns,
@@ -1092,7 +1091,7 @@ if(large_dataset) {
         axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         axis(side=3)
-        legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1)
+        legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
         cat("\n\n")
     }
 } else {
@@ -1109,7 +1108,7 @@ if(large_dataset) {
     axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
     axis(side=1)
     axis(side=3)
-    legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1)
+    legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
 
     at <- barplot(
         gdna_dat_uns,
@@ -1124,7 +1123,7 @@ if(large_dataset) {
     axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
     axis(side=1)
     axis(side=3)
-    legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1)
+    legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
 }
 ```
 
@@ -1140,7 +1139,7 @@ levels of genomic DNA contamination in your library.
 This plot shows the proportion of alignments that are in annotated rRNA features.
 
 ```{r rrna_map_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
-par(mar=c(4, 3.5, 4, 0.5), mgp=c(2.5, 0.75, 0))
+par(mar=c(4, 4, 5, 0.5), mgp=c(2.5, 0.75, 0))
 rrna_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "rRNA Rate"])
 if(large_dataset) {
     cat("#### Plots {.tabset}\n")
@@ -1480,8 +1479,8 @@ plotqual <- function(sn) {
         title(paste(sn, "R2", sep=" "))
     }
 }
-par(mfrow=c(nsamp, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
 if(large_dataset) {
+    par(mfrow=c(lg_cutoff, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
     cat("#### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
@@ -1491,6 +1490,7 @@ if(large_dataset) {
         cat("\n\n")
     }
 } else {
+    par(mfrow=c(nsamp, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
     plt_out <- sapply(samplenames, plotqual)
 }
 ```
@@ -1538,8 +1538,8 @@ if(length(trim_samp) > 0) {
             title(paste(sn, "R2", sep=" "))
         }
     }
-    par(mfrow=c(nsamp, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
     if(large_dataset) {
+        par(mfrow=c(lg_cutoff, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
         cat("#### Plots {.tabset}\n")
         for(i in unique(chunks)) {
             idx <- which(chunks == i)
@@ -1549,6 +1549,7 @@ if(length(trim_samp) > 0) {
             cat("\n\n")
         }
     } else {
+        par(mfrow=c(nsamp, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
         plt_out <- sapply(trim_samp, plotqual)
     }
 } else {
@@ -1559,13 +1560,16 @@ if(length(trim_samp) > 0) {
 # Alignment Summaries
 ## HISAT2 Summaries {.tabset}
 ### Counts-Based
+These plots summarize the number of fragments that align uniquely, multiply,
+discordantly, or do not map to the genome.
+
 ```{r hisat2_counts, echo=FALSE, message=FALSE, results="asis"}
 library(knitr)
 
 count_dat <- as.matrix(hisat_summary[,c("UniqueMapped", "MultiMapped", "DiscoMapped", "Unmapped")])
 max_reads <- max(hisat_summary$Total)/1000000
 if(large_dataset) {
-    cat("#### Fragment Counts Plots {.tabset}\n")
+    cat("#### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
@@ -1589,7 +1593,7 @@ if(large_dataset) {
         cat("\n\n")
     }
 } else {
-    cat("#### Fragment Counts Plot\n")
+    cat("#### Plot\n")
     at <- barplot(
         t(count_dat)/1000000,
         beside=FALSE,
@@ -1614,12 +1618,14 @@ kable(hisat_tab, caption="Summary of alignment from HISAT2 based on fragment cou
 ```
 
 ### Proportion-Based
+These plots summarize the mapping as a proportion of the total reads.
+
 ```{r hisat2_prop, echo=FALSE, message=FALSE, results="asis"}
 library(knitr)
 # Then make a proportion plot
 prop_dat <- count_dat / as.numeric(hisat_summary$Total)
 if(large_dataset) {
-    cat("#### Fragment Proportions Plots {.tabset}\n")
+    cat("#### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
@@ -1643,7 +1649,7 @@ if(large_dataset) {
         cat("\n\n")
     }
 } else {
-    cat("#### Fragment Counts Plot\n")
+    cat("#### Plot\n")
     at <- barplot(
         t(prop_dat),
         beside=FALSE,
@@ -1868,11 +1874,11 @@ subread_counts <- subread_counts[,-c(1:6)]
 num_expressed <- as.numeric(apply(subread_counts, 2, function(x) sum(x>0)))
 maxexpr <- max(num_expressed)
 if(large_dataset) {
-    cat("### Expressed Features {.tabset}\n")
+    cat("#### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         subdat <- num_expressed[idx]
-        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         at <- barplot(
             subdat,
             ylab="Number of Expressed Features",
