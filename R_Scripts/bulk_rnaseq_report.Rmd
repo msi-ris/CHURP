@@ -41,6 +41,8 @@ bbduk_summary <- read.table(paste(params["workdir"], "allsamples", "rRNA_kmers.t
 names(bbduk_summary) <- c("SampleName", "rRNA_Fragments", "rRNA_Pct")
 rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F, sep="\t", quote=NULL)
 names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
+rnaseqc_summary_uns <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics_Unstranded.txt", sep="/"), header=F, sep="\t", quote=NULL)
+names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
 # Assume that the first sample is part of the same dataset as the others
 first_read <- as.character(sheet$V3[1])
 fastq_dir <- dirname(first_read)
@@ -858,11 +860,20 @@ axis(side=1)
 ```
 
 ### gDNA and Strand Agreement
-This plot shows the proportion of alignments that that are in exons, introns,
-and between genes.
+These plots show both gDNA contamination and strand-specificity. The plot on
+the left shows the read alignments to exons, introns, and to intergenic regions
+while accounting for the strand of the annotations. The plot on the right shows
+the same region-based summary, but ignoring the strand of the annotations. If
+the unstranded plot shows much higher assignment to exons than the strand-aware
+plot, then it is likely that you have given the incorrect strand-specificity
+for your library. Please refer to the library preparation protocol to determine
+the correct strand-specificity.
+
+If the plots look similar in terms of assignment proportions, then you have
+given the correct strand-specificity.
 
 ```{r gdna_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=0.8*nrow(sheet)}
-par(mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
+par(mar=c(4, 3.5, 1, 0.5), mgp=c(2.5, 0.75, 0), mfrow=c(1, 2))
 gdna_dat <- matrix(
     c(
         as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Exonic Rate"]),
@@ -881,7 +892,32 @@ at <- barplot(
     horiz=TRUE,
     xlim=c(0, 1.25),
     xlab="Proportion of Fragments",
-    main="Proportion of \"On Target\" Fragments",
+    main="Strand-aware Metrics",
+    ylab="",
+    col=bar_cols)
+axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
+axis(side=1)
+legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1)
+
+gdna_dat <- matrix(
+    c(
+        as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary$Statistic == "Exonic Rate"]),
+        as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary$Statistic == "Intronic Rate"]),
+        as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary$Statistic == "Intergenic Rate"])
+        ),
+    byrow=TRUE,
+    nrow=3
+    )
+bar_cols <- c("#a6cee3", "#1f78b4", "#b2df8a")
+
+at <- barplot(
+    gdna_dat,
+    beside=TRUE,
+    axes=FALSE,
+    horiz=TRUE,
+    xlim=c(0, 1.25),
+    xlab="Proportion of Fragments",
+    main="Unstranded Metrics",
     ylab="",
     col=bar_cols)
 axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
@@ -1375,7 +1411,7 @@ These plots will show the breakdown of read assignment by `featureCounts`.
 
 ```{r subread_summary, echo=FALSE, message=FALSE, fig.width=8, fig.height=0.9*nrow(sheet)}
 library(knitr)
-par(mar=c(5.1, 5, 5.1, 0.1))
+par(mar=c(4, 3.5, 1, 0.5), mgp=c(2.5, 0.75, 0))
 subread_sum <- read.table(paste(params["workdir"], "allsamples", "subread_counts.txt.summary", sep="/"), header=TRUE)
 plt_dat <- as.matrix(subread_sum[,-c(1)])
 # Combined the unassigned categories into one
@@ -1399,7 +1435,7 @@ at <- barplot(
     horiz=TRUE)
 axis(side=2, at=apply(at, 2, mean), labels=colnames(subread_sum[-c(1)]), las=2, cex.axis=0.6, lty=0)
 axis(side=1)
-legend("top", categories, fill=bar_cols, ncol=2, xpd=TRUE)
+legend("right", categories, fill=bar_cols, xpd=TRUE)
 ```
 
 
@@ -1412,13 +1448,14 @@ at <- barplot(
     beside=FALSE,
     col=bar_cols,
     axes=FALSE,
-    ylim=c(0, 1.2),
+    xlim=c(0, 1.2),
     xlab="",
     ylab="Fragment Proportions",
-    main="Subread Summary")
-axis(side=1, at=at, labels=colnames(subread_sum[-c(1)]), las=2, cex.axis=0.6)
-axis(side=2, at=seq(0, 1, by=0.2), labels=seq(0, 1, by=0.2))
-legend("top", categories, fill=bar_cols, ncol=2)
+    main="Subread Summary",
+    horiz=TRUE)
+axis(side=2, at=at, labels=colnames(subread_sum[-c(1)]), las=2, cex.axis=0.6)
+axis(side=1, at=seq(0, 1, by=0.2), labels=seq(0, 1, by=0.2))
+legend("right", categories, fill=bar_cols)
 
 # We want to transpose this table so that it scales vertically with the number
 # of samples.
