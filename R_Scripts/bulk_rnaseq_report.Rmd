@@ -37,19 +37,28 @@ Sys.setenv(firstrun=firstrun)
 nsamp <- length(samplenames)
 hisat_summary <- read.table(paste(params["workdir"], "allsamples", "HISAT_Stats.txt", sep="/"), header=F)
 names(hisat_summary) <- c("SampleName", "Total", "Unmapped", "UniqueMapped", "MultiMapped", "DiscoMapped")
-dup_summary <- read.table(paste(params["workdir"], "allsamples", "Dup_Stats.txt", sep="/"), header=F)
-names(dup_summary) <- c("SampleName", "R1_Dup", "R2_Dup")
 bbduk_summary <- read.table(paste(params["workdir"], "allsamples", "rRNA_kmers.txt", sep="/"), header=F)
 names(bbduk_summary) <- c("SampleName", "rRNA_Fragments", "rRNA_Pct")
-picard_rnaseq_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F)
-names(picard_rnaseq_summary) <- c(
-    "SampleName",
-    "RIBOSOMAL_BASES", "CODING_BASES", "UTR_BASES", "INTRONIC_BASES", "INTERGENIC_BASES",
-    "CORRECT_STRAND_READS", "INCORRECT_STRAND_READS", "PCT_RIBOSOMAL_BASES", "PCT_CODING_BASES", "PCT_UTR_BASES",
-    "PCT_INTRONIC_BASES", "PCT_INTERGENIC_BASES", "PCT_USABLE_BASES", "PCT_CORRECT_STRAND_READS")
+rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F, sep="\t", quote=NULL)
+names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
+rnaseqc_summary_uns <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics_Unstranded.txt", sep="/"), header=F, sep="\t", quote=NULL)
+names(rnaseqc_summary_uns) <- c("SampleName", "Statistic", "Value")
 # Assume that the first sample is part of the same dataset as the others
 first_read <- as.character(sheet$V3[1])
 fastq_dir <- dirname(first_read)
+
+# Set a "large dataset" flag
+lg_cutoff <- 12
+if(nsamp > lg_cutoff) {
+    large_dataset <- TRUE
+} else {
+    large_dataset <- FALSE
+}
+
+# Generate the chunk offsets that we will use in the case of large datasets
+if(large_dataset) {
+    chunks <- cut(1:nsamp, breaks=unique(c(seq(0, nsamp, by=lg_cutoff), nsamp)), include.lowest=TRUE)
+}
 ```
 
 # PURR: Pipeline for UMII/RIS RNASeq Analysis
@@ -69,6 +78,8 @@ MSI with funding provided by the University of Minnesota Informatics Institute
 # Key Figures and Summaries
 ## Experiment Summary
 The location of the FASTQ files for this run is ``r fastq_dir``
+
+This run consists of ``r nsamp`` samples.
 
 A tabular summary of the samples and reads that were analyzed is shown below:
 
@@ -101,31 +112,50 @@ names(sumsheet) <- c(
 sumsheet
 ```
 
-## Fragment Counts Plot
-```{r counts_sum, echo=FALSE, message=FALSE}
+```{r counts_sum, echo=FALSE, results='asis'}
 read_dat <- matrix(
     c(read_summary$V2, read_summary$V4)/1000000,
     byrow=FALSE,
     nrow=nrow(read_summary)
     )
 max_reads <- max(read_dat)
-at <- barplot(
-    t(read_dat),
-    beside=TRUE,
-    ylim=c(0, max_reads*1.2),
-    axes=FALSE,
+if(large_dataset) {
+    cat("## Fragment Counts Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        cat("### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        subdat <- read_dat[idx,]
+        at <- barplot(
+            t(subdat),
+            beside=TRUE,
+            ylim=c(0, max_reads*1.2),
+            axes=FALSE,
+        col=c("#d95f02", "#1b9e77"),
+        ylab="Fragment Count (Millions)",
+        main="Fragment Counts")
+        legend("top", c("Raw", "Trimmed"), fill=c("#d95f02", "#1b9e77"), ncol=2)
+        axis(side=2)
+        axis(side=1, at=apply(at, 2, mean), labels=as.character(read_summary$V1[idx]), cex.axis=0.6, las=2)
+        cat("\n\n")
+    }
+} else {
+    cat("## Fragment Counts Plot\n")
+    at <- barplot(
+        t(read_dat),
+        beside=TRUE,
+        ylim=c(0, max_reads*1.2),
+        axes=FALSE,
     col=c("#d95f02", "#1b9e77"),
     ylab="Fragment Count (Millions)",
     main="Fragment Counts")
-legend("top", c("Raw", "Trimmed"), fill=c("#d95f02", "#1b9e77"), ncol=2)
-axis(side=2)
-axis(side=1, at=apply(at, 2, mean), labels=as.character(read_summary$V1), cex.axis=0.6, las=2)
+    legend("top", c("Raw", "Trimmed"), fill=c("#d95f02", "#1b9e77"), ncol=2)
+    axis(side=2)
+    axis(side=1, at=apply(at, 2, mean), labels=as.character(read_summary$V1), cex.axis=0.6, las=2)
+}
 ```
 
-## Read Quality Plots {.tabset}
-### Raw Reads
-
-```{r raw_qual_sum, echo=FALSE, message=FALSE, fig.width=8, fig.height=0.7*nrow(sheet)}
+## Read Quality Plots
+```{r raw_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 0.6*nrow(sheet)), results='asis'}
 plotqual_first <- function(sn) {
     allquals <- matrix(0:45)
     image(
@@ -218,18 +248,38 @@ plotqual_last <- function(sn) {
         axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
     }
 }
-par(mfrow=c(nsamp+1, 2))
-# Set the margins of the top to be high on the first two so we can add the R1/R2 labels
-par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-dummy <- plotqual_first(samplenames[1])
-par(mar=c(1.1, 5, 1.1, 0.1))
-dummy <- sapply(samplenames[3:nsamp-1], plotqual)
-par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-dummy <- plotqual_last(samplenames[nsamp])
+
+if(large_dataset) {
+    cat("### Raw Reads {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        subsamp <- samplenames[idx]
+        nsubsamp <- length(subsamp)
+        cat("\n\n")
+        par(mfrow=c(nsubsamp+1, 2))
+        # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
+        par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_first(subsamp[1])
+        par(mar=c(1.1, 5, 1.1, 0.1))
+        dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
+        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_last(subsamp[nsubsamp])
+        cat("\n\n")
+    }
+} else {
+    par(mfrow=c(nsamp+1, 2))
+    # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
+    par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
+    dummy <- plotqual_first(samplenames[1])
+    par(mar=c(1.1, 5, 1.1, 0.1))
+    dummy <- sapply(samplenames[3:nsamp-1], plotqual)
+    par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+    dummy <- plotqual_last(samplenames[nsamp])
+}
 ```
 
-### Trimmed Reads
-```{r trim_qual_sum, echo=FALSE, message=FALSE, fig.width=8, fig.height=0.7*nrow(sheet)}
+```{r trim_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 0.6*nrow(sheet)), results='asis'}
 trim_samp <- sheet$V1[sheet$V7 == "yes"]
 if(length(trim_samp) > 0) {
     plotqual_first <- function(sn) {
@@ -324,81 +374,170 @@ if(length(trim_samp) > 0) {
             axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
         }
     }
-    nsamp <- length(trim_samp)
-    par(mfrow=c(nsamp+1, 2))
-    # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
-    par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_first(trim_samp[1])
-    par(mar=c(1.1, 5, 1.1, 0.1))
-    dummy <- sapply(trim_samp[3:nsamp-1], plotqual)
-    par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_last(trim_samp[nsamp])
+    if(large_dataset) {
+        cat("### Trimmed Reads {.tabset}\n")
+        for(i in unique(chunks)) {
+            idx <- which(chunks == i)
+            cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            subsamp <- trim_samp[idx]
+            nsubsamp <- length(subsamp)
+            cat("\n\n")
+            par(mfrow=c(nsubsamp+1, 2))
+            # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
+            par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
+            dummy <- plotqual_first(subsamp[1])
+            par(mar=c(1.1, 5, 1.1, 0.1))
+            dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
+            par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+            dummy <- plotqual_last(subsamp[nsubsamp])
+            cat("\n\n")
+        }
     } else {
-        print("No trimming performed.")
+        cat("### Trimmed Reads\n")
+        par(mfrow=c(nsamp+1, 2))
+        # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
+        par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_first(trim_samp[1])
+        par(mar=c(1.1, 5, 1.1, 0.1))
+        dummy <- sapply(trim_samp[3:nsamp-1], plotqual)
+        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_last(trim_samp[nsamp])
+    }
+} else {
+        cat("### Trimmed Reads\n\nNo trimming performed.")
     }
 ```
 
 ## HISAT2 Plots {.tabset}
-### Counts
-```{r hisat2_counts_sum, echo=FALSE, message=FALSE}
+
+```{r hisat2_counts_sum, echo=FALSE, message=FALSE, results="asis"}
 count_dat <- as.matrix(hisat_summary[,c("UniqueMapped", "MultiMapped", "DiscoMapped", "Unmapped")])
 max_reads <- max(hisat_summary$Total)/1000000
-at <- barplot(
-    t(count_dat)/1000000,
-    beside=FALSE,
-    col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
-    ylim=c(0, max_reads*1.2),
-    ylab="Fragment Count (Millions)",
-    main="HISAT2 Count Plot",
-    axes=FALSE)
-axis(side=2)
-axis(side=1, at=at, labels=as.character(hisat_summary$SampleName), cex.axis=0.6, las=2)
-legend(
-    "top",
-    c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
-    fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
-    ncol=4,
-    cex=0.7)
+if(large_dataset) {
+    cat("### Fragment Counts Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        subdat <- count_dat[idx,]
+        at <- barplot(
+            t(subdat)/1000000,
+            beside=FALSE,
+            col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ylim=c(0, max_reads*1.2),
+            ylab="Fragment Count (Millions)",
+            main="HISAT2 Count Plot",
+            axes=FALSE)
+        axis(side=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName)[idx], cex.axis=0.6, las=2)
+        legend(
+            "top",
+            c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
+            fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ncol=4,
+            cex=0.7)
+        cat("\n\n")
+    }
+} else {
+    cat("### Fragment Counts Plot\n")
+    at <- barplot(
+        t(count_dat)/1000000,
+        beside=FALSE,
+        col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+        ylim=c(0, max_reads*1.2),
+        ylab="Fragment Count (Millions)",
+        main="HISAT2 Count Plot",
+        axes=FALSE)
+        axis(side=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName), cex.axis=0.6, las=2)
+        legend(
+            "top",
+            c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
+            fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ncol=4,
+            cex=0.7)
+}
 ```
 
-### Proportions
-```{r hisat2_prop_sum, echo=FALSE, message=FALSE}
-count_dat <- as.matrix(hisat_summary[,c("UniqueMapped", "MultiMapped", "DiscoMapped", "Unmapped")])
+```{r hisat2_prop_sum, echo=FALSE, message=FALSE, results="asis"}
 # Then make a proportion plot
-prop_dat <- count_dat / hisat_summary$Total
-barplot(
-    t(prop_dat),
-    beside=FALSE,
-    col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
-    ylim=c(0, 1.15),
-    ylab="Proportion",
-    main="HISAT2 Proportion Plot",
-    axes=FALSE)
-legend(
-    "top",
-    c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
-    fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
-    ncol=4,
-    cex=0.7)
-axis(side=2)
-axis(side=1, at=at, labels=as.character(hisat_summary$SampleName), cex.axis=0.6, las=2)
+prop_dat <- count_dat / as.numeric(hisat_summary$Total)
+if(large_dataset) {
+    cat("### Fragment Proportions Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        subdat <- prop_dat[idx,]
+        at <- barplot(
+            t(subdat),
+            beside=FALSE,
+            col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ylim=c(0, 1.2),
+            ylab="Proportion",
+            main="HISAT2 Proportion Plot",
+            axes=FALSE)
+        axis(side=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName)[idx], cex.axis=0.6, las=2)
+        legend(
+            "top",
+            c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
+            fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ncol=4,
+            cex=0.7)
+        cat("\n\n")
+    }
+} else {
+    cat("### Fragment Counts Plot\n")
+    at <- barplot(
+        t(prop_dat),
+        beside=FALSE,
+        col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+        ylim=c(0, 1.2),
+        ylab="Proportion",
+        main="HISAT2 Proportion Plot",
+        axes=FALSE)
+        axis(side=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName), cex.axis=0.6, las=2)
+        legend(
+            "top",
+            c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
+            fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ncol=4,
+            cex=0.7)
+}
 ```
 
 ## Expression Plots {.tabset}
-### Expressed Genes
-```{r expressed_sum, echo=FALSE, message=FALSE}
+```{r expressed_sum, echo=FALSE, message=FALSE, results="asis"}
 subread_counts <- read.table(paste(params["workdir"], "allsamples", "subread_counts.txt", sep="/"), header=T, sep="\t", comment.char="#")
 subread_counts <- subread_counts[,-c(1:6)]
 num_expressed <- as.numeric(apply(subread_counts, 2, function(x) sum(x>0)))
 maxexpr <- max(num_expressed)
-at <- barplot(
-    num_expressed,
-    ylab="Number of Expressed Features",
-    ylim=c(0, maxexpr*1.2),
-    col="#1f78b4",
-    axes=FALSE)
-axis(side=2)
-axis(side=1, at=at, labels=names(subread_counts), las=2, cex.axis=0.7)
+if(large_dataset) {
+    cat("### Expressed Features {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        subdat <- num_expressed[idx]
+        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        at <- barplot(
+            subdat,
+            ylab="Number of Expressed Features",
+            ylim=c(0, maxexpr*1.2),
+            col="#1f78b4",
+            axes=FALSE)
+        axis(side=2)
+        axis(side=1, at=at, labels=names(subread_counts)[idx], las=2, cex.axis=0.7)
+        cat("\n\n")
+    }
+} else {
+    at <- barplot(
+        num_expressed,
+        ylab="Number of Expressed Features",
+        ylim=c(0, maxexpr*1.2),
+        col="#1f78b4",
+        axes=FALSE)
+    axis(side=2)
+    axis(side=1, at=at, labels=names(subread_counts), las=2, cex.axis=0.7)
+}
 ```
 
 ### CPM
@@ -471,10 +610,10 @@ Trimmed reads (or raw reads, if `--no-trim` was specified) were aligned to the
 reference genome with HISAT2. Duplicate reads based on alignment position were
 marked with SAMTools. If `--rmdup` was specified, then the positional duplicates
 were removed instead of marked. Alignments with duplicates marked were
-summarized with Picard CollectRnaSeqMetrics to summarize the number of mapped
-bases that occur in off-target regions and in annotated ribosomal regions.
-Processed alignments were filtered of reads that have a mapping quality of less
-than 60, and sorted by query name rather than position.
+summarized with RNASeQC to quantify the proportion of positional duplicates,
+identify risosomal alignments, and quantify the proportion of "on-target"
+reads. Processed alignments were filtered of reads that have a mapping quality
+of less than 60, and sorted by query name rather than position.
 
 ### Counts and Differential Expression testing
 Cleaned and name-sorted alignments were processed with the featureCounts tool
@@ -698,45 +837,91 @@ These counts were based on searching a subset of the raw reads against a
 reference database of ribosomal K-mers. Click on the table headers to show the
 summaries of rRNA contamination.
 
-### Plot
-```{r bbduk_plot, echo=FALSE, message=FALSE}
-plt_dat <- as.numeric(gsub("%", "", as.character(bbduk_summary$rRNA_Pct)))
-at <- barplot(
-    plt_dat/100,
-    col="#e41a1c",
-    ylim=c(0, 0.75),
-    xlab="",
-    ylab="Proportion rRNA",
-    main="K-mer Based rRNA Contamination",
+```{r bbduk_plot, echo=FALSE, message=FALSE, results="asis"}
+plt_dat <- as.numeric(gsub("%", "", as.character(bbduk_summary$rRNA_Pct))) / 100
+if(large_dataset) {
+    cat("### Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        subdat <- plt_dat[idx]
+        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        at <- barplot(
+            subdat,
+            col="#e41a1c",
+            ylim=c(0, 0.75),
+            xlab="",
+            ylab="Proportion rRNA",
+            main="K-mer Based rRNA Contamination",
+            axes=FALSE)
+        axis(side=1, at=at, labels=as.character(bbduk_summary$SampleName)[idx], las=2, cex.axis=0.6)
+        axis(side=2, at=seq(0, 0.6, by=0.05), labels=seq(0, 0.6, by=0.05))
+        rect(
+            xleft=par("usr")[1],
+            xright=par("usr")[2],
+            ybottom=0.2,
+            ytop=0.35,
+            col=rgb(255/255, 237/255, 160/255, 0.5),
+            border=NA
+            )
+        rect(
+            xleft=par("usr")[1],
+            xright=par("usr")[2],
+            ybottom=0.35,
+            ytop=0.6,
+            col=rgb(228/255, 26/255, 28/255, 0.25),
+            border=NA
+            )
+        # Dumb, but re-plot it to put it on the top
+        barplot(
+            subdat,
+            col="#e41a1c",
+            ylim=c(0, 0.75),
+            xlab="",
+            ylab="Proportion rRNA",
+            main="K-mer Based rRNA Contamination",
+            axes=FALSE,
+            add=TRUE)
+        cat("\n\n")
+    }
+} else {
+    cat("### Plot\n")
+    at <- barplot(
+        plt_dat,
+        col="#e41a1c",
+        ylim=c(0, 0.75),
+        xlab="",
+        ylab="Proportion rRNA",
+        main="K-mer Based rRNA Contamination",
     axes=FALSE)
-axis(side=1, at=at, labels=as.character(bbduk_summary$SampleName), las=2, cex.axis=0.6)
-axis(side=2, at=seq(0, 0.6, by=0.05), labels=seq(0, 0.6, by=0.05))
-rect(
-    xleft=par("usr")[1],
-    xright=par("usr")[2],
-    ybottom=0.2,
-    ytop=0.35,
-    col=rgb(255/255, 237/255, 160/255, 0.5),
-    border=NA
-    )
-rect(
-    xleft=par("usr")[1],
-    xright=par("usr")[2],
-    ybottom=0.35,
-    ytop=0.6,
-    col=rgb(228/255, 26/255, 28/255, 0.25),
-    border=NA
-    )
-# Dumb, but re-plot it to put it on the top
-barplot(
-    plt_dat/100,
-    col="#e41a1c",
-    ylim=c(0, 0.75),
-    xlab="",
-    ylab="Proportion rRNA",
-    main="K-mer Based rRNA Contamination",
-    axes=FALSE,
-    add=TRUE)
+    axis(side=1, at=at, labels=as.character(bbduk_summary$SampleName), las=2, cex.axis=0.6)
+    axis(side=2, at=seq(0, 0.6, by=0.05), labels=seq(0, 0.6, by=0.05))
+    rect(
+        xleft=par("usr")[1],
+        xright=par("usr")[2],
+        ybottom=0.2,
+        ytop=0.35,
+        col=rgb(255/255, 237/255, 160/255, 0.5),
+        border=NA
+        )
+    rect(
+        xleft=par("usr")[1],
+        xright=par("usr")[2],
+        ybottom=0.35,
+        ytop=0.6,
+        col=rgb(228/255, 26/255, 28/255, 0.25),
+        border=NA
+        )
+    # Dumb, but re-plot it to put it on the top
+    barplot(
+        plt_dat,
+        col="#e41a1c",
+        ylim=c(0, 0.75),
+        xlab="",
+        ylab="Proportion rRNA",
+        main="K-mer Based rRNA Contamination",
+        axes=FALSE,
+        add=TRUE)
+}
 ```
 
 ### Table
@@ -745,235 +930,243 @@ library(knitr)
 kable(bbduk_summary, caption="Number of read pairs (from subsample) and percentage of library that is estimated to be derived from ribosomal RNA.")
 ```
 
-## Sequence Duplication {.tabset}
-These plots show sequence duplication summaries, derived from FastQC output.
-Click on the tab headers to show the various summaries.
+## Mapping-based QC Metrics {.tabset}
+These plots show QC metrics based on summaries of the BAM alignment files, as
+generated by [RNASeQC](https://github.com/broadinstitute/rnaseqc).
 
-### Overall Duplication
-```{r dup_overall, echo=FALSE, message=FALSE}
-plt_dat <- matrix(as.numeric(c(dup_summary$R1_Dup, dup_summary$R2_Dup)), nrow=2, byrow=TRUE)
-at <- barplot(
-    (100-plt_dat)/100,
-    beside=TRUE,
-    axes=F,
-    col=c("#d95f02", "#1b9e77"),
-    ylim=c(0, 1.1),
-    xlab="",
-    ylab="Proportion Duplicated",
-    main="Total Duplication")
-axis(side=1, at=apply(at, 2, mean), labels=as.character(dup_summary$SampleName), las=2, cex.axis=0.6)
-axis(side=2, at=seq(0, 1, by=0.1), labels=seq(0, 1, by=0.1))
-legend("top", c("R1", "R2"), fill=c("#d95f02", "#1b9e77"), ncol=2)
-```
+### Expression Profiling Efficiency
+This plot shows the proportion of high-quality alignments that are in exons. For
+messenger RNA libraries, this value is expected to be close to 1.
 
-### Duplication Histograms
-```{r dup_hist, echo=FALSE, message=FALSE, fig.width=8, fig.height=1.75*nrow(sheet)}
-par(mfrow=c(nrow(sheet), 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
-plot_dup <- function(sn) {
-    r1_dfile <- paste(params["outdir"], "Dup_Stats", paste(sn, "_1_Dups.txt", sep=""), sep="/")
-    r1_dup <- read.table(r1_dfile, header=FALSE, stringsAsFactors=FALSE)
-    plt_dat <- as.matrix(r1_dup[, c(2, 3)])
-    at <- barplot(
-        t(plt_dat)/100,
-        axes=F,
-        beside=TRUE,
-        col=c("#a6cee3", "#1f78b4"),
-        ylim=c(0, 1),
-        xlab="Duplication Level",
-        ylab="Proportion",
-        main=paste("Duplication in ", sn, " R1", sep=""))
-    axis(side=1, at=apply(at, 2, mean), labels=as.character(r1_dup$V1), las=2, cex.axis=0.6)
-    axis(side=2, at=seq(0, 1, by=0.05), labels=seq(0, 1, by=0.05))
-    legend("top", c("Of Deduplicated", "Of Total"), fill=c("#a6cee3", "#1f78b4"), ncol=2)
-    r2_dfile <- paste(params["outdir"], "Dup_Stats", paste(sn, "_2_Dups.txt", sep=""), sep="/")
-    if(!file.exists(r2_dfile)) {
-            plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
-            text(x=0.5, y=0.5, "No R2 file found.", cex=1.5, col="black")
-        } else {
-            r2_dup <- read.table(r2_dfile, header=FALSE, stringsAsFactors=FALSE)
-            plt_dat <- as.matrix(r2_dup[, c(2, 3)])
-            at <- barplot(
-                t(plt_dat)/100,
-                axes=F,
-                beside=TRUE,
-                col=c("#a6cee3", "#1f78b4"),
-                ylim=c(0, 1),
-                xlab="Duplication Level",
-                ylab="Proportion",
-                main=paste("Duplication in ", sn, " R2", sep=""))
-            axis(side=1, at=apply(at, 2, mean), labels=as.character(r2_dup$V1), las=2, cex.axis=0.6)
-            axis(side=2, at=seq(0, 1, by=0.05), labels=seq(0, 1, by=0.05))
-            legend("top", c("Of Deduplicated", "Of Total"), fill=c("#a6cee3", "#1f78b4"), ncol=2)
+```{r epe_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
+par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
+epe_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Expression Profiling Efficiency"])
+if(large_dataset) {
+    cat("#### Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        subdat <- epe_dat[idx]
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        at <- barplot(
+            subdat,
+            axes=FALSE,
+            horiz=TRUE,
+            xlim=c(0, 1),
+            xlab="Efficiency",
+            main="Expression Profiling Efficiency",
+            ylab="",
+            col="#1f78b4")
+        axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=1)
+        axis(side=3)
+        cat("\n\n")
     }
-}
-dummy <- sapply(samplenames, plot_dup)
-```
-
-## Picard RNASeq Metrics {.tabset}
-These summaries are useful for identifying genomic DNA contamination, potential
-strandedness mismatches between the pipeline settings and the data, and coverage
-biases across transcripts. There is also another measure of ribosomal RNA
-contamination, based on alignment to annotated rRNA features.
-
-### gDNA Contamination Metrics
-This plot will show the percentage of bases that map to off-target regions
-(i.e., non-exon regions). Note that the counts and proportions here *exclude*
-ribosomal mapping.
-
-```{r gdna_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=0.8*nrow(sheet)}
-par(mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
-cts_dat <- matrix(
-    c(
-        as.numeric(picard_rnaseq_summary$CODING_BASES),
-        as.numeric(picard_rnaseq_summary$UTR_BASES),
-        as.numeric(picard_rnaseq_summary$INTRONIC_BASES),
-        as.numeric(picard_rnaseq_summary$INTERGENIC_BASES)
-        )/1000000,
-    byrow=TRUE,
-    nrow=4)
-max_ct <- max(cts_dat)
-bar_cols <- c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c")
-at <- barplot(
-    cts_dat,
-    beside=TRUE,
-    axes=FALSE,
-    horiz=TRUE,
-    xlim=c(0, max_ct*1.25),
-    xlab="Number of Bases in Primary Alignments (Millions)",
-    main="Base Positions",
-    ylab="",
-    col=bar_cols)
-axis(side=2, at=apply(at, 2, mean), labels=as.character(picard_rnaseq_summary$SampleName), las=2, cex.axis=0.6, lty=0)
-axis(side=1)
-legend("right", c("Coding", "UTR", "Intron", "Intergenic"), fill=bar_cols, ncol=1)
-```
-
-```{r gdna_plot_prop, echo=FALSE, message=FALSE}
-prop_dat <- matrix(
-    c(
-        as.numeric(picard_rnaseq_summary$PCT_CODING_BASES),
-        as.numeric(picard_rnaseq_summary$PCT_UTR_BASES),
-        as.numeric(picard_rnaseq_summary$PCT_INTRONIC_BASES),
-        as.numeric(picard_rnaseq_summary$PCT_INTERGENIC_BASES)
-        ),
-    byrow=TRUE,
-    nrow=4)
-at <- barplot(
-    prop_dat,
-    beside=FALSE,
-    axes=F,
-    ylim=c(0, 1.2),
-    ylab="Proportion of Bases in Primary Alignments",
-    main="Base Positions",
-    xlab="",
-    col=bar_cols)
-axis(side=1, at=at, labels=as.character(picard_rnaseq_summary$SampleName), las=2, cex.axis=0.6)
-axis(side=2, at=seq(0, 1, by=0.2), labels=seq(0, 1, by=0.2))
-legend("top", c("Coding", "UTR", "Intron", "Intergenic"), fill=bar_cols, ncol=4)
-```
-
-### Strand Summary
-This plot will summarize the mismatch between the observed and expected strand
-directionality in the samples. Note that for unstranded libraries, these values
-will all be 0.
-
-```{r strand_plot, echo=FALSE, message=FALSE}
-plot_dat <- as.numeric(picard_rnaseq_summary$PCT_CORRECT_STRAND_READS)
-par(mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
-if(all(plot_dat == 0)) {
-    plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
-    text(x=0.5, y=0.5, "All strand agreement is 0:\nunstranded lib", cex=2, col="black")
 } else {
     at <- barplot(
-        plot_dat,
-        col="#1f78b4",
-        ylim=c(0, 1.1),
-        xlab="",
-        ylab="Proportion Correct Strand",
-        main="Strand Agreement",
-        axes=F)
-    axis(side=1, at=at, labels=as.character(picard_rnaseq_summary$SampleName), las=2, cex.axis=0.6)
-    axis(side=2)
+        epe_dat,
+        axes=FALSE,
+        horiz=TRUE,
+        xlim=c(0, 1),
+        xlab="Efficiency",
+        main="Expression Profiling Efficiency",
+        ylab="",
+        col="#1f78b4")
+    axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
+    axis(side=1)
+    axis(side=3)
 }
 ```
 
-### Mapping-based rRNA Contamination
-This plot will show the proportion fo bases that map to annotated rRNA features.
+### Duplication
+This plot shows the proportion of alignments that are positional duplicates in
+each sample, as determined in the default algorithm of the
+[Picard MarkDuplicates](https://broadinstitute.github.io/picard/command-line-overview.html#MarkDuplicates) tool.
 
-```{r picard_rrna, echo=FALSE, message=FALSE}
-plot_dat <- as.numeric(picard_rnaseq_summary$PCT_RIBOSOMAL_BASES)
-par(mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
-at <- barplot(
-    plot_dat,
-    col="#e41a1c",
-    ylim=c(0, 0.75),
-    xlab="",
-    ylab="Proportion Ribosomal Bases",
-    main="rRNA Contamination (Mapping)",
-    axes=FALSE)
-rect(
-    xleft=par("usr")[1],
-    xright=par("usr")[2],
-    ybottom=0.2,
-    ytop=0.35,
-    col=rgb(255/255, 237/255, 160/255, 0.5),
-    border=NA
-    )
-rect(
-    xleft=par("usr")[1],
-    xright=par("usr")[2],
-    ybottom=0.35,
-    ytop=0.6,
-    col=rgb(228/255, 26/255, 28/255, 0.25),
-    border=NA
-    )
-axis(side=1, at=at, labels=as.character(picard_rnaseq_summary$SampleName), las=2, cex.axis=0.6)
-axis(side=2, at=seq(0, 0.6, by=0.05), labels=seq(0, 0.6, by=0.05))
-barplot(
-    plot_dat,
-    col="#e41a1c",
-    ylim=c(0, 0.75),
-    xlab="",
-    ylab="Proportion Ribosomal Bases",
-    main="rRNA Contamination (Mapping)",
-    axes=FALSE,
-    add=TRUE)
-```
-
-### Coverage Bias
-This plot will show normalized coverage across all transcripts. Ideally, the
-curve is symmetrical, showing no bias toward one end of the transcripts.
-
-```{r coverage_bias, echo=FALSE, message=FALSE, fig.width=8, fig.height=1.25*nrow(sheet)}
-samprow <- ceiling(nrow(sheet)/2)
-par(mfrow=c(samprow, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
-plot_cov <- function(sn) {
-    cf <- paste(params["outdir"], "RNASeqMetrics", paste(sn, "_Metrics.txt", sep=""), sep="/")
-    # Wrap this read in a tryCatch for the cases where there are no normalized coverage numbers
-    cov_dat <- tryCatch(
-        {read.table(cf, header=FALSE, stringsAsFactors=FALSE, skip=11)},
-        error=function(x) {
-            return(data.frame())
-        }
-        )
-    if(length(cov_dat) > 0) {
-        plot(
-            cov_dat$V2 ~ cov_dat$V1,
-            type="l",
-            lwd=2,
-            col="#1f78b4",
-            xlab="Normalized Position",
-            ylab="Normalized Coverage",
-            main=sn,
-            ylim=c(0, 1.7)
-            )
-        abline(h=1, lwd=1, col="grey", lty=3)
-    } else {
-        plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
-        text(x=0.5, y=0.5, "No Bias Metrics Found", cex=1, col="black")
+```{r dup_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
+par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
+dup_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Duplicate Rate of Mapped"])
+if(large_dataset) {
+    cat("#### Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        subdat <- dup_dat[idx]
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        at <- barplot(
+            subdat,
+            axes=FALSE,
+            horiz=TRUE,
+            xlim=c(0, 1),
+            xlab="Proportion of Fragments",
+            main="Sequence Duplication Levels",
+            ylab="",
+            col="#1f78b4")
+        axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=1)
+        axis(side=3)
+        cat("\n\n")
     }
+} else {
+    at <- barplot(
+        dup_dat,
+        axes=FALSE,
+        horiz=TRUE,
+        xlim=c(0, 1),
+        xlab="Proportion of Fragments",
+        main="Sequence Duplication Levels",
+        ylab="",
+        col="#1f78b4")
+    axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
+    axis(side=1)
+    axis(side=3)
 }
-dummy <- sapply(samplenames, plot_cov)
+```
+
+### gDNA and Strand Agreement
+These plots show both gDNA contamination and strand-specificity. The plot on
+the left shows the read alignments to exons, introns, and to intergenic regions
+while accounting for the strand of the annotations. The plot on the right shows
+the same region-based summary, but ignoring the strand of the annotations. If
+the unstranded plot shows much higher assignment to exons than the strand-aware
+plot, then it is likely that you have given the incorrect strand-specificity
+for your library. Please refer to the library preparation protocol to determine
+the correct strand-specificity.
+
+If the plots look similar in terms of assignment proportions, then you have
+given the correct strand-specificity.
+
+```{r gdna_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.6*nrow(sheet), 0.6*lg_cutoff), results="asis"}
+par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0), mfrow=c(1, 2))
+gdna_dat <- matrix(
+    c(
+        as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Exonic Rate"]),
+        as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Intronic Rate"]),
+        as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Intergenic Rate"])
+        ),
+    byrow=TRUE,
+    nrow=3
+    )
+gdna_dat_uns <- matrix(
+    c(
+        as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary_uns$Statistic == "Exonic Rate"]),
+        as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary_uns$Statistic == "Intronic Rate"]),
+        as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary_uns$Statistic == "Intergenic Rate"])
+        ),
+    byrow=TRUE,
+    nrow=3
+    )
+bar_cols <- c("#a6cee3", "#1f78b4", "#b2df8a")
+
+if(large_dataset) {
+    cat("#### Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        subdat <- gdna_dat[,idx]
+        subdat_uns <- gdna_dat_uns[,idx]
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        at <- barplot(
+            subdat,
+            beside=TRUE,
+            axes=FALSE,
+            horiz=TRUE,
+            xlim=c(0, 1.25),
+            xlab="Proportion of Fragments",
+            main="Strand-aware Metrics",
+            ylab="",
+            col=bar_cols)
+        axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=1)
+        axis(side=3)
+        legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
+
+        at <- barplot(
+            subdat_uns,
+            beside=TRUE,
+            axes=FALSE,
+            horiz=TRUE,
+            xlim=c(0, 1.25),
+            xlab="Proportion of Fragments",
+            main="Unstranded Metrics",
+            ylab="",
+            col=bar_cols)
+        axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=1)
+        axis(side=3)
+        legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
+        cat("\n\n")
+    }
+} else {
+    at <- barplot(
+        gdna_dat,
+        beside=TRUE,
+        axes=FALSE,
+        horiz=TRUE,
+        xlim=c(0, 1.25),
+        xlab="Proportion of Fragments",
+        main="Strand-aware Metrics",
+        ylab="",
+        col=bar_cols)
+    axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
+    axis(side=1)
+    axis(side=3)
+    legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
+
+    at <- barplot(
+        gdna_dat_uns,
+        beside=TRUE,
+        axes=FALSE,
+        horiz=TRUE,
+        xlim=c(0, 1.25),
+        xlab="Proportion of Fragments",
+        main="Unstranded Metrics",
+        ylab="",
+        col=bar_cols)
+    axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
+    axis(side=1)
+    axis(side=3)
+    legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
+}
+```
+
+### rRNA
+This plot shows the proportion of alignments that are in annotated rRNA features.
+
+```{r rrna_map_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
+par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
+rrna_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "rRNA Rate"])
+if(large_dataset) {
+    cat("#### Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        subdat <- rrna_dat[idx]
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        at <- barplot(
+            subdat,
+            axes=FALSE,
+            horiz=TRUE,
+            xlim=c(0, 1),
+            xlab="Proportion of Fragments",
+            main="rRNA Mapping Rate",
+            ylab="",
+            col="#e41a1c")
+        axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=1)
+        axis(side=3)
+        cat("\n\n")
+    }
+} else {
+    at <- barplot(
+        rrna_dat,
+        axes=FALSE,
+        horiz=TRUE,
+        xlim=c(0, 1),
+        xlab="Proportion of Fragments",
+        main="rRNA Mapping Rate",
+        ylab="",
+        col="#e41a1c")
+    axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
+    axis(side=1)
+    axis(side=3)
+}
 ```
 
 ## Read Qualities {.tabset}
@@ -981,7 +1174,8 @@ Click on the tab headers to show plots of raw and trimmed read qualities.
 
 ### Raw Read Qualities (Compact style)
 These plots show the read qualities as they came off the sequencing instrument.
-```{r raw_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=0.7*nrow(sheet)}
+
+```{r raw_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.7*nrow(sheet), 0.7*lg_cutoff), results="asis"}
 plotqual_first <- function(sn) {
     allquals <- matrix(0:45)
     image(
@@ -1074,19 +1268,41 @@ plotqual_last <- function(sn) {
         axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
     }
 }
-par(mfrow=c(nsamp+1, 2))
-# Set the margins of the top to be high on the first two so we can add the R1/R2 labels
-par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-dummy <- plotqual_first(samplenames[1])
-par(mar=c(1.1, 5, 1.1, 0.1))
-dummy <- sapply(samplenames[3:nsamp-1], plotqual)
-par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-dummy <- plotqual_last(samplenames[nsamp])
+
+if(large_dataset) {
+    cat("#### Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        subsamp <- samplenames[idx]
+        nsubsamp <- length(subsamp)
+        cat("\n\n")
+        par(mfrow=c(nsubsamp+1, 2))
+        # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
+        par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_first(subsamp[1])
+        par(mar=c(1.1, 5, 1.1, 0.1))
+        dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
+        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_last(subsamp[nsubsamp])
+        cat("\n\n")
+    }
+} else {
+    par(mfrow=c(nsamp+1, 2))
+    # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
+    par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
+    dummy <- plotqual_first(samplenames[1])
+    par(mar=c(1.1, 5, 1.1, 0.1))
+    dummy <- sapply(samplenames[3:nsamp-1], plotqual)
+    par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+    dummy <- plotqual_last(samplenames[nsamp])
+}
 ```
 
 ### Trimmed Read Qualities (Compact style)
 These plots show read qualities post-trimming, if it was performed.
-```{r trim_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=0.7*nrow(sheet)}
+
+```{r trim_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.7*nrow(sheet), 0.7*lg_cutoff), results="asis"}
 if(length(trim_samp) > 0) {
     plotqual_first <- function(sn) {
         allquals <- matrix(0:45)
@@ -1180,17 +1396,36 @@ if(length(trim_samp) > 0) {
             axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
         }
     }
-    nsamp <- length(trim_samp)
-    par(mfrow=c(nsamp+1, 2))
-    # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
-    par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_first(trim_samp[1])
-    par(mar=c(1.1, 5, 1.1, 0.1))
-    dummy <- sapply(trim_samp[3:nsamp-1], plotqual)
-    par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_last(trim_samp[nsamp])
+    if(large_dataset) {
+        cat("#### Plots {.tabset}\n")
+        for(i in unique(chunks)) {
+            idx <- which(chunks == i)
+            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            subsamp <- trim_samp[idx]
+            nsubsamp <- length(subsamp)
+            cat("\n\n")
+            par(mfrow=c(nsubsamp+1, 2))
+            # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
+            par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
+            dummy <- plotqual_first(subsamp[1])
+            par(mar=c(1.1, 5, 1.1, 0.1))
+            dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
+            par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+            dummy <- plotqual_last(subsamp[nsubsamp])
+            cat("\n\n")
+        }
     } else {
-        print("No trimming performed.")
+        par(mfrow=c(nsamp+1, 2))
+        # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
+        par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_first(trim_samp[1])
+        par(mar=c(1.1, 5, 1.1, 0.1))
+        dummy <- sapply(trim_samp[3:nsamp-1], plotqual)
+        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_last(trim_samp[nsamp])
+    }
+} else {
+        cat("\nNo trimming performed.")
     }
 ```
 
@@ -1200,7 +1435,7 @@ The black dot shows the mean quality, the red dot shows the median quality,
 the grey shaded region shows the inter-quartile range, and the vertical black
 lines show the 10th-90th percentile range.
 
-```{r raw_read_quals_fastqc, echo=FALSE, message=FALSE, fig.width=8, fig.height=1.75*nrow(sheet)}
+```{r raw_read_quals_fastqc, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(1.7*nrow(sheet), 1.7*lg_cutoff), results="asis"}
 plotqual <- function(sn) {
     qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.raw_quals.txt", sep=""), sep="/")
     dat <- read.table(qr1_file, header=F, stringsAsFactors=FALSE)
@@ -1236,8 +1471,20 @@ plotqual <- function(sn) {
         title(paste(sn, "R2", sep=" "))
     }
 }
-par(mfrow=c(nsamp, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
-plt_out <- sapply(samplenames, plotqual)
+if(large_dataset) {
+    par(mfrow=c(lg_cutoff, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
+    cat("#### Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        subsamp <- samplenames[idx]
+        plt_out <- sapply(subsamp, plotqual)
+        cat("\n\n")
+    }
+} else {
+    par(mfrow=c(nsamp, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
+    plt_out <- sapply(samplenames, plotqual)
+}
 ```
 
 ### Trimmed Read Qualities (FastQC-style)
@@ -1246,7 +1493,7 @@ The black dot shows the mean quality, the red dot shows the median quality,
 the grey shaded region shows the inter-quartile range, and the vertical black
 lines show the 10th-90th percentile range.
 
-```{r trim_read_quals_fastqc, echo=FALSE, message=FALSE, fig.width=8, fig.height=1.75*nrow(sheet)}
+```{r trim_read_quals_fastqc, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(1.7*nrow(sheet), 1.7*lg_cutoff), results="asis"}
 if(length(trim_samp) > 0) {
     plotqual <- function(sn) {
         qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.trim_quals.txt", sep=""), sep="/")
@@ -1283,72 +1530,143 @@ if(length(trim_samp) > 0) {
             title(paste(sn, "R2", sep=" "))
         }
     }
-    par(mfrow=c(nsamp, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
-    plt_out <- sapply(trim_samp, plotqual)
+    if(large_dataset) {
+        par(mfrow=c(lg_cutoff, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
+        cat("#### Plots {.tabset}\n")
+        for(i in unique(chunks)) {
+            idx <- which(chunks == i)
+            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            subsamp <- trim_samp[idx]
+            plt_out <- sapply(subsamp, plotqual)
+            cat("\n\n")
+        }
+    } else {
+        par(mfrow=c(nsamp, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
+        plt_out <- sapply(trim_samp, plotqual)
+    }
 } else {
-    print("No trimming performed.")
+    cat("No trimming performed.")
 }
 ```
 
 # Alignment Summaries
 ## HISAT2 Summaries {.tabset}
 ### Counts-Based
-```{r hisat2_counts, echo=FALSE, message=FALSE}
+These plots summarize the number of fragments that align uniquely, multiply,
+discordantly, or do not map to the genome.
+
+```{r hisat2_counts, echo=FALSE, message=FALSE, results="asis"}
 library(knitr)
+
 count_dat <- as.matrix(hisat_summary[,c("UniqueMapped", "MultiMapped", "DiscoMapped", "Unmapped")])
 max_reads <- max(hisat_summary$Total)/1000000
-at <- barplot(
-    t(count_dat)/1000000,
-    beside=FALSE,
-    col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
-    ylim=c(0, max_reads*1.2),
-    ylab="Fragment Count (Millions)",
-    main="HISAT2 Count Plot",
-    axes=FALSE)
-axis(side=2)
-axis(side=1, at=at, labels=as.character(hisat_summary$SampleName), cex.axis=0.6, las=2)
-legend(
-    "top",
-    c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
-    fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
-    ncol=4,
-    cex=0.7)
+if(large_dataset) {
+    cat("#### Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        subdat <- count_dat[idx,]
+        at <- barplot(
+            t(subdat)/1000000,
+            beside=FALSE,
+            col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ylim=c(0, max_reads*1.2),
+            ylab="Fragment Count (Millions)",
+            main="HISAT2 Count Plot",
+            axes=FALSE)
+        axis(side=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName)[idx], cex.axis=0.6, las=2)
+        legend(
+            "top",
+            c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
+            fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ncol=4,
+            cex=0.7)
+        cat("\n\n")
+    }
+} else {
+    cat("#### Plot\n")
+    at <- barplot(
+        t(count_dat)/1000000,
+        beside=FALSE,
+        col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+        ylim=c(0, max_reads*1.2),
+        ylab="Fragment Count (Millions)",
+        main="HISAT2 Count Plot",
+        axes=FALSE)
+        axis(side=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName), cex.axis=0.6, las=2)
+        legend(
+            "top",
+            c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
+            fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ncol=4,
+            cex=0.7)
+}
 
-names(hisat_summary) <- c("Sample Name", "Total Fragments", "Unmapped", "Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped")
-kable(hisat_summary, caption="Summary of alignment from HISAT2 based on fragment counts. Note that if the samples are paired-end, then each fragment is represented by 2 reads. If the samples are single-end, then each fragment is represented by 1 read.")
+hisat_tab <- hisat_summary
+names(hisat_tab) <- c("Sample Name", "Total Fragments", "Unmapped", "Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped")
+kable(hisat_tab, caption="Summary of alignment from HISAT2 based on fragment counts. Note that if the samples are paired-end, then each fragment is represented by 2 reads. If the samples are single-end, then each fragment is represented by 1 read.")
 ```
 
 ### Proportion-Based
-```{r hisat2_prop, echo=FALSE, message=FALSE}
+These plots summarize the mapping as a proportion of the total reads.
+
+```{r hisat2_prop, echo=FALSE, message=FALSE, results="asis"}
 library(knitr)
-hisat_summary <- read.table(paste(params["workdir"], "allsamples", "HISAT_Stats.txt", sep="/"), header=F)
-count_dat <- as.matrix(hisat_summary[,c(4, 5, 6, 3)])
 # Then make a proportion plot
-prop_dat <- count_dat / hisat_summary$V2
-barplot(
-    t(prop_dat),
-    beside=FALSE,
-    col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
-    ylim=c(0, 1.15),
-    ylab="Fraction",
-    main="HISAT2 Proportion Plot",
-    axes=FALSE)
-legend(
-    "top",
-    c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
-    fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
-    ncol=4,
-    cex=0.7)
-axis(side=2)
-axis(side=1, at=at, labels=as.character(hisat_summary$V1), cex.axis=0.6, las=2)
+prop_dat <- count_dat / as.numeric(hisat_summary$Total)
+if(large_dataset) {
+    cat("#### Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        subdat <- prop_dat[idx,]
+        at <- barplot(
+            t(subdat),
+            beside=FALSE,
+            col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ylim=c(0, 1.2),
+            ylab="Proportion",
+            main="HISAT2 Proportion Plot",
+            axes=FALSE)
+        axis(side=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName)[idx], cex.axis=0.6, las=2)
+        legend(
+            "top",
+            c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
+            fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ncol=4,
+            cex=0.7)
+        cat("\n\n")
+    }
+} else {
+    cat("#### Plot\n")
+    at <- barplot(
+        t(prop_dat),
+        beside=FALSE,
+        col=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+        ylim=c(0, 1.2),
+        ylab="Proportion",
+        main="HISAT2 Proportion Plot",
+        axes=FALSE)
+        axis(side=2)
+        axis(side=1, at=at, labels=as.character(hisat_summary$SampleName), cex.axis=0.6, las=2)
+        legend(
+            "top",
+            c("Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped", "Unmapped"),
+            fill=c("#1f78b4", "#a6cee3", "#b2df8a", "#999999"),
+            ncol=4,
+            cex=0.7)
+}
 
 hisat_prop <- data.frame(
-    SN=as.character(hisat_summary$V1),
+    SN=as.character(hisat_summary$SampleName),
     TO=rep("100%", nrow(hisat_summary)),
-    UNM=paste(as.character(round((hisat_summary$V3/hisat_summary$V2)*100, digits=2)), "%", sep=""),
-    SM=paste(as.character(round((hisat_summary$V4/hisat_summary$V2)*100, digits=2)), "%", sep=""),
-    MM=paste(as.character(round((hisat_summary$V5/hisat_summary$V2)*100, digits=2)), "%", sep=""),
-    DM=paste(as.character(round((hisat_summary$V6/hisat_summary$V2)*100, digits=2)), "%", sep=""))
+    UNM=paste(as.character(round((hisat_summary$Unmapped/hisat_summary$Total)*100, digits=2)), "%", sep=""),
+    SM=paste(as.character(round((hisat_summary$UniqueMapped/hisat_summary$Total)*100, digits=2)), "%", sep=""),
+    MM=paste(as.character(round((hisat_summary$MultiMapped/hisat_summary$Total)*100, digits=2)), "%", sep=""),
+    DM=paste(as.character(round((hisat_summary$DiscoMapped/hisat_summary$Total)*100, digits=2)), "%", sep=""))
 names(hisat_prop) <- c(
     "Sample Name",
     "Total Fragments",
@@ -1432,9 +1750,9 @@ if(!file.exists(insertsize_file)) {
 ### Subread Assignment Summary
 These plots will show the breakdown of read assignment by `featureCounts`.
 
-```{r subread_summary, echo=FALSE, message=FALSE, fig.width=8, fig.height=0.9*nrow(sheet)}
+```{r subread_summary, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.6*nrow(sheet), 0.6*lg_cutoff), results="asis"}
 library(knitr)
-par(mar=c(5.1, 5, 5.1, 0.1))
+par(mar=c(4, 3.5, 1, 0.5), mgp=c(2.5, 0.75, 0))
 subread_sum <- read.table(paste(params["workdir"], "allsamples", "subread_counts.txt.summary", sep="/"), header=TRUE)
 plt_dat <- as.matrix(subread_sum[,-c(1)])
 # Combined the unassigned categories into one
@@ -1446,38 +1764,87 @@ colnames(plt_dat_comb) <- NULL
 categories <- c("Assigned", "Unassigned")
 bar_cols <- c("#1f78b4", "#999999")
 maxct <- max(plt_dat_comb)/1000000
-at <- barplot(
-    plt_dat_comb/1000000,
-    beside=TRUE,
-    col=bar_cols,
-    axes=FALSE,
-    xlim=c(0, maxct*1.2),
-    ylab="",
-    xlab="Fragment Count (Millions)",
-    main="Subread Summary",
-    horiz=TRUE)
-axis(side=2, at=apply(at, 2, mean), labels=colnames(subread_sum[-c(1)]), las=2, cex.axis=0.6, lty=0)
-axis(side=1)
-legend("top", categories, fill=bar_cols, ncol=2, xpd=TRUE)
+
+if(large_dataset) {
+    cat("#### Counts-based Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        subdat <- plt_dat_comb[,idx]
+        at <- barplot(
+            subdat/1000000,
+            beside=TRUE,
+            col=bar_cols,
+            axes=FALSE,
+            xlim=c(0, maxct*1.2),
+            ylab="",
+            xlab="Fragment Count (Millions)",
+            main="Subread Summary",
+            horiz=TRUE)
+        axis(side=2, at=apply(at, 2, mean), labels=colnames(subread_sum[-c(1)])[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=1)
+        legend("right", categories, fill=bar_cols, xpd=TRUE)
+        cat("\n\n")
+    }
+} else {
+    at <- barplot(
+        plt_dat_comb/1000000,
+        beside=TRUE,
+        col=bar_cols,
+        axes=FALSE,
+        xlim=c(0, maxct*1.2),
+        ylab="",
+        xlab="Fragment Count (Millions)",
+        main="Subread Summary",
+        horiz=TRUE)
+    axis(side=2, at=apply(at, 2, mean), labels=colnames(subread_sum[-c(1)]), las=2, cex.axis=0.6, lty=0)
+    axis(side=1)
+    legend("right", categories, fill=bar_cols, xpd=TRUE)
+}
 ```
 
 
-```{r subread_summary_prop, echo=FALSE, message=FALSE}
+```{r subread_summary_prop, echo=FALSE, message=FALSE, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
 plt_dat_prop <- t(plt_dat_comb)
 plt_dat_prop <- plt_dat_prop/rowSums(plt_dat_prop)
 plt_dat_prop <- t(plt_dat_prop)
-at <- barplot(
-    plt_dat_prop,
-    beside=FALSE,
-    col=bar_cols,
-    axes=FALSE,
-    ylim=c(0, 1.2),
-    xlab="",
-    ylab="Fragment Proportions",
-    main="Subread Summary")
-axis(side=1, at=at, labels=colnames(subread_sum[-c(1)]), las=2, cex.axis=0.6)
-axis(side=2, at=seq(0, 1, by=0.2), labels=seq(0, 1, by=0.2))
-legend("top", categories, fill=bar_cols, ncol=2)
+par(mar=c(4, 3.5, 1, 0.5), mgp=c(2.5, 0.75, 0))
+if(large_dataset) {
+    cat("#### Proportions-based Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        subdat <- plt_dat_prop[,idx]
+        at <- barplot(
+            subdat,
+            beside=FALSE,
+            col=bar_cols,
+            axes=FALSE,
+            xlim=c(0, 1.2),
+            ylab="",
+            xlab="Proportions",
+            main="Subread Summary",
+            horiz=TRUE)
+        axis(side=2, at=at, labels=colnames(subread_sum[-c(1)])[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=1)
+        legend("right", categories, fill=bar_cols, xpd=TRUE)
+        cat("\n\n")
+    }
+} else {
+    at <- barplot(
+        plt_dat_prop,
+        beside=FALSE,
+        col=bar_cols,
+        axes=FALSE,
+        xlim=c(0, 1.2),
+        ylab="",
+        xlab="Proportions",
+        main="Subread Summary",
+        horiz=TRUE)
+    axis(side=2, at=at, labels=colnames(subread_sum[-c(1)]), las=2, cex.axis=0.6, lty=0)
+    axis(side=1)
+    legend("right", categories, fill=bar_cols, xpd=TRUE)
+}
 
 # We want to transpose this table so that it scales vertically with the number
 # of samples.
@@ -1490,22 +1857,40 @@ t_subread
 ```
 
 ### Number of Expressed Features
-This plot shows the number of features (genes) that have at least one  fragment
+This plot shows the number of features (genes) that have at least one fragment
 mapping to them.
 
-```{r expressed_features, echo=FALSE, message=FALSE}
+```{r expressed_features, echo=FALSE, message=FALSE, results="asis"}
 subread_counts <- read.table(paste(params["workdir"], "allsamples", "subread_counts.txt", sep="/"), header=T, sep="\t", comment.char="#")
 subread_counts <- subread_counts[,-c(1:6)]
 num_expressed <- as.numeric(apply(subread_counts, 2, function(x) sum(x>0)))
 maxexpr <- max(num_expressed)
-at <- barplot(
-    num_expressed,
-    ylab="Number of Expressed Features",
-    ylim=c(0, maxexpr*1.2),
-    col="#1f78b4",
-    axes=FALSE)
-axis(side=2)
-axis(side=1, at=at, labels=names(subread_counts), las=2, cex.axis=0.7)
+if(large_dataset) {
+    cat("#### Plots {.tabset}\n")
+    for(i in unique(chunks)) {
+        idx <- which(chunks == i)
+        subdat <- num_expressed[idx]
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        at <- barplot(
+            subdat,
+            ylab="Number of Expressed Features",
+            ylim=c(0, maxexpr*1.2),
+            col="#1f78b4",
+            axes=FALSE)
+        axis(side=2)
+        axis(side=1, at=at, labels=names(subread_counts)[idx], las=2, cex.axis=0.7)
+        cat("\n\n")
+    }
+} else {
+    at <- barplot(
+        num_expressed,
+        ylab="Number of Expressed Features",
+        ylim=c(0, maxexpr*1.2),
+        col="#1f78b4",
+        axes=FALSE)
+    axis(side=2)
+    axis(side=1, at=at, labels=names(subread_counts), las=2, cex.axis=0.7)
+}
 ```
 
 ### Expression in Counts-per-million
