@@ -6,9 +6,10 @@ University of Minnesota Genomics Centre. The following analysis pipelines are
 supported:
     - group_template
     - bulk_rnaseq
+    - hcp_pipeline
 Questions should be directed to help@msi.umn.edu.
 Version: 0.2.0
-2019-04-24
+2019-06-16
 """
 
 # Check the Python version
@@ -90,6 +91,13 @@ def brnaseq(args):
             samplesheet_fname,
             key_name,
             qsub_dat)
+    return
+
+
+def hcp_pipeline(args):
+    """This function calls the HCP pipeline module, which builds shell scripts
+    to automate the HCP pipelines from T. Hendrickson in UMII."""
+    from GopherPipelines.Pipelines import HCPPipeline
     return
 
 
