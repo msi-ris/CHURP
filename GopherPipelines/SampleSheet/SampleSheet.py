@@ -70,6 +70,7 @@ class Samplesheet(object):
         # that come after the sample name
         samp_re = re.compile(
             r'(_S[0-9]+)?'
+            r'(_[ATCG]{4,})?'
             r'(_L00[1-8])?'
             r'(_R(1|2))?_001\.((fq(\.gz)?$)|(fastq(\.gz)?$))')
         # Get all files that look like not-R2 fastq files, make the matching
