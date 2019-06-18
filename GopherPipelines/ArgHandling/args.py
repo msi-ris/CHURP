@@ -7,7 +7,7 @@ import argparse
 import GopherPipelines
 from GopherPipelines.ArgHandling import group_template_args
 from GopherPipelines.ArgHandling import bulk_rnaseq_args
-from GopherPipelines.ArgHandling import sc_rnaseq_args
+from GopherPipelines.ArgHandling import hcp_args
 from GopherPipelines import DieGracefully
 
 
@@ -22,7 +22,7 @@ BRNASEQ_HELP = ('Bulk RNAseq analysis, including QC, mapping, and expression. '
                 'Alignment is performed with HISAT2. Read counts are '
                 'generated with featureCounts from the Subread package. '
                 'Expression anaylsis is done with edgeR in R.')
-SCRNASEQ_HELP = 'Single-cell RNAseq analysis.'
+HCP_HELP = 'UMII MRI analysis pipeline from the WUStl HCP.'
 
 
 def usage():
@@ -96,15 +96,15 @@ def pipeline_args():
         'bulk_rnaseq',
         help=BRNASEQ_HELP,
         add_help=False)
-    # sc_rnaseq parser
-    sc_rnaseq_parser = pipe_parser.add_parser(
-        'sc_rnaseq',
-        help=SCRNASEQ_HELP,
+    # hcp parser
+    hcp_parser = pipe_parser.add_parser(
+        'hcp',
+        help=HCP_HELP,
         add_help=False)
 
     group_template_args.add_args(group_parser)
     bulk_rnaseq_args.add_args(bulk_rnaseq_parser)
-    sc_rnaseq_args.add_args(sc_rnaseq_parser)
+    hcp_args.add_args(hcp_parser)
     pargs = parser.parse_args()
     check_for_bad(pargs)
     return vars(pargs)

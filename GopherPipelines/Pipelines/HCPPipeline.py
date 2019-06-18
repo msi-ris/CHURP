@@ -15,3 +15,9 @@ from GopherPipelines.Pipelines import Pipeline
 from GopherPipelines.ArgHandling import set_verbosity
 from GopherPipelines.FileOps import default_files
 from GopherPipelines.FileOps import dir_funcs
+
+
+class HCPPipeline(Pipeline.Pipeline):
+    """Sub-class of Pipeline for HCP pipeline."""
+    pipe_name = 'hcp_pipeline'
+    pass
