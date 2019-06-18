@@ -1955,6 +1955,14 @@ expression in `Group2` than in `Group1`. The files in the `DEGs/` directory
 under the output directory follow this naming convention:
 `DE_Group2-Group1_list.txt`.
 
+**Note** that the group ordering is based on alphabetical sort order. This
+means that if you named your groups `Case` and `Control` then `Case` will be
+the **denominator** of the comparison. This is opposite to what is
+conventionally done; you must flip the signs on the log(Fold Change) values
+if you want to interpret the changes in the `Case` group with respect to the
+`Control` group. The P-values (both nominal and FDR-adjusted) and CPM values are
+unaffected.
+
 ```{r degs, echo=FALSE, message=FALSE, results="asis"}
 library(knitr)
 degdir <- paste(params["outdir"], "DEGs", sep="/")
