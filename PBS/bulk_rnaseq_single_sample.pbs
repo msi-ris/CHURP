@@ -208,8 +208,6 @@ if [ ! -f fastqc.done ]; then
     fi
 fi
 
-mkdir -p "${OUTDIR}/Dup_Stats"
-
 # The fastqc files are auto-extracted, so we search for the directories that
 # end in '_fastqc', pull out the total number of reads, then throw away the
 # directory
@@ -226,11 +224,6 @@ do
         "${fastqc_out_dir}/fastqc_data.txt" \
         | sed -e 's/ /./g' \
         > "${WORKDIR}/singlesamples/${SAMPLENM}/${SAMPLENM}_${read_no}.raw_quals.txt"
-    awk '/>>Sequence Duplication Levels/{flag=1; next} />>END_MODULE/{flag=0} flag' \
-        "${fastqc_out_dir}/fastqc_data.txt" \
-        | sed -e 's/ /./g' \
-        > "${OUTDIR}/Dup_Stats/${SAMPLENM}_${read_no}_Dups.txt"
-    head -n 1 "${OUTDIR}/Dup_Stats/${SAMPLENM}_${read_no}_Dups.txt" | cut -f 2 > "${WORKDIR}/singlesamples/${SAMPLENM}/${SAMPLENM}_${read_no}.overall_dup.txt"
     rm -rf "${fastqc_out_dir}.processed"
     mv -f "${fastqc_out_dir}" "${fastqc_out_dir}.processed"
 done
@@ -484,7 +477,15 @@ if [ ! -f rnaseqc.done ]; then
     source activate "${CONDA_ENV}"
     python "${COLLAPSE_GTF}" <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf"
     source deactivate
-    echo "# ${PBS_JOBID} $(date '+%F %T'): Collecting RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
+    echo "# ${PBS_JOBID} $(date '+%F %T'): Collecting unstranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
+    RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM}_Unstranded --legacy"
+    "${RNASEQC}" \
+        "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" \
+        "${WORKDIR}/singlesamples/${SAMPLENM}/${RAW_COORD}" \
+        "${WORKDIR}/singlesamples/${SAMPLENM}/RNASeQC_Out" \
+        ${RNASEQC_OPTIONS}
+        2>> "${LOG_FNAME}"
+    echo "# ${PBS_JOBID} $(date '+%F %T'): Collecting stranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
     RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM} --legacy"
     if [ "${STRAND}" = "2" ]; then
         RNASEQC_OPTIONS="${RNASEQC_OPTIONS} --stranded=RF"
