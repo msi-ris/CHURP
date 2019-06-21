@@ -156,7 +156,7 @@ uniq_groups <- sub('^', 'group', uniq_groups)
 edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
 
 # Filter out lowly expressed features. To do so we define what the minimum CPM would be for our minimum count cut-off in the smallest library. We keep only those features that have at least as many samples with the minimum CPM as there are samples in the smallest group.
-min_cpm <- log2((1+min_cts) / min(edge_mat$samples$lib.size) * 1e6)
+min_cpm <- log2((1 + as.numeric(min_cts)) / min(edge_mat$samples$lib.size) * 1e6)
 keep <- rowSums(cpm(edge_mat, log = T, prior.count = 1)) >= min(table(true_groups))
 edge_mat <- edge_mat[keep, ,keep.lib.sizes = F]
 
