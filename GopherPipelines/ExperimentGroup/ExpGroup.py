@@ -89,15 +89,21 @@ class ExpGroup(object):
         """Read the contents of the supplied FASTQ directory and parse out the
         sample names."""
         # regular expression to slice out the samplename from the read name
+        # This has been updated to also include support for a 4+ nucleotide
+        # barcode in the filename
         samp_re = re.compile(
-            r'(_S[0-9]+)?(_L00[1-8])?'
-            r'(_R(1|2))?'
-            r'_001\.((fq(\.gz)?$)|(fastq(\.gz)?$))',
-            flags=re.I)
+            r'(_S[0-9]+)?'
+            r'(_[ATCG]{4,})?'
+            r'(_L00[1-8])?'
+            r'(_R(1|2))?_001\.((fq(\.gz)?$)|(fastq(\.gz)?$))')
         # regular expression to get files that look like not-R2 FASTQ files
+        # in the standard Illumina format
         fq_re = re.compile(
             r'^.+[^_R2]_001\.((fq(\.gz)?$)|(fastq(\.gz)?$))',
             flags=re.I)
+        # These regex lines match SRA-style filenames
+        sra_re = re.compile(r'^.+_1\.((fq(\.gz)?$)|(fastq(\.gz)?$))')
+        sra_samp_re = re.compile(r'_(1|2)\.((fq(\.gz)?$)|(fastq(\.gz)?$))')
         cont = os.listdir(d)
         sd = {}
         for f in cont:
@@ -105,6 +111,10 @@ class ExpGroup(object):
                 sn = re.sub(samp_re, '', f)
                 sd[sn] = {}
                 self.group_logger.debug('Found sample %s', sn)
+            elif re.match(sra_re, f):
+                sn = re.sub(sra_samp_re, '', f)
+                sd[sn] = {}
+                self.group_logger.debug('Found SRA sample %s', sn)
         return sd
 
     def _build_groups(self, dummy='NULL'):
