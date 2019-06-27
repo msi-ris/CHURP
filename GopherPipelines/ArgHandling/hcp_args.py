@@ -11,10 +11,34 @@ def add_args(ap):
     called for the side-effect of adding arguments to the parser object."""
     ap_req = ap.add_argument_group(
         title='Required Arguments')
+    ap_req.add_argument(
+        '--input',
+        '-i',
+        metavar='<Input BIDS Dir>',
+        dest='input_dir',
+        help='Input data directory, in BIDS structure.')
     # Make an argument group for optional arguments
     ap_opt = ap.add_argument_group(
         'Optional Arguments')
-
+    ap_opt.add_argument(
+        '--output',
+        '-o',
+        metavar='<Output HCP Dir>',
+        dest='output_dir',
+        help='Output directory. Defaults to global scratch',
+        default=default_dirs.default_output('hcp'))
+    ap_opt.add_argument(
+        '--stages',
+        '-s',
+        metavar='<Stages>',
+        nargs='*',
+        default=['PreFreeSurfer', 'FreeSurfer', 'PostFreeSurfer', 'fMRIVolume',
+                 'fMRISurface', 'multiICAFIX', 'MSMAll',
+                 'DiffusionPreProcessing'],
+        help='Stages to run in the HCP pipeline.',
+        choices=['PreFreeSurfer', 'FreeSurfer', 'PostFreeSurfer', 'fMRIVolume',
+                 'fMRISurface', 'multiICAFIX', 'MSMAll',
+                 'DiffusionPreProcessing'])
     # Make an argument for scheduler options
     ap_sched = ap.add_argument_group(
         'Scheduler Options')

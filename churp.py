@@ -112,6 +112,7 @@ def main():
     else:
         pipe_args = args.pipeline_args()
         cmd = {
+            'hcp': hcp_pipeline,
             'bulk_rnaseq': brnaseq,
             'group_template': expr_group,
             'list_species': sp_dbs
