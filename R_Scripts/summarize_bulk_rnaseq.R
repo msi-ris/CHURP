@@ -31,6 +31,8 @@ min_len <- args[5]
 min_cts <- args[6]
 
 setwd(work_dir)
+# Boolean to check if we will attempt DEG testing
+do_deg <- TRUE
 
 ############################
 # Read in data and prep relevant data and set output files
@@ -53,14 +55,16 @@ n_true_groups <- length(uniq_groups[which(uniq_groups != 'NULL')])
 # Check if the number of groups meets our analysis criteria
 if (n_true_groups >= 5){
 write("Maximum number of groups exceeded: This experimental design appears to be too complex for this pipeline. If you'd like analysis help, please e-mail help@msi.umn.edu.", stderr())
-quit(status = 0, save = "no")
+# quit(status = 0, save = "no")
+do_deg <- FALSE
 }
 
 # Then check if the number of replicates meets our criteria.
 if (length(true_groups[which(table(true_groups) < 3)]) > 0){
 write("At least one of the groups has fewer than three replicates, which makes reliable statistical interpretation difficult", stderr())
 writeLines(text = paste("This group has fewer than three replicates", unique(groups)[which(table(groups) < 3)], sep=" : "), con = stderr())
-quit(status = 0, save = "no")
+do_deg <- FALSE
+# quit(status = 0, save = "no")
 }
 
 # Set filename variables
@@ -89,7 +93,12 @@ edge_mat <- calcNormFactors(edge_mat)
 
 
 # This is THE ONLY colorblind acceptable palette with 4 colors from colorbrewer: http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=4
-pal <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c')
+if(length(uniq_groups) > 4) {
+    write("There are more than four groups, so all groups will be colored dark blue. We plot a maximum of four colors for colorblindness and print-friendly considerations.", stderr())
+    pal <- rep("#1f78b4", length.out=length(uniq_groups))
+} else {
+    pal <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c')
+}
 col_vec <- pal[match(groups,uniq_groups)]
 
 # legend code adapted from https://support.bioconductor.org/p/101530/
@@ -138,6 +147,9 @@ dev.off()
 ############################
 # Differential expression testing and summaries
 ############################
+if(!do_deg) {
+quit(status = 0, save = "no")
+}
 n_groups <- length(uniq_groups)
 
 # If there is only one grouping in the data, we don't need to run the subsequent tests.
