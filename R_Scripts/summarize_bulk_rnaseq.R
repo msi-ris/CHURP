@@ -156,7 +156,7 @@ n_groups <- length(uniq_groups)
 if (n_groups == 1){
 write("Only 1 grouping present, skipping differential expression tests.", stderr())
 quit(status = 0, save = "no")
-} 
+}
 
 # Check if group IDs are numbers and if so, modify them
 if (is.numeric(uniq_groups)){
