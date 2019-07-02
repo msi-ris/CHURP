@@ -39,6 +39,14 @@ def add_args(ap):
         choices=['PreFreeSurfer', 'FreeSurfer', 'PostFreeSurfer', 'fMRIVolume',
                  'fMRISurface', 'multiICAFIX', 'MSMAll',
                  'DiffusionPreProcessing'])
+    ap_opt.add_argument(
+        '--no-submit',
+        help=('Do not automatically submit pipeline jobs. Use this when you '
+              'want to make changes to the pipeline script or samplesheet '
+              'before running.'),
+        dest='no_auto_submit',
+        action='store_true',
+        default=False)
     # Make an argument for scheduler options
     ap_sched = ap.add_argument_group(
         'Scheduler Options')
@@ -50,30 +58,4 @@ def add_args(ap):
         help='MSI group to charge for SU usage. Defaults to primary group.',
         type=str,
         default=None)
-    ap_sched.add_argument(
-        '--ppn',
-        '-p',
-        metavar='<procs per node>',
-        dest='ppn',
-        help='Processors to allocate for each task. Defaults to 6.',
-        type=int,
-        default=6)
-    ap_sched.add_argument(
-        '--mem',
-        '-m',
-        metavar='<mem per job (Mb)>',
-        dest='mem',
-        help=('Memory, in megabytes, to allocate to each task. Must be at '
-              'least 12000 (12GB). Default: 12000'),
-        type=int,
-        default=12000)
-    ap_sched.add_argument(
-        '--walltime',
-        '-w',
-        metavar='<wall clock time (hours)>',
-        dest='walltime',
-        help=('Walltime, in hours, to allocate to each task. Must be at least '
-              '2 hours. Defaults to 12 hours.'),
-        type=int,
-        default=12)
     return

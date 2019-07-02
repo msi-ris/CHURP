@@ -23,6 +23,7 @@ BRNASEQ_NO_SAMP_GPS = 26
 BRNASEQ_SUCCESS = 27
 BRNASEQ_SUBMIT_OK = 28
 BRNASEQ_SUBMIT_FAIL = 29
+HCP_INC_ARGS = 30
 GROUP_NO_PIPE = 50
 GROUP_BAD_COL = 51
 BRNASEQ_GROUP_SUCCESS = 52
@@ -368,6 +369,19 @@ You specified an invalid value for the {opt} option.\n"""
     return
 
 
+def hcp_inc():
+    """Call this function when the hcp pipeline arguments dictionary is
+    incomplete."""
+    msg = CREDITS + """----------
+ERROR
+
+
+You did not speify sufficient options to run the HCP pipeline. You must specify
+a BIDS-format input directory (-i).\n"""
+    sys.stderr.write(msg)
+    return
+
+
 def die_gracefully(e, *args):
     """Print user-friendly error messages and exit."""
     err_dict = {
@@ -391,6 +405,7 @@ def die_gracefully(e, *args):
         BRNASEQ_SUBMIT_OK: brnaseq_auto_submit_ok,
         BRNASEQ_SUBMIT_FAIL: brnaseq_auto_submit_fail,
         NEFARIOUS_CHAR: nefarious_cmd,
+        HCP_INC: hcp_inc
         }
     try:
         err_dict[e](*args)
