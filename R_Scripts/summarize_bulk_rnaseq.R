@@ -104,11 +104,19 @@ col_vec <- pal[match(groups,uniq_groups)]
 # legend code adapted from https://support.bioconductor.org/p/101530/
 # Set the MDS plot pdf and write the plot
 pdf(mds_plot)
-opar <- par(no.readonly = TRUE)
-par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
-plotMDS(edge_mat, cex = 0.75, col = col_vec)
-legend(par("usr")[2], mean(par("usr")[3:4]), legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
-par(opar)
+# If there are fewer than 3 samples, we still want to write a PDF for the MDS,
+# but we can't actually generate an MDS plot. The edgeR function dies with
+# less than 3 samples
+if(length(samp_ids) < 3) {
+    plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+    text(x=0.5, y=0.5, "Less than 3 samples;\nMDS not possible", cex=1, col="black")
+} else {
+    opar <- par(no.readonly = TRUE)
+    par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
+    plotMDS(edge_mat, cex = 0.75, col = col_vec)
+    legend(par("usr")[2], mean(par("usr")[3:4]), legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
+    par(opar)
+}
 dev.off()
 
 ## set par back to original
