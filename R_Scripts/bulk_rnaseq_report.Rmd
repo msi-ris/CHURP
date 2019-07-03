@@ -272,8 +272,10 @@ if(large_dataset) {
     # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
     par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
     dummy <- plotqual_first(samplenames[1])
-    par(mar=c(1.1, 5, 1.1, 0.1))
-    dummy <- sapply(samplenames[3:nsamp-1], plotqual)
+    if(nsamp > 2) {
+        par(mar=c(1.1, 5, 1.1, 0.1))
+        dummy <- sapply(samplenames[3:nsamp-1], plotqual)
+    }
     par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
     dummy <- plotqual_last(samplenames[nsamp])
 }
@@ -398,8 +400,10 @@ if(length(trim_samp) > 0) {
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
         dummy <- plotqual_first(trim_samp[1])
-        par(mar=c(1.1, 5, 1.1, 0.1))
-        dummy <- sapply(trim_samp[3:nsamp-1], plotqual)
+            if(nsamp > 2) {
+            par(mar=c(1.1, 5, 1.1, 0.1))
+            dummy <- sapply(trim_samp[2:nsamp-1], plotqual)
+        }
         par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
         dummy <- plotqual_last(trim_samp[nsamp])
     }
@@ -1292,8 +1296,10 @@ if(large_dataset) {
     # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
     par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
     dummy <- plotqual_first(samplenames[1])
-    par(mar=c(1.1, 5, 1.1, 0.1))
-    dummy <- sapply(samplenames[3:nsamp-1], plotqual)
+    if(nsamp > 2) {
+        par(mar=c(1.1, 5, 1.1, 0.1))
+        dummy <- sapply(samplenames[2:nsamp-1], plotqual)
+    }
     par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
     dummy <- plotqual_last(samplenames[nsamp])
 }
@@ -1419,8 +1425,10 @@ if(length(trim_samp) > 0) {
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
         dummy <- plotqual_first(trim_samp[1])
-        par(mar=c(1.1, 5, 1.1, 0.1))
-        dummy <- sapply(trim_samp[3:nsamp-1], plotqual)
+        if(nsamp > 2) {
+            par(mar=c(1.1, 5, 1.1, 0.1))
+            dummy <- sapply(trim_samp[2:nsamp-1], plotqual)
+        }
         par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
         dummy <- plotqual_last(trim_samp[nsamp])
     }
