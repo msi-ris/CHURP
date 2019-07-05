@@ -78,7 +78,7 @@ hmap <- paste(out_dir, "Plots/high_variance_heatmap.pdf", sep = "/")
 if(length(samp_ids) > 1) {
     raw_mat <- raw_mat[-which(apply(raw_mat[,seq(-1,-6)],1,var) < 1),]
 } else {
-    write("There is only one sample, so we do not apply variance filtering to the raw counts. This is not an error." stderr())
+    write("There is only one sample, so we do not apply variance filtering to the raw counts. This is not an error.", stderr())
 }
 raw_mat <- raw_mat[which(raw_mat$Length >= min_len),]
 
