@@ -152,7 +152,7 @@ n_genes <- min(500, nrow(cpm_counts))
 if(n_genes < 500) {
     write("There are fewer than 500 genes that pass variance filtering for the clustering heatmap. This is not an error, but you should be aware of it.", stderr())
 }
-if(length(samp_ids) > 2) {
+if(length(samp_ids) == 1) {
     write("There is only one sample, so we will not try to generate a clustering heatmap. This is not an error.", stderr())
     pdf(hmap)
     plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
