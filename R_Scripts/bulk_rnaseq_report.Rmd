@@ -54,6 +54,12 @@ if(nsamp > lg_cutoff) {
 } else {
     large_dataset <- FALSE
 }
+# Set a "one sample" flag that will affect some of our plots
+if(nsamp == 1) {
+    one_samp <- TRUE
+} else {
+    one_samp <- FALSE
+}
 
 # Generate the chunk offsets that we will use in the case of large datasets
 if(large_dataset) {
@@ -156,7 +162,7 @@ if(large_dataset) {
 
 ## Read Quality Plots
 ```{r raw_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 0.6*nsamp), results='asis'}
-plotqual_first <- function(sn) {
+plotqual_first <- function(sn, draw_ax) {
     allquals <- matrix(0:45)
     image(
         allquals,
@@ -177,6 +183,9 @@ plotqual_first <- function(sn) {
         col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
         axes=FALSE,
         main="Mean R1 Quality")
+    if(draw_ax) {
+        axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+    }
     mtext(side=2, font=2, cex=0.5, las=2, sn)
     qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.raw_quals.txt", sep=""), sep="/")
     if(!file.exists(qr2_file)) {
@@ -191,6 +200,9 @@ plotqual_first <- function(sn) {
             col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
             axes=FALSE,
             main="Mean R2 Quality")
+        if(draw_ax) {
+            axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+    }
     }
 }
 
@@ -271,20 +283,23 @@ if(large_dataset) {
     par(mfrow=c(nsamp+1, 2))
     # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
     par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_first(samplenames[1])
+    dummy <- plotqual_first(samplenames[1], one_samp)
     if(nsamp > 2) {
         par(mar=c(1.1, 5, 1.1, 0.1))
         dummy <- sapply(samplenames[3:nsamp-1], plotqual)
     }
-    par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_last(samplenames[nsamp])
+    # This looks silly, but if we have just 1 sample, then we do not need to draw the bottom labels
+    if(nsamp > 1) {
+        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_last(samplenames[nsamp])
+    }
 }
 ```
 
 ```{r trim_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 0.6*nsamp), results='asis'}
 trim_samp <- sheet$V1[sheet$V7 == "yes"]
 if(length(trim_samp) > 0) {
-    plotqual_first <- function(sn) {
+    plotqual_first <- function(sn, draw_ax) {
         allquals <- matrix(0:45)
         image(
             allquals,
@@ -295,7 +310,7 @@ if(length(trim_samp) > 0) {
         axis(side=1, at=seq(0, 1, length.out=46)[c(TRUE, FALSE)], labels=as.character(0:45)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
 
         plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
-        qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.trim_quals.txt", sep=""), sep="/")
+        qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.raw_quals.txt", sep=""), sep="/")
         dat <- read.table(qr1_file, header=F, stringsAsFactors=FALSE)
         names(dat) <- c("Base", "QMean", "QMedian", "Q25", "Q75", "Q10", "Q90")
         # Make a plot
@@ -305,8 +320,11 @@ if(length(trim_samp) > 0) {
             col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
             axes=FALSE,
             main="Mean R1 Quality")
+        if(draw_ax) {
+            axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+        }
         mtext(side=2, font=2, cex=0.5, las=2, sn)
-        qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.trim_quals.txt", sep=""), sep="/")
+        qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.raw_quals.txt", sep=""), sep="/")
         if(!file.exists(qr2_file)) {
             plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
             text(x=0.5, y=0.5, "No R2", cex=1, col="black")
@@ -319,8 +337,12 @@ if(length(trim_samp) > 0) {
                 col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
                 axes=FALSE,
                 main="Mean R2 Quality")
+            if(draw_ax) {
+                axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+        }
         }
     }
+
 
     plotqual <- function(sn) {
         qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.trim_quals.txt", sep=""), sep="/")
@@ -395,17 +417,19 @@ if(length(trim_samp) > 0) {
             cat("\n\n")
         }
     } else {
-        cat("### Trimmed Reads\n")
         par(mfrow=c(nsamp+1, 2))
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-        dummy <- plotqual_first(trim_samp[1])
-            if(nsamp > 2) {
+        dummy <- plotqual_first(samplenames[1], one_samp)
+        if(nsamp > 2) {
             par(mar=c(1.1, 5, 1.1, 0.1))
-            dummy <- sapply(trim_samp[3:nsamp-1], plotqual)
+            dummy <- sapply(samplenames[3:nsamp-1], plotqual)
         }
-        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-        dummy <- plotqual_last(trim_samp[nsamp])
+        # This looks silly, but if we have just 1 sample, then we do not need to draw the bottom labels
+        if(nsamp > 1) {
+            par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+            dummy <- plotqual_last(samplenames[nsamp])
+        }
     }
 } else {
         cat("### Trimmed Reads\n\nNo trimming performed.")
@@ -1180,7 +1204,7 @@ Click on the tab headers to show plots of raw and trimmed read qualities.
 These plots show the read qualities as they came off the sequencing instrument.
 
 ```{r raw_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.7*nrow(sheet), 0.7*lg_cutoff), results="asis"}
-plotqual_first <- function(sn) {
+plotqual_first <- function(sn, draw_ax) {
     allquals <- matrix(0:45)
     image(
         allquals,
@@ -1201,6 +1225,9 @@ plotqual_first <- function(sn) {
         col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
         axes=FALSE,
         main="Mean R1 Quality")
+    if(draw_ax) {
+        axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+    }
     mtext(side=2, font=2, cex=0.5, las=2, sn)
     qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.raw_quals.txt", sep=""), sep="/")
     if(!file.exists(qr2_file)) {
@@ -1215,6 +1242,9 @@ plotqual_first <- function(sn) {
             col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
             axes=FALSE,
             main="Mean R2 Quality")
+        if(draw_ax) {
+            axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+        }
     }
 }
 
@@ -1295,13 +1325,16 @@ if(large_dataset) {
     par(mfrow=c(nsamp+1, 2))
     # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
     par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_first(samplenames[1])
+    dummy <- plotqual_first(samplenames[1], one_samp)
     if(nsamp > 2) {
         par(mar=c(1.1, 5, 1.1, 0.1))
         dummy <- sapply(samplenames[3:nsamp-1], plotqual)
     }
-    par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_last(samplenames[nsamp])
+    # This looks silly, but if we have just 1 sample, then we do not need to draw the bottom labels
+    if(nsamp > 1) {
+        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_last(samplenames[nsamp])
+    }
 }
 ```
 
@@ -1310,7 +1343,7 @@ These plots show read qualities post-trimming, if it was performed.
 
 ```{r trim_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.7*nrow(sheet), 0.7*lg_cutoff), results="asis"}
 if(length(trim_samp) > 0) {
-    plotqual_first <- function(sn) {
+    plotqual_first <- function(sn, draw_ax) {
         allquals <- matrix(0:45)
         image(
             allquals,
@@ -1321,7 +1354,7 @@ if(length(trim_samp) > 0) {
         axis(side=1, at=seq(0, 1, length.out=46)[c(TRUE, FALSE)], labels=as.character(0:45)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
 
         plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
-        qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.trim_quals.txt", sep=""), sep="/")
+        qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.raw_quals.txt", sep=""), sep="/")
         dat <- read.table(qr1_file, header=F, stringsAsFactors=FALSE)
         names(dat) <- c("Base", "QMean", "QMedian", "Q25", "Q75", "Q10", "Q90")
         # Make a plot
@@ -1331,8 +1364,11 @@ if(length(trim_samp) > 0) {
             col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
             axes=FALSE,
             main="Mean R1 Quality")
+        if(draw_ax) {
+            axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+        }
         mtext(side=2, font=2, cex=0.5, las=2, sn)
-        qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.trim_quals.txt", sep=""), sep="/")
+        qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.raw_quals.txt", sep=""), sep="/")
         if(!file.exists(qr2_file)) {
             plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
             text(x=0.5, y=0.5, "No R2", cex=1, col="black")
@@ -1345,6 +1381,9 @@ if(length(trim_samp) > 0) {
                 col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
                 axes=FALSE,
                 main="Mean R2 Quality")
+            if(draw_ax) {
+                axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+            }
         }
     }
 
@@ -1424,13 +1463,16 @@ if(length(trim_samp) > 0) {
         par(mfrow=c(nsamp+1, 2))
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-        dummy <- plotqual_first(trim_samp[1])
+        dummy <- plotqual_first(samplenames[1], one_samp)
         if(nsamp > 2) {
             par(mar=c(1.1, 5, 1.1, 0.1))
-            dummy <- sapply(trim_samp[3:nsamp-1], plotqual)
+            dummy <- sapply(samplenames[3:nsamp-1], plotqual)
         }
-        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-        dummy <- plotqual_last(trim_samp[nsamp])
+        # This looks silly, but if we have just 1 sample, then we do not need to draw the bottom labels
+        if(nsamp > 1) {
+            par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+            dummy <- plotqual_last(samplenames[nsamp])
+        }
     }
 } else {
         cat("\nNo trimming performed.")
