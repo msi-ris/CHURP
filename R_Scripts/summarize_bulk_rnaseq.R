@@ -74,7 +74,12 @@ counts_list <- paste(out_dir, "Counts/cpm_list.txt", sep = "/")
 hmap <- paste(out_dir, "Plots/high_variance_heatmap.pdf", sep = "/")
 
 # Filter the featureCounts matrix (read in above) on variance and feature length.
-raw_mat <- raw_mat[-which(apply(raw_mat[,seq(-1,-6)],1,var) < 1),]
+# But, we can only apply the variance filter if there is more than one sample.
+if(length(samp_ids) > 1) {
+    raw_mat <- raw_mat[-which(apply(raw_mat[,seq(-1,-6)],1,var) < 1),]
+} else {
+    write("There is only one sample, so we do not apply variance filtering to the raw counts. This is not an error." stderr())
+}
 raw_mat <- raw_mat[which(raw_mat$Length >= min_len),]
 
 # Convert the raw matrix into a DGE object. Column 1 is Geneid, columns 7+ are the sample counts. The groups list  is generated above. 
