@@ -1810,10 +1810,14 @@ par(mar=c(4, 3.5, 1, 0.5), mgp=c(2.5, 0.75, 0))
 subread_sum <- read.table(paste(params["workdir"], "allsamples", "subread_counts.txt.summary", sep="/"), header=TRUE)
 plt_dat <- as.matrix(subread_sum[,-c(1)])
 # Combined the unassigned categories into one
-plt_dat_comb <- matrix(
-    c(plt_dat[1,], as.numeric(apply(plt_dat[-c(1),], 2, sum))),
-    byrow=TRUE,
-    ncol=nsamp)
+if(nsamp == 1) {
+    plt_dat_comb <- c(plt_dat[1], sum(plt_dat[2:length(plt_dat)]))
+} else {
+    plt_dat_comb <- matrix(
+        c(plt_dat[1,], as.numeric(apply(plt_dat[-c(1),], 2, sum))),
+        byrow=TRUE,
+        ncol=nsamp)
+}
 colnames(plt_dat_comb) <- NULL
 categories <- c("Assigned", "Unassigned")
 bar_cols <- c("#1f78b4", "#999999")
