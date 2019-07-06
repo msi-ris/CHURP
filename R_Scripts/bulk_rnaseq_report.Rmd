@@ -161,7 +161,7 @@ if(large_dataset) {
 ```
 
 ## Read Quality Plots
-```{r raw_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 0.6*nsamp), results='asis'}
+```{r raw_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 2.4), results='asis'}
 plotqual_first <- function(sn, draw_ax) {
     allquals <- matrix(0:45)
     image(
@@ -296,7 +296,7 @@ if(large_dataset) {
 }
 ```
 
-```{r trim_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 0.6*nsamp), results='asis'}
+```{r trim_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 2.4), results='asis'}
 trim_samp <- sheet$V1[sheet$V7 == "yes"]
 if(length(trim_samp) > 0) {
     plotqual_first <- function(sn, draw_ax) {
