@@ -417,6 +417,7 @@ if(length(trim_samp) > 0) {
             cat("\n\n")
         }
     } else {
+        cat("### Trimmed Reads\n\n")
         par(mfrow=c(nsamp+1, 2))
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
