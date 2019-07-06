@@ -1921,7 +1921,11 @@ mapping to them.
 ```{r expressed_features, echo=FALSE, message=FALSE, results="asis"}
 subread_counts <- read.table(paste(params["workdir"], "allsamples", "subread_counts.txt", sep="/"), header=T, sep="\t", comment.char="#")
 subread_counts <- subread_counts[,-c(1:6)]
-num_expressed <- as.numeric(apply(subread_counts, 2, function(x) sum(x>0)))
+if(nsamp == 1) {
+    num_expressed <- sum(subread_counts > 0)
+} else {
+    num_expressed <- as.numeric(apply(subread_counts, 2, function(x) sum(x>0)))
+}
 maxexpr <- max(num_expressed)
 if(large_dataset) {
     cat("#### Plots {.tabset}\n")
