@@ -1942,7 +1942,7 @@ if(large_dataset) {
             col="#1f78b4",
             axes=FALSE)
         axis(side=2)
-        axis(side=1, at=at, labels=names(subread_counts)[idx], las=2, cex.axis=0.7)
+        axis(side=1, at=at, labels=samplenames[idx], las=2, cex.axis=0.7)
         cat("\n\n")
     }
 } else {
@@ -1953,7 +1953,7 @@ if(large_dataset) {
         col="#1f78b4",
         axes=FALSE)
     axis(side=2)
-    axis(side=1, at=at, labels=names(subread_counts), las=2, cex.axis=0.7)
+    axis(side=1, at=at, labels=samplenames, las=2, cex.axis=0.7)
 }
 ```
 
