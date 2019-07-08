@@ -54,6 +54,12 @@ if(nsamp > lg_cutoff) {
 } else {
     large_dataset <- FALSE
 }
+# Set a "one sample" flag that will affect some of our plots
+if(nsamp == 1) {
+    one_samp <- TRUE
+} else {
+    one_samp <- FALSE
+}
 
 # Generate the chunk offsets that we will use in the case of large datasets
 if(large_dataset) {
@@ -155,8 +161,8 @@ if(large_dataset) {
 ```
 
 ## Read Quality Plots
-```{r raw_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 0.6*nrow(sheet)), results='asis'}
-plotqual_first <- function(sn) {
+```{r raw_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 2.4), results='asis'}
+plotqual_first <- function(sn, draw_ax) {
     allquals <- matrix(0:45)
     image(
         allquals,
@@ -177,6 +183,9 @@ plotqual_first <- function(sn) {
         col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
         axes=FALSE,
         main="Mean R1 Quality")
+    if(draw_ax) {
+        axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+    }
     mtext(side=2, font=2, cex=0.5, las=2, sn)
     qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.raw_quals.txt", sep=""), sep="/")
     if(!file.exists(qr2_file)) {
@@ -191,6 +200,9 @@ plotqual_first <- function(sn) {
             col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
             axes=FALSE,
             main="Mean R2 Quality")
+        if(draw_ax) {
+            axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+    }
     }
 }
 
@@ -268,21 +280,27 @@ if(large_dataset) {
         cat("\n\n")
     }
 } else {
+    cat("### Raw Reads\n\n")
     par(mfrow=c(nsamp+1, 2))
     # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
     par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_first(samplenames[1])
-    par(mar=c(1.1, 5, 1.1, 0.1))
-    dummy <- sapply(samplenames[3:nsamp-1], plotqual)
-    par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_last(samplenames[nsamp])
+    dummy <- plotqual_first(samplenames[1], one_samp)
+    if(nsamp > 2) {
+        par(mar=c(1.1, 5, 1.1, 0.1))
+        dummy <- sapply(samplenames[3:nsamp-1], plotqual)
+    }
+    # This looks silly, but if we have just 1 sample, then we do not need to draw the bottom labels
+    if(nsamp > 1) {
+        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_last(samplenames[nsamp])
+    }
 }
 ```
 
-```{r trim_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 0.6*nrow(sheet)), results='asis'}
+```{r trim_qual_sum, echo=FALSE, fig.width=8, fig.height=min(0.6*lg_cutoff, 2.4), results='asis'}
 trim_samp <- sheet$V1[sheet$V7 == "yes"]
 if(length(trim_samp) > 0) {
-    plotqual_first <- function(sn) {
+    plotqual_first <- function(sn, draw_ax) {
         allquals <- matrix(0:45)
         image(
             allquals,
@@ -293,7 +311,7 @@ if(length(trim_samp) > 0) {
         axis(side=1, at=seq(0, 1, length.out=46)[c(TRUE, FALSE)], labels=as.character(0:45)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
 
         plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
-        qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.trim_quals.txt", sep=""), sep="/")
+        qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.raw_quals.txt", sep=""), sep="/")
         dat <- read.table(qr1_file, header=F, stringsAsFactors=FALSE)
         names(dat) <- c("Base", "QMean", "QMedian", "Q25", "Q75", "Q10", "Q90")
         # Make a plot
@@ -303,8 +321,11 @@ if(length(trim_samp) > 0) {
             col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
             axes=FALSE,
             main="Mean R1 Quality")
+        if(draw_ax) {
+            axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+        }
         mtext(side=2, font=2, cex=0.5, las=2, sn)
-        qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.trim_quals.txt", sep=""), sep="/")
+        qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.raw_quals.txt", sep=""), sep="/")
         if(!file.exists(qr2_file)) {
             plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
             text(x=0.5, y=0.5, "No R2", cex=1, col="black")
@@ -317,8 +338,12 @@ if(length(trim_samp) > 0) {
                 col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
                 axes=FALSE,
                 main="Mean R2 Quality")
+            if(draw_ax) {
+                axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+        }
         }
     }
+
 
     plotqual <- function(sn) {
         qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.trim_quals.txt", sep=""), sep="/")
@@ -393,15 +418,20 @@ if(length(trim_samp) > 0) {
             cat("\n\n")
         }
     } else {
-        cat("### Trimmed Reads\n")
+        cat("### Trimmed Reads\n\n")
         par(mfrow=c(nsamp+1, 2))
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-        dummy <- plotqual_first(trim_samp[1])
-        par(mar=c(1.1, 5, 1.1, 0.1))
-        dummy <- sapply(trim_samp[3:nsamp-1], plotqual)
-        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-        dummy <- plotqual_last(trim_samp[nsamp])
+        dummy <- plotqual_first(samplenames[1], one_samp)
+        if(nsamp > 2) {
+            par(mar=c(1.1, 5, 1.1, 0.1))
+            dummy <- sapply(samplenames[3:nsamp-1], plotqual)
+        }
+        # This looks silly, but if we have just 1 sample, then we do not need to draw the bottom labels
+        if(nsamp > 1) {
+            par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+            dummy <- plotqual_last(samplenames[nsamp])
+        }
     }
 } else {
         cat("### Trimmed Reads\n\nNo trimming performed.")
@@ -510,7 +540,11 @@ if(large_dataset) {
 ```{r expressed_sum, echo=FALSE, message=FALSE, results="asis"}
 subread_counts <- read.table(paste(params["workdir"], "allsamples", "subread_counts.txt", sep="/"), header=T, sep="\t", comment.char="#")
 subread_counts <- subread_counts[,-c(1:6)]
-num_expressed <- as.numeric(apply(subread_counts, 2, function(x) sum(x>0)))
+if(nsamp > 1) {
+    num_expressed <- as.numeric(apply(subread_counts, 2, function(x) sum(x>0)))
+} else {
+    num_expressed <- sum(subread_counts > 0)
+}
 maxexpr <- max(num_expressed)
 if(large_dataset) {
     cat("### Expressed Features {.tabset}\n")
@@ -525,7 +559,7 @@ if(large_dataset) {
             col="#1f78b4",
             axes=FALSE)
         axis(side=2)
-        axis(side=1, at=at, labels=names(subread_counts)[idx], las=2, cex.axis=0.7)
+        axis(side=1, at=at, labels=samplenames[idx], las=2, cex.axis=0.7)
         cat("\n\n")
     }
 } else {
@@ -536,7 +570,7 @@ if(large_dataset) {
         col="#1f78b4",
         axes=FALSE)
     axis(side=2)
-    axis(side=1, at=at, labels=names(subread_counts), las=2, cex.axis=0.7)
+    axis(side=1, at=at, labels=samplenames, las=2, cex.axis=0.7)
 }
 ```
 
@@ -938,7 +972,7 @@ generated by [RNASeQC](https://github.com/broadinstitute/rnaseqc).
 This plot shows the proportion of high-quality alignments that are in exons. For
 messenger RNA libraries, this value is expected to be close to 1.
 
-```{r epe_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
+```{r epe_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(3.6, 0.4*lg_cutoff), results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
 epe_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Expression Profiling Efficiency"])
 if(large_dataset) {
@@ -982,7 +1016,7 @@ This plot shows the proportion of alignments that are positional duplicates in
 each sample, as determined in the default algorithm of the
 [Picard MarkDuplicates](https://broadinstitute.github.io/picard/command-line-overview.html#MarkDuplicates) tool.
 
-```{r dup_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
+```{r dup_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(3.6, 0.4*lg_cutoff), results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
 dup_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Duplicate Rate of Mapped"])
 if(large_dataset) {
@@ -1034,7 +1068,7 @@ the correct strand-specificity.
 If the plots look similar in terms of assignment proportions, then you have
 given the correct strand-specificity.
 
-```{r gdna_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.6*nrow(sheet), 0.6*lg_cutoff), results="asis"}
+```{r gdna_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(4.8, 0.6*lg_cutoff), results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0), mfrow=c(1, 2))
 gdna_dat <- matrix(
     c(
@@ -1130,7 +1164,7 @@ if(large_dataset) {
 ### rRNA
 This plot shows the proportion of alignments that are in annotated rRNA features.
 
-```{r rrna_map_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
+```{r rrna_map_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(3.6, 0.4*lg_cutoff), results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
 rrna_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "rRNA Rate"])
 if(large_dataset) {
@@ -1175,8 +1209,8 @@ Click on the tab headers to show plots of raw and trimmed read qualities.
 ### Raw Read Qualities (Compact style)
 These plots show the read qualities as they came off the sequencing instrument.
 
-```{r raw_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.7*nrow(sheet), 0.7*lg_cutoff), results="asis"}
-plotqual_first <- function(sn) {
+```{r raw_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(2.4, 0.6*lg_cutoff), results="asis"}
+plotqual_first <- function(sn, draw_ax) {
     allquals <- matrix(0:45)
     image(
         allquals,
@@ -1197,6 +1231,9 @@ plotqual_first <- function(sn) {
         col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
         axes=FALSE,
         main="Mean R1 Quality")
+    if(draw_ax) {
+        axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+    }
     mtext(side=2, font=2, cex=0.5, las=2, sn)
     qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.raw_quals.txt", sep=""), sep="/")
     if(!file.exists(qr2_file)) {
@@ -1211,6 +1248,9 @@ plotqual_first <- function(sn) {
             col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
             axes=FALSE,
             main="Mean R2 Quality")
+        if(draw_ax) {
+            axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+        }
     }
 }
 
@@ -1291,20 +1331,25 @@ if(large_dataset) {
     par(mfrow=c(nsamp+1, 2))
     # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
     par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_first(samplenames[1])
-    par(mar=c(1.1, 5, 1.1, 0.1))
-    dummy <- sapply(samplenames[3:nsamp-1], plotqual)
-    par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-    dummy <- plotqual_last(samplenames[nsamp])
+    dummy <- plotqual_first(samplenames[1], one_samp)
+    if(nsamp > 2) {
+        par(mar=c(1.1, 5, 1.1, 0.1))
+        dummy <- sapply(samplenames[3:nsamp-1], plotqual)
+    }
+    # This looks silly, but if we have just 1 sample, then we do not need to draw the bottom labels
+    if(nsamp > 1) {
+        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+        dummy <- plotqual_last(samplenames[nsamp])
+    }
 }
 ```
 
 ### Trimmed Read Qualities (Compact style)
 These plots show read qualities post-trimming, if it was performed.
 
-```{r trim_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.7*nrow(sheet), 0.7*lg_cutoff), results="asis"}
+```{r trim_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(2.4, 0.6*lg_cutoff), results="asis"}
 if(length(trim_samp) > 0) {
-    plotqual_first <- function(sn) {
+    plotqual_first <- function(sn, draw_ax) {
         allquals <- matrix(0:45)
         image(
             allquals,
@@ -1315,7 +1360,7 @@ if(length(trim_samp) > 0) {
         axis(side=1, at=seq(0, 1, length.out=46)[c(TRUE, FALSE)], labels=as.character(0:45)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
 
         plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
-        qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.trim_quals.txt", sep=""), sep="/")
+        qr1_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_1.raw_quals.txt", sep=""), sep="/")
         dat <- read.table(qr1_file, header=F, stringsAsFactors=FALSE)
         names(dat) <- c("Base", "QMean", "QMedian", "Q25", "Q75", "Q10", "Q90")
         # Make a plot
@@ -1325,8 +1370,11 @@ if(length(trim_samp) > 0) {
             col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
             axes=FALSE,
             main="Mean R1 Quality")
+        if(draw_ax) {
+            axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+        }
         mtext(side=2, font=2, cex=0.5, las=2, sn)
-        qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.trim_quals.txt", sep=""), sep="/")
+        qr2_file <- paste(params["workdir"], "singlesamples", sn, paste(sn, "_2.raw_quals.txt", sep=""), sep="/")
         if(!file.exists(qr2_file)) {
             plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
             text(x=0.5, y=0.5, "No R2", cex=1, col="black")
@@ -1339,6 +1387,9 @@ if(length(trim_samp) > 0) {
                 col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
                 axes=FALSE,
                 main="Mean R2 Quality")
+            if(draw_ax) {
+                axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE)], labels=as.character(dat$Base)[c(TRUE, FALSE)], las=2, cex.axis=0.75, tck=-0.05)
+            }
         }
     }
 
@@ -1418,11 +1469,16 @@ if(length(trim_samp) > 0) {
         par(mfrow=c(nsamp+1, 2))
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
-        dummy <- plotqual_first(trim_samp[1])
-        par(mar=c(1.1, 5, 1.1, 0.1))
-        dummy <- sapply(trim_samp[3:nsamp-1], plotqual)
-        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-        dummy <- plotqual_last(trim_samp[nsamp])
+        dummy <- plotqual_first(samplenames[1], one_samp)
+        if(nsamp > 2) {
+            par(mar=c(1.1, 5, 1.1, 0.1))
+            dummy <- sapply(samplenames[3:nsamp-1], plotqual)
+        }
+        # This looks silly, but if we have just 1 sample, then we do not need to draw the bottom labels
+        if(nsamp > 1) {
+            par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+            dummy <- plotqual_last(samplenames[nsamp])
+        }
     }
 } else {
         cat("\nNo trimming performed.")
@@ -1750,16 +1806,20 @@ if(!file.exists(insertsize_file)) {
 ### Subread Assignment Summary
 These plots will show the breakdown of read assignment by `featureCounts`.
 
-```{r subread_summary, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(0.6*nrow(sheet), 0.6*lg_cutoff), results="asis"}
+```{r subread_summary, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(4.8, 0.6*lg_cutoff), results="asis"}
 library(knitr)
 par(mar=c(4, 3.5, 1, 0.5), mgp=c(2.5, 0.75, 0))
 subread_sum <- read.table(paste(params["workdir"], "allsamples", "subread_counts.txt.summary", sep="/"), header=TRUE)
 plt_dat <- as.matrix(subread_sum[,-c(1)])
 # Combined the unassigned categories into one
-plt_dat_comb <- matrix(
-    c(plt_dat[1,], as.numeric(apply(plt_dat[-c(1),], 2, sum))),
-    byrow=TRUE,
-    ncol=nsamp)
+if(nsamp == 1) {
+    plt_dat_comb <- c(plt_dat[1], sum(plt_dat[2:length(plt_dat)]))
+} else {
+    plt_dat_comb <- matrix(
+        c(plt_dat[1,], as.numeric(apply(plt_dat[-c(1),], 2, sum))),
+        byrow=TRUE,
+        ncol=nsamp)
+}
 colnames(plt_dat_comb) <- NULL
 categories <- c("Assigned", "Unassigned")
 bar_cols <- c("#1f78b4", "#999999")
@@ -1804,7 +1864,7 @@ if(large_dataset) {
 ```
 
 
-```{r subread_summary_prop, echo=FALSE, message=FALSE, fig.height=min(0.4*nrow(sheet), 0.4*lg_cutoff), results="asis"}
+```{r subread_summary_prop, echo=FALSE, message=FALSE, fig.height=min(3.6, 0.4*lg_cutoff), results="asis"}
 plt_dat_prop <- t(plt_dat_comb)
 plt_dat_prop <- plt_dat_prop/rowSums(plt_dat_prop)
 plt_dat_prop <- t(plt_dat_prop)
@@ -1863,7 +1923,11 @@ mapping to them.
 ```{r expressed_features, echo=FALSE, message=FALSE, results="asis"}
 subread_counts <- read.table(paste(params["workdir"], "allsamples", "subread_counts.txt", sep="/"), header=T, sep="\t", comment.char="#")
 subread_counts <- subread_counts[,-c(1:6)]
-num_expressed <- as.numeric(apply(subread_counts, 2, function(x) sum(x>0)))
+if(nsamp == 1) {
+    num_expressed <- sum(subread_counts > 0)
+} else {
+    num_expressed <- as.numeric(apply(subread_counts, 2, function(x) sum(x>0)))
+}
 maxexpr <- max(num_expressed)
 if(large_dataset) {
     cat("#### Plots {.tabset}\n")
@@ -1878,7 +1942,7 @@ if(large_dataset) {
             col="#1f78b4",
             axes=FALSE)
         axis(side=2)
-        axis(side=1, at=at, labels=names(subread_counts)[idx], las=2, cex.axis=0.7)
+        axis(side=1, at=at, labels=samplenames[idx], las=2, cex.axis=0.7)
         cat("\n\n")
     }
 } else {
@@ -1889,7 +1953,7 @@ if(large_dataset) {
         col="#1f78b4",
         axes=FALSE)
     axis(side=2)
-    axis(side=1, at=at, labels=names(subread_counts), las=2, cex.axis=0.7)
+    axis(side=1, at=at, labels=samplenames, las=2, cex.axis=0.7)
 }
 ```
 

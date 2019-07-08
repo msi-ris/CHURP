@@ -31,6 +31,8 @@ min_len <- as.numeric(args[5])
 min_cts <- as.numeric(args[6])
 
 setwd(work_dir)
+# Boolean to check if we will attempt DEG testing
+do_deg <- TRUE
 
 ############################
 # Read in data and prep relevant data and set output files
@@ -53,14 +55,16 @@ n_true_groups <- length(uniq_groups[which(uniq_groups != 'NULL')])
 # Check if the number of groups meets our analysis criteria
 if (n_true_groups >= 5){
 write("Maximum number of groups exceeded: This experimental design appears to be too complex for this pipeline. If you'd like analysis help, please e-mail help@msi.umn.edu.", stderr())
-quit(status = 0, save = "no")
+# quit(status = 0, save = "no")
+do_deg <- FALSE
 }
 
 # Then check if the number of replicates meets our criteria.
 if (length(true_groups[which(table(true_groups) < 3)]) > 0){
 write("At least one of the groups has fewer than three replicates, which makes reliable statistical interpretation difficult", stderr())
 writeLines(text = paste("This group has fewer than three replicates", unique(groups)[which(table(groups) < 3)], sep=" : "), con = stderr())
-quit(status = 0, save = "no")
+do_deg <- FALSE
+# quit(status = 0, save = "no")
 }
 
 # Set filename variables
@@ -70,7 +74,12 @@ counts_list <- paste(out_dir, "Counts/cpm_list.txt", sep = "/")
 hmap <- paste(out_dir, "Plots/high_variance_heatmap.pdf", sep = "/")
 
 # Filter the featureCounts matrix (read in above) on variance and feature length.
-raw_mat <- raw_mat[-which(apply(raw_mat[,seq(-1,-6)],1,var) < 1),]
+# But, we can only apply the variance filter if there is more than one sample.
+if(length(samp_ids) > 1) {
+    raw_mat <- raw_mat[-which(apply(raw_mat[,seq(-1,-6)],1,var) < 1),]
+} else {
+    write("There is only one sample, so we do not apply variance filtering to the raw counts. This is not an error.", stderr())
+}
 raw_mat <- raw_mat[which(raw_mat$Length >= min_len),]
 
 # Convert the raw matrix into a DGE object. Column 1 is Geneid, columns 7+ are the sample counts. The groups list  is generated above. 
@@ -89,17 +98,30 @@ edge_mat <- calcNormFactors(edge_mat)
 
 
 # This is THE ONLY colorblind acceptable palette with 4 colors from colorbrewer: http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=4
-pal <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c')
+if(length(uniq_groups) > 4) {
+    write("There are more than four groups, so all groups will be colored dark blue. We plot a maximum of four colors for colorblindness and print-friendly considerations.", stderr())
+    pal <- rep("#1f78b4", length.out=length(uniq_groups))
+} else {
+    pal <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c')
+}
 col_vec <- pal[match(groups,uniq_groups)]
 
 # legend code adapted from https://support.bioconductor.org/p/101530/
 # Set the MDS plot pdf and write the plot
 pdf(mds_plot)
-opar <- par(no.readonly = TRUE)
-par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
-plotMDS(edge_mat, cex = 0.75, col = col_vec)
-legend(par("usr")[2], mean(par("usr")[3:4]), legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
-par(opar)
+# If there are fewer than 3 samples, we still want to write a PDF for the MDS,
+# but we can't actually generate an MDS plot. The edgeR function dies with
+# less than 3 samples
+if(length(samp_ids) < 3) {
+    plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+    text(x=0.5, y=0.5, "Less than 3 samples;\nMDS not possible", cex=1, col="black")
+} else {
+    opar <- par(no.readonly = TRUE)
+    par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
+    plotMDS(edge_mat, cex = 0.75, col = col_vec)
+    legend(par("usr")[2], mean(par("usr")[3:4]), legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
+    par(opar)
+}
 dev.off()
 
 ## set par back to original
@@ -125,26 +147,41 @@ dev.off()
 
 # Calculate count variance across samples and select the top 500 variance features.
 #cpm_counts <- cpm(edge_mat, log = T, prior.count = 1)
-gene_var <- apply(cpm_counts, 1, var)
-select_var <- names(sort(gene_var, decreasing=TRUE))[1:500]
-high_var <- cpm_counts[select_var,]
+# For some reason, sometimes there are fewer than 500 genes that pass filtering
+n_genes <- min(500, nrow(cpm_counts))
+if(n_genes < 500) {
+    write("There are fewer than 500 genes that pass variance filtering for the clustering heatmap. This is not an error, but you should be aware of it.", stderr())
+}
+if(length(samp_ids) == 1) {
+    write("There is only one sample, so we will not try to generate a clustering heatmap. This is not an error.", stderr())
+    pdf(hmap)
+    plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+    text(x=0.5, y=0.5, "1 sample;\nClustering heatmap not possible", cex=1, col="black")
+    dev.off()
+} else {
+    gene_var <- apply(cpm_counts, 1, var)
+    select_var <- names(sort(gene_var, decreasing=TRUE))[1:n_genes]
+    high_var <- cpm_counts[select_var,]
 
-# Set the heatmap pdf and plot the normalized counts heatmap
-pdf(hmap)
-heatmap.2(high_var,trace="none", main = "Top 500 variance genes", cexCol = 0.75, dendrogram = "column", labRow = "", ColSideColors = col_vec, srtCol = 45, margins = c(8,8))
-legend('left', title = 'Group', legend = uniq_groups, fill = unique(col_vec), cex = 0.8, box.lty = 0 )
-dev.off()
-
+    # Set the heatmap pdf and plot the normalized counts heatmap
+    pdf(hmap)
+    heatmap.2(high_var,trace="none", main = paste("Top ", n_genes, " variance genes", sep=""), cexCol = 0.75, dendrogram = "column", labRow = "", ColSideColors = col_vec, srtCol = 45, margins = c(8,8))
+    legend('left', title = 'Group', legend = uniq_groups, fill = unique(col_vec), cex = 0.8, box.lty = 0 )
+    dev.off()
+}
 ############################
 # Differential expression testing and summaries
 ############################
+if(!do_deg) {
+quit(status = 0, save = "no")
+}
 n_groups <- length(uniq_groups)
 
 # If there is only one grouping in the data, we don't need to run the subsequent tests.
 if (n_groups == 1){
 write("Only 1 grouping present, skipping differential expression tests.", stderr())
 quit(status = 0, save = "no")
-} 
+}
 
 # Check if group IDs are numbers and if so, modify them
 if (is.numeric(uniq_groups)){
