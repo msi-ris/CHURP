@@ -13,16 +13,8 @@ from GopherPipelines import DieGracefully
 
 class Pipeline(object):
     """Define the Pipeline object."""
-
     def __init__(self, args):
-        """Initialize the pipeline object with user-supplied inputs. The
-        general pipeline attributes that get set here are:
-            - Output directory
-            - Program names for options setting
-            - User options dictionary
-            - Default optiond dictionary
-            - Final options dictionary
-            - Path to single sample PBS script"""
+        """Initialize the pipeline object with user-supplied inputs."""
         self.logger = set_verbosity.verb(args['verbosity'], __name__)
         self.logger.debug('Passed args:\n%s', pprint.pformat(args))
         self.outdir = args['outdir']

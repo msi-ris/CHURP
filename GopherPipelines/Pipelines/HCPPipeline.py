@@ -12,6 +12,7 @@ import getpass
 import GopherPipelines
 from GopherPipelines import DieGracefully
 from GopherPipelines.Pipelines import Pipeline
+from GopherPipelines.SampleSheet import HCPSampleSheet
 from GopherPipelines.ArgHandling import set_verbosity
 from GopherPipelines.FileOps import default_files
 from GopherPipelines.FileOps import dir_funcs
@@ -38,7 +39,7 @@ class HCPPipeline(Pipeline.Pipeline):
         self.nosubmit = valid_args['no_auto_submit']
 
         # And make a sample sheet from the args
-        self.sheet = BulkRNASeqSampleSheet.BulkRNASeqSampleSheet(valid_args)
+        self.sheet = HCPSampleSheet.HCPSampleSheet(valid_args)
         return
 
     def _validate_args(self, a):
@@ -49,33 +50,32 @@ class HCPPipeline(Pipeline.Pipeline):
         a['input_dir'] = os.path.realpath(
             os.path.expanduser(str(a['input_dir'])))
         self.pipe_logger.debug('Input directory: %s', a['input_dir'])
-        # Check that the adapters and GTF file exist
-        try:
-            handle = open(a['gtf'], 'r')
-            handle.close()
-        except OSError:
-            DieGracefully.die_gracefully(DieGracefully.BAD_GTF)
-        if not a['adapters']:
-            a['adapters'] = '$TRIMMOMATIC/adapters/all_illumina_adapters.fa'
-        else:
-            try:
-                a['adapters'] = os.path.realpath(
-                    os.path.expanduser(str(a['adapters'])))
-                handle = open(a['adapters'], 'r')
-                handle.close()
-            except OSError:
-                DieGracefully.die_gracefully(DieGracefully.BAD_ADAPT)
-        if a['expr_groups']:
-            try:
-                handle = open(a['expr_groups'], 'r')
-                handle.close()
-            except OSError:
-                DieGracefully.die_gracefully(DieGracefully.BRNASEQ_BAD_GPS)
-        # Validate the FASTQ folder
-        self._validate_fastq_folder(a['fq_folder'])
-        # Validate the hisat2 index
-        self._validate_hisat_idx(a['hisat2_idx'])
-        # Sanitize the hisat2 index path
-        a['hisat2_idx'] = dir_funcs.sanitize_path(
-            a['hisat2_idx'], self.pipe_logger)
+        self._check_input(a['input_dir'])
         return a
+
+    def _check_input(self, d):
+        """Return an error if the input BIDS directory is not readable or
+        cannot be found."""
+        try:
+            contents = os.listdir(d)
+        except OSError:
+            DieGracefully.die_gracefully(DieGracefully.HCP_BAD_BIDS)
+        # Check that there is a 'participants.tsv' file
+        try:
+            open(os.path.join(d, 'participants.tsv'), 'r').close()
+        except OSError:
+            DieGracefully.die_gracefully(DieGracefully.NO_PARTICIPANTS)
+        # Check that there are subjects in the directory, too. These are
+        # called sub-[something] and are directories
+        sub_pat = re.compile(r'^sub-.+$')
+        has_subject = False
+        for f in contents:
+            if re.match(sub_pat, f):
+                if dir_funcs.dir_exists(os.path.join(d, f)):
+                    has_subject = True
+                    break
+        if has_subject:
+            return
+        else:
+            DieGracefully.die_gracefully(DieGracefully.NO_SUBJECTS)
+        return

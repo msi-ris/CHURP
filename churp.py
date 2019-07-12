@@ -98,6 +98,8 @@ def hcp_pipeline(args):
     """This function calls the HCP pipeline module, which builds shell scripts
     to automate the HCP pipelines from T. Hendrickson in UMII."""
     from GopherPipelines.Pipelines import HCPPipeline
+    p = HCPPipeline.HCPPipeline(args)
+    p.setup(args)
     return
 
 

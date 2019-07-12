@@ -24,6 +24,9 @@ BRNASEQ_SUCCESS = 27
 BRNASEQ_SUBMIT_OK = 28
 BRNASEQ_SUBMIT_FAIL = 29
 HCP_INC_ARGS = 30
+HCP_BAD_BIDS = 31
+NO_PARTICIPANTS = 32
+NO_SUBJECTS = 33
 GROUP_NO_PIPE = 50
 GROUP_BAD_COL = 51
 BRNASEQ_GROUP_SUCCESS = 52
@@ -375,9 +378,46 @@ def hcp_inc():
     msg = CREDITS + """----------
 ERROR
 
-
 You did not speify sufficient options to run the HCP pipeline. You must specify
 a BIDS-format input directory (-i).\n"""
+    sys.stderr.write(msg)
+    return
+
+
+def hcp_badbids():
+    """Call this function when the hcp pipeline was called with an unreadable
+    or nonexistent BIDS directory."""
+    msg = CREDITS + """----------
+ERROR
+
+The input BIDS directory you specified could either not be read or could not
+be found. Please check your command line and try again.\n"""
+    sys.stderr.write(msg)
+    return
+
+
+def hcp_no_participants():
+    """Call this function when the input BIDS directory does not have a file
+    called 'participants.tsv'"""
+    msg = CREDITS + """----------
+ERROR
+
+The input BIDS directory you specified does not have a 'participants.tsv'
+file, which is required as part of the BIDS specificiation. Please check your
+input directory and try again.\n"""
+    sys.stderr.write(msg)
+    return
+
+
+def hcp_no_subjects():
+    """Call this function when there are no sub-XXXXX directories in the given
+    BIDS directory. This is different from checking for participants.tsv."""
+    msg = CREDITS + """----------
+ERROR
+
+The input BIDS directory you specified does not have any subject directories
+in it, which are required as part of the BIDS specification. Please check your
+input directory and try again.\n"""
     sys.stderr.write(msg)
     return
 
@@ -405,7 +445,10 @@ def die_gracefully(e, *args):
         BRNASEQ_SUBMIT_OK: brnaseq_auto_submit_ok,
         BRNASEQ_SUBMIT_FAIL: brnaseq_auto_submit_fail,
         NEFARIOUS_CHAR: nefarious_cmd,
-        HCP_INC: hcp_inc
+        HCP_INC_ARGS: hcp_inc,
+        HCP_BAD_BIDS: hcp_badbids,
+        NO_PARTICIPANTS: hcp_no_participants,
+        NO_SUBJECTS: hcp_no_subjects
         }
     try:
         err_dict[e](*args)
