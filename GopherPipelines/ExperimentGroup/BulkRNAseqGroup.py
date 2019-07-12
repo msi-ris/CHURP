@@ -59,3 +59,45 @@ class BulkRNAseqGroup(ExpGroup.ExpGroup):
         a['fq_folder'] = os.path.realpath(
             os.path.expanduser(a['fq_folder']))
         return a
+
+    def _validate_fastq_folder(self, d):
+        """Raise an error if the FASTQ directory does not exist or does not
+        have any FASTQ files."""
+        try:
+            contents = os.listdir(d)
+        except OSError:
+            DieGracefully.die_gracefully(DieGracefully.BAD_FASTQ)
+        # Check if there is at least one file ending in a standard fastq suffix
+        fq_pat = re.compile(r'^.+((.fq(.gz)?$)|(.fastq(.gz)?$))')
+        has_fastq = False
+        for f in contents:
+            if re.match(fq_pat, f):
+                has_fastq = True
+                break
+        if has_fastq:
+            return
+        else:
+            DieGracefully.die_gracefully(DieGracefully.EMPTY_FASTQ)
+        return
+
+    def _get_sample_names(self, d):
+        """Read the contents of the supplied FASTQ directory and parse out the
+        sample names."""
+        # regular expression to slice out the samplename from the read name
+        samp_re = re.compile(
+            r'(_S[0-9]+)?(_L00[1-8])?'
+            r'(_R(1|2))?'
+            r'_001\.((fq(\.gz)?$)|(fastq(\.gz)?$))',
+            flags=re.I)
+        # regular expression to get files that look like not-R2 FASTQ files
+        fq_re = re.compile(
+            r'^.+[^_R2]_001\.((fq(\.gz)?$)|(fastq(\.gz)?$))',
+            flags=re.I)
+        cont = os.listdir(d)
+        sd = {}
+        for f in cont:
+            if re.match(fq_re, f):
+                sn = re.sub(samp_re, '', f)
+                sd[sn] = {}
+                self.group_logger.debug('Found sample %s', sn)
+        return sd

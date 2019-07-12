@@ -35,6 +35,14 @@ def add_args(ap):
         choices=['debug', 'info', 'warn'],
         default='warn')
     ap_opt.add_argument(
+        '--expr-groups',
+        '-e',
+        help=('CSV from the "group_template" subcommand that lists '
+              'experimental groups for each sample. This file must be '
+              'hand-edited to include experimental groups to enable '
+              'differential expression testing. See the manual for details.'),
+        default=None)
+    ap_opt.add_argument(
         '--working-dir',
         '-d',
         metavar='<Working Dir>',
