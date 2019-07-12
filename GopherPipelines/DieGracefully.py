@@ -396,19 +396,6 @@ be found. Please check your command line and try again.\n"""
     return
 
 
-def hcp_no_participants():
-    """Call this function when the input BIDS directory does not have a file
-    called 'participants.tsv'"""
-    msg = CREDITS + """----------
-ERROR
-
-The input BIDS directory you specified does not have a 'participants.tsv'
-file, which is required as part of the BIDS specificiation. Please check your
-input directory and try again.\n"""
-    sys.stderr.write(msg)
-    return
-
-
 def hcp_no_subjects():
     """Call this function when there are no sub-XXXXX directories in the given
     BIDS directory. This is different from checking for participants.tsv."""
@@ -447,7 +434,6 @@ def die_gracefully(e, *args):
         NEFARIOUS_CHAR: nefarious_cmd,
         HCP_INC_ARGS: hcp_inc,
         HCP_BAD_BIDS: hcp_badbids,
-        NO_PARTICIPANTS: hcp_no_participants,
         NO_SUBJECTS: hcp_no_subjects
         }
     try:

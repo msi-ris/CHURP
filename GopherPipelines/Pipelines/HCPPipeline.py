@@ -60,11 +60,6 @@ class HCPPipeline(Pipeline.Pipeline):
             contents = os.listdir(d)
         except OSError:
             DieGracefully.die_gracefully(DieGracefully.HCP_BAD_BIDS)
-        # Check that there is a 'participants.tsv' file
-        try:
-            open(os.path.join(d, 'participants.tsv'), 'r').close()
-        except OSError:
-            DieGracefully.die_gracefully(DieGracefully.NO_PARTICIPANTS)
         # Check that there are subjects in the directory, too. These are
         # called sub-[something] and are directories
         sub_pat = re.compile(r'^sub-.+$')

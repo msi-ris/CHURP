@@ -23,7 +23,7 @@ class ExpGroup(object):
         self._group_help(args)
         self.group_logger = set_verbosity.verb(args['verbosity'], __name__)
         self.samples = {}
-        self.columns = ['SampleName', 'Group']
+        self.columns = []
         self.dest = os.path.realpath(os.path.expanduser(args['outfile']))
         self._prepare_output()
         return

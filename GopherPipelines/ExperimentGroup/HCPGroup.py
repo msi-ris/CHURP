@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Experiment group for the bulk RNAseq pipeline."""
+"""Experiment group for the HCP pipeline."""
 
 import pprint
 import os
@@ -10,39 +10,39 @@ from GopherPipelines.ExperimentGroup import ExpGroup
 from GopherPipelines.ArgHandling import set_verbosity
 
 
-class BulkRNAseqGroup(ExpGroup.ExpGroup):
+class HCPGroup(ExpGroup.ExpGroup):
     """Inherits from the ExpGroup object. Some of these functions will be very
-    similar to those that are written for the bulk RNAseq samplesheet object.
-    This is unavoidable, unfortunately."""
+    similar to those that are written for the samplesheet object. This is
+    unavoidable, unfortunately."""
 
-    self.columns.extend(['SampleName', 'Group'])
+    self.columns.extend(['SubjectID', 'SessionID', 'Group'])
 
     def setup(self, args):
         """Do a detailed check of the arguments passed to this function. We
-        want to validate the output directory, working directory, FASTQ
+        want to validate the output directory, working directory, BIDS
         directory, and the columns that were passed."""
         valid_args = self._validate(args)
         # Append the extra columns to the default ones
         self.columns.extend(valid_args['extra_column'])
-        self.samples = self._get_sample_names(valid_args['fq_folder'])
+        self.samples = self._get_bids_data(valid_args['input_dir'])
         self._build_groups()
         return
 
     def _validate(self, a):
-        """Validate the arguments. We want to make sure that the FASTQ
+        """Validate the arguments. We want to make sure that the BIDS
         directory is not empty, the columns do not collide with each other, and
         that the names do not have any commas in them."""
-        self._validate_fastq_folder(a['fq_folder'])
+        self._validate_bids(a['input_dir'])
         # Drop a warning that specifying extra columns means that there will be
         # some more specialized statistical analysis required
         if a['extra_column']:
             self.group_logger.warning(
                 'Specifying additional columns for experimental conditions '
                 'is an advanced feature, and will require you to write custom '
-                'scripts for statistical analysis. gopher-pipelines will do '
-                'tests on the "Group" column (present by default), but will '
-                'not account for additional experimental details in your '
-                'design. This is not an error message.')
+                'scripts for statistical analysis. CHURP will do tests on the '
+                '"Group" column (present by default), but will not account for'
+                ' additional experimental details in your design. This is not '
+                'an error message.')
         # Check the experimental columns - first make sure that the names are
         # not duplicated
         tot_col = self.columns + a['extra_column']
@@ -57,31 +57,33 @@ class BulkRNAseqGroup(ExpGroup.ExpGroup):
                 self.group_logger.error('Column names cannot contain commas.')
                 DieGracefully.die_gracefully(DieGracefully.GROUP_BAD_COL)
         # Turn relative paths into absolute paths
-        a['fq_folder'] = os.path.realpath(
-            os.path.expanduser(a['fq_folder']))
+        a['input_dir'] = os.path.realpath(
+            os.path.expanduser(a['input_dir']))
         return a
 
-    def _validate_fastq_folder(self, d):
-        """Raise an error if the FASTQ directory does not exist or does not
-        have any FASTQ files."""
+    def _validate_bids(self, d):
+        """Return an error if the input BIDS directory is not readable or
+        cannot be found."""
         try:
             contents = os.listdir(d)
         except OSError:
-            DieGracefully.die_gracefully(DieGracefully.BAD_FASTQ)
-        # Check if there is at least one file ending in a standard fastq suffix
-        fq_pat = re.compile(r'^.+((.fq(.gz)?$)|(.fastq(.gz)?$))')
-        has_fastq = False
+            DieGracefully.die_gracefully(DieGracefully.HCP_BAD_BIDS)
+        # Check that there are subjects in the directory, too. These are
+        # called sub-[something] and are directories
+        sub_pat = re.compile(r'^sub-.+$')
+        has_subject = False
         for f in contents:
-            if re.match(fq_pat, f):
-                has_fastq = True
-                break
-        if has_fastq:
+            if re.match(sub_pat, f):
+                if dir_funcs.dir_exists(os.path.join(d, f), self.pipe_logger):
+                    has_subject = True
+                    break
+        if has_subject:
             return
         else:
-            DieGracefully.die_gracefully(DieGracefully.EMPTY_FASTQ)
+            DieGracefully.die_gracefully(DieGracefully.NO_SUBJECTS)
         return
 
-    def _get_sample_names(self, d):
+    def _get_bids_data(self, d):
         """Read the contents of the supplied FASTQ directory and parse out the
         sample names."""
         # regular expression to slice out the samplename from the read name
