@@ -70,8 +70,8 @@ class HCPPipeline(Pipeline.Pipeline):
         sub_pat = re.compile(r'^sub-.+$')
         has_subject = False
         for f in contents:
-            if re.match(sub_pat, f, self.pipe_logger):
-                if dir_funcs.dir_exists(os.path.join(d, f)):
+            if re.match(sub_pat, f):
+                if dir_funcs.dir_exists(os.path.join(d, f), self.pipe_logger):
                     has_subject = True
                     break
         if has_subject:
