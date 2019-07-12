@@ -45,7 +45,7 @@ class HCPPipeline(Pipeline.Pipeline):
     def _validate_args(self, a):
         """Validate arguments for the HCPPipeline object."""
         if not a['input_dir']:
-            DieGracefully.die_gracefully(DieGracefully.HPC_INC_ARGS)
+            DieGracefully.die_gracefully(DieGracefully.HCP_INC_ARGS)
         # Convert all of the paths into absolute paths
         a['input_dir'] = os.path.realpath(
             os.path.expanduser(str(a['input_dir'])))
