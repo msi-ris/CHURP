@@ -55,8 +55,20 @@ def expr_group(args):
             eg.dest)
         return
 
+    def hcp_group(a):
+        """Sub-function for calling the HCP group template."""
+        from GopherPipelines.ExperimentGroup import HCPGroup
+        hg = BulkRNAseqGroup.HCPGroup(args)
+        hg.setup(args)
+        hg.write_sheet()
+        DieGracefully.die_gracefully(
+            DieGracefully.BRNASEQ_GROUP_SUCCESS,
+            hg.dest)
+        return
+
     grp_cmd = {
         'bulk_rnaseq': brnaseq_group
+        'hcp': hcp_group
         }
     try:
         grp_cmd[args['pipe_group']](args)
