@@ -42,7 +42,7 @@ class HCPSampleSheet(SampleSheet.Samplesheet):
         # regex for the session directory. This is optional if there is just
         # one session.
         ses_pat = re.compile(r'^ses-[a-z-A-Z0-9]+$')
-        cont = os.listdir(d)
+        cont = os.listdir(bd)
         sd = {}
         for f in cont:
             if re.match(sub_pat, f):
