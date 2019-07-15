@@ -63,14 +63,15 @@ class HCPGroup(ExpGroup.ExpGroup):
 
     def _validate_bids(self, d):
         """Return an error if the input BIDS directory is not readable or
-        cannot be found."""
+        cannot be found. This does a very CURSORY check that a directory
+        looks like a BIDS directory - is there a subject directory?"""
         try:
             contents = os.listdir(d)
         except OSError:
             DieGracefully.die_gracefully(DieGracefully.HCP_BAD_BIDS)
         # Check that there are subjects in the directory, too. These are
         # called sub-[something] and are directories
-        sub_pat = re.compile(r'^sub-.+$')
+        sub_pat = re.compile(r'^sub-[a-zA-Z0-9]+$')
         has_subject = False
         for f in contents:
             if re.match(sub_pat, f):
@@ -86,21 +87,27 @@ class HCPGroup(ExpGroup.ExpGroup):
     def _get_bids_data(self, d):
         """Read the contents of the supplied FASTQ directory and parse out the
         sample names."""
-        # regular expression to slice out the samplename from the read name
-        samp_re = re.compile(
-            r'(_S[0-9]+)?(_L00[1-8])?'
-            r'(_R(1|2))?'
-            r'_001\.((fq(\.gz)?$)|(fastq(\.gz)?$))',
-            flags=re.I)
-        # regular expression to get files that look like not-R2 FASTQ files
-        fq_re = re.compile(
-            r'^.+[^_R2]_001\.((fq(\.gz)?$)|(fastq(\.gz)?$))',
-            flags=re.I)
+        # Regex for the subject directory
+        sub_pat = re.compile(r'^sub-[a-zA-Z0-9]+$')
+        # regex for the session directory. This is optional if there is just
+        # one session.
+        ses_pat = re.compile(r'^ses-[a-z-A-Z0-9]+$')
         cont = os.listdir(d)
         sd = {}
         for f in cont:
-            if re.match(fq_re, f):
-                sn = re.sub(samp_re, '', f)
-                sd[sn] = {}
-                self.group_logger.debug('Found sample %s', sn)
+            if re.match(sub_pat, f):
+                # The subject ID is the second part after the '-' character
+                subid = f.split('-')[1]
+                self.group_logger.debug('Found subject %s', subid)
+                # Next, get the session, if it exists
+                sub_cont = os.listdir(os.path.join(d, f))
+                sessions = []
+                for g in sub_cont:
+                    if re.match(ses_pat, g):
+                        sesid = g.split('-')[1]
+                        self.group_logger.debug(
+                            'Found session %s for subject %s', sesid, subid)
+                        sessions.append(sesid)
+                for s in sessions:
+                    sd[(subid, s)] = {}
         return sd

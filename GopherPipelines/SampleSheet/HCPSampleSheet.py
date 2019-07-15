@@ -22,9 +22,9 @@ class HCPSampleSheet(SampleSheet.Samplesheet):
         # Set the column order to be the columns of the sample sheet. This will
         # eventually become the header of the sheet.
         self.column_order.extend([
-            'Group',
             'SubjectID',
             'SessionID',
+            'Group',
             'BIDSDir',
             'OutDir',
             'Stages'])
@@ -37,8 +37,30 @@ class HCPSampleSheet(SampleSheet.Samplesheet):
     def _parse_bids(self, bd):
         """Crawl a BIDS directory structure and return a list of tuples that
         represents the (subject, session) structure inside it."""
-
-        pass
+        # Regex for the subject directory
+        sub_pat = re.compile(r'^sub-[a-zA-Z0-9]+$')
+        # regex for the session directory. This is optional if there is just
+        # one session.
+        ses_pat = re.compile(r'^ses-[a-z-A-Z0-9]+$')
+        cont = os.listdir(d)
+        sd = {}
+        for f in cont:
+            if re.match(sub_pat, f):
+                # The subject ID is the second part after the '-' character
+                subid = f.split('-')[1]
+                self.group_logger.debug('Found subject %s', subid)
+                # Next, get the session, if it exists
+                sub_cont = os.listdir(os.path.join(d, f))
+                sessions = []
+                for g in sub_cont:
+                    if re.match(ses_pat, g):
+                        sesid = g.split('-')[1]
+                        self.group_logger.debug(
+                            'Found session %s for subject %s', sesid, subid)
+                        sessions.append(sesid)
+                for s in sessions:
+                    sd[(subid, s)] = {}
+        return sd
 
     def _set_groups(self, groups):
         """If the groups argument is NoneType, then there were no experimental
