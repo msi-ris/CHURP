@@ -67,7 +67,7 @@ def expr_group(args):
         return
 
     grp_cmd = {
-        'bulk_rnaseq': brnaseq_group
+        'bulk_rnaseq': brnaseq_group,
         'hcp': hcp_group
         }
     try:
