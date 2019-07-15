@@ -69,4 +69,51 @@ def add_args(ap):
               'edgeR or DESeq2 analysis to properly handle the experimental '
               'conditions in your metadata CSV. The "SampleName" and "Group" '
               'columns are present by default.'))
+
+    # Parser for the HCP pipelines
+    hcp_group = ap_sub.add_parser(
+        'hcp',
+        help='Generate template groups file for HCP pipelines.',
+        add_help=False)
+    hcp_group_req = hcp_group.add_argument_group(
+        title='Required arguments')
+    hcp_group_req.add_argument(
+        '--input',
+        '-i',
+        metavar='<Input BIDS Dir>',
+        dest='input_dir',
+        help='Input data directory, in BIDS structure.')
+    hcp_group_opt = hcp_group.add_argument_group(
+        title='Optional arguments')
+    hcp_group_opt.add_argument(
+        '--help',
+        '-h',
+        help='Show this help message and exit.',
+        action='help')
+    hcp_group_opt.add_argument(
+        '--verbosity',
+        '-v',
+        metavar='<loglevel>',
+        dest='verbosity',
+        help=('How much logging output to show. '
+              'Choose one of "debug," "info," or "warn."'),
+        choices=['debug', 'info', 'warn'],
+        default='warn')
+    hcp_group_opt.add_argument(
+        '--output',
+        '-o',
+        metavar='<output file>',
+        dest='outfile',
+        help='Write the CSV to this file. Defaults to ' + str(brnaseq_def_csv),
+        default=brnaseq_def_csv)
+    hcp_group_opt.add_argument(
+        '--extra-column',
+        '-e',
+        metavar='<extra column>',
+        action='append',
+        default=[],
+        help=('Extra column to add to the CSV file. This option may be passed '
+              'more than once to add multiple columns. Please note that if '
+              'you use this option, then you may need custom scripts to '
+              'perform the hypothesis tests of interest.'))
     return
