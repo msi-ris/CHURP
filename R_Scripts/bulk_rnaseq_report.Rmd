@@ -1209,7 +1209,7 @@ Click on the tab headers to show plots of raw and trimmed read qualities.
 ### Raw Read Qualities (Compact style)
 These plots show the read qualities as they came off the sequencing instrument.
 
-```{r raw_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(2.4, 0.6*lg_cutoff), results="asis"}
+```{r raw_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(2.4*nrow(sheet), 0.6*lg_cutoff), results="asis"}
 plotqual_first <- function(sn, draw_ax) {
     allquals <- matrix(0:45)
     image(
@@ -1347,7 +1347,7 @@ if(large_dataset) {
 ### Trimmed Read Qualities (Compact style)
 These plots show read qualities post-trimming, if it was performed.
 
-```{r trim_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(2.4, 0.6*lg_cutoff), results="asis"}
+```{r trim_read_quals, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(2.4*nrow(sheet), 0.6*lg_cutoff), results="asis"}
 if(length(trim_samp) > 0) {
     plotqual_first <- function(sn, draw_ax) {
         allquals <- matrix(0:45)
