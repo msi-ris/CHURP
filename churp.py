@@ -58,7 +58,7 @@ def expr_group(args):
     def hcp_group(a):
         """Sub-function for calling the HCP group template."""
         from GopherPipelines.ExperimentGroup import HCPGroup
-        hg = BulkRNAseqGroup.HCPGroup(args)
+        hg = HCPGroup.HCPGroup(args)
         hg.setup(args)
         hg.write_sheet()
         DieGracefully.die_gracefully(

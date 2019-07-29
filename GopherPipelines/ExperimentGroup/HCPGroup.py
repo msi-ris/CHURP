@@ -3,26 +3,28 @@
 
 import pprint
 import os
+import re
 
 import GopherPipelines
 from GopherPipelines import DieGracefully
 from GopherPipelines.ExperimentGroup import ExpGroup
 from GopherPipelines.ArgHandling import set_verbosity
+from GopherPipelines.FileOps import dir_funcs
 
 
 class HCPGroup(ExpGroup.ExpGroup):
     """Inherits from the ExpGroup object. Some of these functions will be very
     similar to those that are written for the samplesheet object. This is
     unavoidable, unfortunately."""
-    # This is an ugly hack, but the first column of this list should be the
-    # unique key for each *unit*.
-    self.columns.extend(['SubjectID,SessionID', 'Group'])
 
     def setup(self, args):
         """Do a detailed check of the arguments passed to this function. We
         want to validate the output directory, working directory, BIDS
         directory, and the columns that were passed."""
         valid_args = self._validate(args)
+        # This is an ugly hack, but the first column of this list should be the
+        # unique key for each *unit*.
+        self.columns.extend(['SubjectID,SessionID', 'Group'])
         # Append the extra columns to the default ones
         self.columns.extend(valid_args['extra_column'])
         # The format of these keys will be subject,session: if the session is
@@ -79,7 +81,7 @@ class HCPGroup(ExpGroup.ExpGroup):
         has_subject = False
         for f in contents:
             if re.match(sub_pat, f):
-                if dir_funcs.dir_exists(os.path.join(d, f), self.pipe_logger):
+                if dir_funcs.dir_exists(os.path.join(d, f), self.group_logger):
                     has_subject = True
                     break
         if has_subject:
