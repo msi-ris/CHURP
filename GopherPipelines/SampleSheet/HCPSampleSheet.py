@@ -58,6 +58,10 @@ class HCPSampleSheet(SampleSheet.Samplesheet):
                         self.group_logger.debug(
                             'Found session %s for subject %s', sesid, subid)
                         sessions.append(sesid)
+                # If sessions is an empty list, then there is only one session
+                # for this subject. We make it an empty element
+                if sessions == []:
+                    sessions = ['']
                 for s in sessions:
                     sd[(subid, s)] = {}
         return sd

@@ -68,8 +68,10 @@ class ExpGroup(object):
     def _build_groups(self, dummy='NULL'):
         """Populate the sample dictionary with dummy values."""
         for sn in self.samples:
-            for c in self.columns:
-                if c == 'SampleName':
+            for i, c in enumerate(self.columns):
+                # We will assume that the first column is the unique sample
+                # name key. This is not necessary, but it makes it a lot easier
+                if i == 0:
                     self.samples[sn][c] = sn
                 else:
                     self.samples[sn][c] = dummy

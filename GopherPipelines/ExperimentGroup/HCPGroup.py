@@ -14,8 +14,9 @@ class HCPGroup(ExpGroup.ExpGroup):
     """Inherits from the ExpGroup object. Some of these functions will be very
     similar to those that are written for the samplesheet object. This is
     unavoidable, unfortunately."""
-
-    self.columns.extend(['SubjectID', 'SessionID', 'Group'])
+    # This is an ugly hack, but the first column of this list should be the
+    # unique key for each *unit*.
+    self.columns.extend(['SubjectID,SessionID', 'Group'])
 
     def setup(self, args):
         """Do a detailed check of the arguments passed to this function. We
@@ -24,6 +25,9 @@ class HCPGroup(ExpGroup.ExpGroup):
         valid_args = self._validate(args)
         # Append the extra columns to the default ones
         self.columns.extend(valid_args['extra_column'])
+        # The format of these keys will be subject,session: if the session is
+        # empty, then it will just be subject,. This is because the full sample
+        # unit is a session from a subject.
         self.samples = self._get_bids_data(valid_args['input_dir'])
         self._build_groups()
         return
@@ -108,6 +112,10 @@ class HCPGroup(ExpGroup.ExpGroup):
                         self.group_logger.debug(
                             'Found session %s for subject %s', sesid, subid)
                         sessions.append(sesid)
+                # If sessions is an empty list, then the subject only has one
+                # scanning session. Keep the element an empty string.
+                if sessions == []:
+                    sessions = ['']
                 for s in sessions:
-                    sd[(subid, s)] = {}
+                    sd[','.join([subid, s])] = {}
         return sd
