@@ -88,17 +88,17 @@ def brnaseq(args):
     pipeline_fname, samplesheet_fname, key_name, qsub_dat = p.qsub()
     if not qsub_dat:
         DieGracefully.die_gracefully(
-            DieGracefully.BRNASEQ_SUCCESS,
+            DieGracefully.CHURP_SUCCESS,
             pipeline_fname,
             samplesheet_fname,
             key_name)
     elif qsub_dat[2].returncode != 0:
         DieGracefully.die_gracefully(
-            DieGracefully.BRNASEQ_SUBMIT_FAIL,
+            DieGracefully.CHURP_SUBMIT_FAIL,
             qsub_dat)
     else:
         DieGracefully.die_gracefully(
-            DieGracefully.BRNASEQ_SUBMIT_OK,
+            DieGracefully.CHURP_SUBMIT_OK,
             pipeline_fname,
             samplesheet_fname,
             key_name,
@@ -112,6 +112,24 @@ def hcp_pipeline(args):
     from GopherPipelines.Pipelines import HCPPipeline
     p = HCPPipeline.HCPPipeline(args)
     p.setup(args)
+    pipeline_fname, samplesheet_fname, key_name, qsub_dat = p.qsub()
+    if not qsub_dat:
+        DieGracefully.die_gracefully(
+            DieGracefully.CHURP_SUCCESS,
+            pipeline_fname,
+            samplesheet_fname,
+            key_name)
+    elif qsub_dat[2].returncode != 0:
+        DieGracefully.die_gracefully(
+            DieGracefully.CHURP_SUBMIT_FAIL,
+            qsub_dat)
+    else:
+        DieGracefully.die_gracefully(
+            DieGracefully.CHURP_SUBMIT_OK,
+            pipeline_fname,
+            samplesheet_fname,
+            key_name,
+            qsub_dat)
     return
 
 

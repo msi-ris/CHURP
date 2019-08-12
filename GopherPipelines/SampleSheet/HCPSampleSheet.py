@@ -22,13 +22,12 @@ class HCPSampleSheet(SampleSheet.Samplesheet):
         # Set the column order to be the columns of the sample sheet. This will
         # eventually become the header of the sheet.
         self.column_order.extend([
-            'SubjectID',
-            'SessionID',
             'Group',
             'BIDSDir',
             'OutDir',
             'Stages'])
-        self._parse_bids(args['input_dir'])
+        self.samples = self._parse_bids(args['input_dir'])
+        self.stages = ','.join(args['stages'])
         self._resolve_options()
         # Set the sample group memberships based on the expr_groups argument
         self._set_groups(args['expr_groups'])
@@ -48,14 +47,14 @@ class HCPSampleSheet(SampleSheet.Samplesheet):
             if re.match(sub_pat, f):
                 # The subject ID is the second part after the '-' character
                 subid = f.split('-')[1]
-                self.group_logger.debug('Found subject %s', subid)
+                self.sheet_logger.debug('Found subject %s', subid)
                 # Next, get the session, if it exists
-                sub_cont = os.listdir(os.path.join(d, f))
+                sub_cont = os.listdir(os.path.join(bd, f))
                 sessions = []
                 for g in sub_cont:
                     if re.match(ses_pat, g):
                         sesid = g.split('-')[1]
-                        self.group_logger.debug(
+                        self.sheet_logger.debug(
                             'Found session %s for subject %s', sesid, subid)
                         sessions.append(sesid)
                 # If sessions is an empty list, then there is only one session
@@ -63,7 +62,7 @@ class HCPSampleSheet(SampleSheet.Samplesheet):
                 if sessions == []:
                     sessions = ['']
                 for s in sessions:
-                    sd[(subid, s)] = {}
+                    sd[','.join([subid, s])] = {}
         return sd
 
     def _set_groups(self, groups):
@@ -89,36 +88,38 @@ class HCPSampleSheet(SampleSheet.Samplesheet):
                     elif line.strip() == '':
                         self.sheet_logger.warn(
                             'Line %d in groups csv is empty, skipping.', index)
-                    elif len(line.strip().split(',')) < 2:
+                    elif len(line.strip().split(',')) < 3:
+                        # The subject and session ID are the first two fields,
+                        # which uniquely key the "sample"
                         self.sheet_logger.warn(
-                            ('Line %d in groups csv has fewer than 2 fields, '
+                            ('Line %d in groups csv has fewer than 3 fields, '
                              'skipping.'), index)
                     else:
                         tmp = line.strip().split(',')
-                        csv_gps[tmp[0]] = tmp[1]
+                        csv_gps[tmp[0] + ',' + tmp[1]] = tmp[2]
             self.sheet_logger.debug(
                 'CSV experimental groups:\n%s',
                 pprint.pformat(csv_gps))
             # Calculate the overlaps
-            fq_samples = set(self.samples)
+            bids_samples = set(self.samples)
             csv_samples = set(csv_gps)
-            fq_only = fq_samples - csv_samples
-            csv_only = csv_samples - fq_samples
-            overlap = fq_samples & csv_samples
+            bids_only = bids_samples - csv_samples
+            csv_only = csv_samples - bids_samples
+            overlap = bids_samples & csv_samples
             # Thow an error if there are no overlapping samples
             if len(overlap) == 0:
                 self.sheet_logger.error(
                     'The BIDS directory and CSV file appear to mismatch.')
-                DieGracefully.die_gracefully(DieGracefully.BRNASEQ_NO_SAMP_GPS)
+                DieGracefully.die_gracefully(DieGracefully.HCP_NO_SAMP_GPS)
             # Drop warnings if there are exclusive samples
-            if len(fq_only) > 0:
+            if len(bids_only) > 0:
                 self.sheet_logger.warning(
                     'Samples found that do not have CSV entries, setting to '
                     'NULL group:\n%s',
-                    '\n'.join(list(fq_only)))
+                    '\n'.join(list(bids_only)))
             if len(csv_only) > 0:
                 self.sheet_logger.warning(
-                    'Ignoring samples with groups but no images in the BIDS '
+                    'Ignoring samples with groups but no data in the BIDS '
                     'directory:\n%s',
                     '\n'.join(list(csv_only)))
             # Iterate through the sample dictionary and set groups
@@ -128,53 +129,15 @@ class HCPSampleSheet(SampleSheet.Samplesheet):
                 self.samples[s]['Group'] = gp
             return
 
-    def compile(self, od, wd):
+    def compile(self, bd, od, wd):
         """Iterate through the dictionary of samples, and fill-in the values
         that were supplied by the user."""
-        # For each sample...
         for s in self.samples:
-            if self.samples[s]['R2'] == '':
-                pe = False
-            else:
-                pe = True
-            if pe:
-                # Key in the values based on the column names
-                self.final_sheet[s] = {
-                    'Group': self.samples[s]['Group'],
-                    'FastqR1files': self.samples[s]['R1'],
-                    'FastqR2file': self.samples[s]['R2'],
-                    'OutputDir': str(od),
-                    'WorkingDir': str(wd),
-                    'TRIM': self.useropts['trim'],
-                    'RMDUP': self.useropts['rmdup'],
-                    'trimmomaticOpts': self.finalopts['trimmomatic'],
-                    'Hisat2index': self.useropts['hisat2_idx'],
-                    'Hisat2Options': self.useropts['hisat2_threads'] + ' ' +
-                                     self.useropts['hisat2_other'] + ' ' +
-                                     self.finalopts['hisat2'],
-                    'Strand': self.useropts['strand'],
-                    'AnnotationGTF': self.useropts['gtf']
-                    }
-            else:
-                se_hisat2_other = self.useropts['hisat2_other'].replace(
-                    '--rna-strandness RF', '--rna-strandness R').replace(
-                    '--rna-strandness FR', '--rna-strandness F')
-                self.final_sheet[s] = {
-                    'Group': self.samples[s]['Group'],
-                    'FastqR1files': self.samples[s]['R1'],
-                    'FastqR2file': self.samples[s]['R2'],
-                    'OutputDir': str(od),
-                    'WorkingDir': str(wd),
-                    'TRIM': self.useropts['trim'],
-                    'RMDUP': self.useropts['rmdup'],
-                    'trimmomaticOpts': self.finalopts['trimmomatic'],
-                    'Hisat2index': self.useropts['hisat2_idx'],
-                    'Hisat2Options': self.useropts['hisat2_threads'] + ' ' +
-                                     se_hisat2_other + ' ' +
-                                     self.finalopts['hisat2'],
-                    'Strand': self.useropts['strand'],
-                    'AnnotationGTF': self.useropts['gtf']
-                    }
+            self.final_sheet[s] = {
+                'Group': self.samples[s]['Group'],
+                'BIDSDir': str(bd),
+                'OutDir': str(od),
+                'Stages': self.stages}
         self.sheet_logger.debug(
             'Samplesheet:\n%s',
             pprint.pformat(self.final_sheet))

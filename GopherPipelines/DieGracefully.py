@@ -20,13 +20,14 @@ BAD_GTF = 23
 BAD_ADAPT = 24
 BRNASEQ_BAD_GPS = 25
 BRNASEQ_NO_SAMP_GPS = 26
-BRNASEQ_SUCCESS = 27
-BRNASEQ_SUBMIT_OK = 28
-BRNASEQ_SUBMIT_FAIL = 29
+CHURP_SUCCESS = 27
+CHURP_SUBMIT_OK = 28
+CHURP_SUBMIT_FAIL = 29
 HCP_INC_ARGS = 30
 HCP_BAD_BIDS = 31
 NO_PARTICIPANTS = 32
 NO_SUBJECTS = 33
+HCP_NO_SAMP_GPS = 34
 GROUP_NO_PIPE = 50
 GROUP_BAD_COL = 51
 BRNASEQ_GROUP_SUCCESS = 52
@@ -101,7 +102,7 @@ and 62000. The walltime should be specified in hours as an integer between 1 and
     return
 
 
-def brnaseq_success(pipe_script, samplesheet, qsubkey):
+def churp_success(pipe_script, samplesheet, qsubkey):
     """Call this function when the bulk RNAseq pipeline finishes successfully.
     It will include the pipeline script and the samplesheet paths in the
     output message."""
@@ -300,7 +301,7 @@ option to enable group testing.\n"""
     return
 
 
-def brnaseq_auto_submit_ok(pipe_script, samplesheet, qsub_key, qsub_msg):
+def churp_auto_submit_ok(pipe_script, samplesheet, qsub_key, qsub_msg):
     """Call this function when the user gives the --submit flag to the
     bulk_rnaseq pipeline."""
     msg = CREDITS + """----------
@@ -328,7 +329,7 @@ Qsub stdout:\n"""
     return
 
 
-def brnaseq_auto_submit_fail(qsub_msg):
+def churp_auto_submit_fail(qsub_msg):
     """Call this function when auto-submitting and qsub returns an exit status
     that is not 0."""
     msg = CREDITS + """----------
@@ -409,6 +410,21 @@ input directory and try again.\n"""
     return
 
 
+def hcp_no_sample_groups():
+    """Call this function when the user supplies a CSV that does not have any
+    information about the samples to analyze for the HCP pipeline."""
+    msg = CREDITS + """----------
+ERROR
+
+The groups CSV file that you supplied does not contain any information about
+the subjects and/or sessions found in the input BIDS directory. Check that you
+specificed the correct input directory with -i, and that your subject and
+session IDs match exactly between the CSV and BIDS directory. Use the template
+from the 'group_template' pipeline to start your groups CSV.\n"""
+    sys.stderr.write(msg)
+    return
+
+
 def die_gracefully(e, *args):
     """Print user-friendly error messages and exit."""
     err_dict = {
@@ -428,13 +444,14 @@ def die_gracefully(e, *args):
         GROUP_NO_PIPE: group_no_pipe,
         GROUP_BAD_COL: group_bad_col,
         BRNASEQ_GROUP_SUCCESS: brnaseq_group_success,
-        BRNASEQ_SUCCESS: brnaseq_success,
-        BRNASEQ_SUBMIT_OK: brnaseq_auto_submit_ok,
-        BRNASEQ_SUBMIT_FAIL: brnaseq_auto_submit_fail,
         NEFARIOUS_CHAR: nefarious_cmd,
         HCP_INC_ARGS: hcp_inc,
         HCP_BAD_BIDS: hcp_badbids,
-        NO_SUBJECTS: hcp_no_subjects
+        NO_SUBJECTS: hcp_no_subjects,
+        HCP_NO_SAMP_GPS: hcp_no_sample_groups,
+        CHURP_SUCCESS: churp_success,
+        CHURP_SUBMIT_OK: churp_auto_submit_ok,
+        CHURP_SUBMIT_FAIL: churp_auto_submit_fail
         }
     try:
         err_dict[e](*args)

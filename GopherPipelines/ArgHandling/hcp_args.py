@@ -48,7 +48,8 @@ def add_args(ap):
         metavar='<Working Dir>',
         dest='workdir',
         help=('Working directory for intermediate files. '
-              'Defaults to global scratch')),
+              'Defaults to global scratch'),
+        default=default_dirs.default_workdir('hcp')),
     ap_opt.add_argument(
         '--output',
         '-o',
