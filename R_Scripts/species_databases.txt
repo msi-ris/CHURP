@@ -1,0 +1,12 @@
+msig_species	db	KEGG_species
+Bos taurus	org.Bt.eg.db	bta
+Caenorhabditis elegans	org.Ce.eg.db	cel
+Canis lupus familiaris	org.Cf.eg.db	cfa
+Danio rerio	org.Dr.eg.db	dre
+Drosophila melanogaster	org.Dm.eg.db	dme
+Gallus gallus	org.Gg.eg.db	gga
+Homo sapiens	org.Hs.eg.db	hsa
+Mus musculus	org.Mm.eg.db	mmu
+Rattus norvegicus	org.Rn.eg.db	rno
+Saccharomyces cerevisiae	org.Sc.eg.db	sce
+Sus scrofa	org.Ss.eg.db	ssc
