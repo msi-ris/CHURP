@@ -138,6 +138,11 @@ class Samplesheet(object):
         self.sheet_logger.debug(
             'Found samples:\n%s',
             pprint.pformat(self.samples))
+        # Simple check - if there are no samples, then throw an error here
+        if len(self.samples) == 0:
+                self.sheet_logger.error(
+                    'No valid FASTQ files were found in the directory.')
+                DieGracefully.die_gracefully(DieGracefully.EMPTY_FASTQ)
         return
 
     def write_sheet(self, od, pn, delim):
