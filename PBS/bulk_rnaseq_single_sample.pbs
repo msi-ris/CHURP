@@ -487,10 +487,16 @@ if [ ! -f rnaseqc.done ]; then
         2>> "${LOG_FNAME}"
     echo "# ${PBS_JOBID} $(date '+%F %T'): Collecting stranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
     RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM} --legacy"
-    if [ "${STRAND}" = "2" ]; then
+    # A bit strange - if the data are single-read data, then the strand has to
+    # be flipped. This was confirmed with single-read pico v2 and pico v1 data.
+    if [[ "${STRAND}" = "2" && "${PE}" = "true" ]]; then
         RNASEQC_OPTIONS="${RNASEQC_OPTIONS} --stranded=RF"
-    elif [ "${STRAND}" = "1" ]; then
+    elif [[ "${STRAND}" = "1" && "${PE}" = "true" ]]; then
         RNASEQC_OPTIONS="${RNASEQC_OPTIONS} --stranded=FR"
+    elif [[ "${STRAND}" = "2" && "${PE}" = "false" ]]; then
+        RNASEQC_OPTIONS="${RNASEQC_OPTIONS} --stranded=FR"
+    elif [[ "${STRAND}" = "1" && "${PE}" = "false" ]]; then
+        RNASEQC_OPTIONS="${RNASEQC_OPTIONS} --stranded=RF"
     fi
     "${RNASEQC}" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" \
