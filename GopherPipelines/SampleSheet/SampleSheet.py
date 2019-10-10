@@ -8,6 +8,7 @@ import pprint
 import re
 
 import GopherPipelines
+from GopherPipelines import DieGracefully
 from GopherPipelines.FileOps import default_files
 from GopherPipelines.FileOps import default_dirs
 from GopherPipelines.FileOps import dir_funcs
