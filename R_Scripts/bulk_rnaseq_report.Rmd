@@ -130,7 +130,7 @@ if(large_dataset) {
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("### Samples ", idx[1], " to ", idx[length(idx)], "\n")
-        subdat <- read_dat[idx,]
+        subdat <- read_dat[idx,,drop=FALSE]
         at <- barplot(
             t(subdat),
             beside=TRUE,
