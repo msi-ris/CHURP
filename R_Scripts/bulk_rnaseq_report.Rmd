@@ -448,7 +448,7 @@ if(large_dataset) {
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
-        subdat <- count_dat[idx,]
+        subdat <- count_dat[idx,,drop=FALSE]
         at <- barplot(
             t(subdat)/1000000,
             beside=FALSE,
@@ -496,7 +496,7 @@ if(large_dataset) {
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
-        subdat <- prop_dat[idx,]
+        subdat <- prop_dat[idx,,drop=FALSE]
         at <- barplot(
             t(subdat),
             beside=FALSE,
@@ -1094,8 +1094,8 @@ if(large_dataset) {
     cat("#### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        subdat <- gdna_dat[,idx]
-        subdat_uns <- gdna_dat_uns[,idx]
+        subdat <- gdna_dat[,idx,drop=FALSE]
+        subdat_uns <- gdna_dat_uns[,idx,drop=FALSE]
         cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         at <- barplot(
             subdat,
@@ -1621,7 +1621,7 @@ if(large_dataset) {
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
-        subdat <- count_dat[idx,]
+        subdat <- count_dat[idx,,drop=FALSE]
         at <- barplot(
             t(subdat)/1000000,
             beside=FALSE,
@@ -1677,7 +1677,7 @@ if(large_dataset) {
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
-        subdat <- prop_dat[idx,]
+        subdat <- prop_dat[idx,,drop=FALSE]
         at <- barplot(
             t(subdat),
             beside=FALSE,
@@ -1830,7 +1830,7 @@ if(large_dataset) {
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
-        subdat <- plt_dat_comb[,idx]
+        subdat <- plt_dat_comb[,idx,drop=FALSE]
         at <- barplot(
             subdat/1000000,
             beside=TRUE,
@@ -1874,7 +1874,7 @@ if(large_dataset) {
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
-        subdat <- plt_dat_prop[,idx]
+        subdat <- plt_dat_prop[,idx,drop=FALSE]
         at <- barplot(
             subdat,
             beside=FALSE,
