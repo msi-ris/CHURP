@@ -319,8 +319,8 @@ if [ ! -f hisat2.done ]; then
             hisat2 \
                 ${HISAT2OPTS} \
                 -x "${HISAT2INDEX}" \
-                -1 <(gzip -cd "${SAMPLENM}_1P.fq.gz" || cat "${SAMPLENM}_1P.fq.gz") \
-                -2 <(gzip -cd "${SAMPLENM}_2P.fq.gz" || cat "${SAMPLENM}_2P.fq.gz") \
+                -1 <(gzip -cd "${SAMPLENM}_1P.fq.gz" || cat "${SAMPLENM}_1P.fq") \
+                -2 <(gzip -cd "${SAMPLENM}_2P.fq.gz" || cat "${SAMPLENM}_2P.fq") \
                 2> alignment.summary \
                 | samtools view -hb -o "${SAMPLENM}.bam" - \
                 && touch hisat2.done
