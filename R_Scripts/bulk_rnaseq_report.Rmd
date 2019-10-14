@@ -269,7 +269,7 @@ if(large_dataset) {
         subsamp <- samplenames[idx]
         nsubsamp <- length(subsamp)
         cat("\n\n")
-        par(mfrow=c(nsubsamp+1, 2))
+        par(mfrow=c(lg_cutoff+1, 2))
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
         dummy <- plotqual_first(subsamp[1], one_samp)
@@ -285,7 +285,7 @@ if(large_dataset) {
     }
 } else {
     cat("### Raw Reads\n\n")
-    par(mfrow=c(nsamp+1, 2))
+    par(mfrow=c(lg_cutoff+1, 2))
     # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
     par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
     dummy <- plotqual_first(samplenames[1], one_samp)
@@ -411,7 +411,7 @@ if(length(trim_samp) > 0) {
             subsamp <- trim_samp[idx]
             nsubsamp <- length(subsamp)
             cat("\n\n")
-            par(mfrow=c(nsubsamp+1, 2))
+            par(mfrow=c(lg_cutoff+1, 2))
             # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
             par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
             dummy <- plotqual_first(subsamp[1], one_samp)
@@ -427,7 +427,7 @@ if(length(trim_samp) > 0) {
         }
     } else {
         cat("### Trimmed Reads\n\n")
-        par(mfrow=c(nsamp+1, 2))
+        par(mfrow=c(lg_cutoff+1, 2))
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
         dummy <- plotqual_first(samplenames[1], one_samp)
@@ -1325,7 +1325,7 @@ if(large_dataset) {
         subsamp <- samplenames[idx]
         nsubsamp <- length(subsamp)
         cat("\n\n")
-        par(mfrow=c(nsubsamp+1, 2))
+        par(mfrow=c(lg_cutoff+1, 2))
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
         dummy <- plotqual_first(subsamp[1], one_samp)
@@ -1340,7 +1340,7 @@ if(large_dataset) {
         cat("\n\n")
     }
 } else {
-    par(mfrow=c(nsamp+1, 2))
+    par(mfrow=c(lg_cutoff+1, 2))
     # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
     par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
     dummy <- plotqual_first(samplenames[1], one_samp)
@@ -1467,7 +1467,7 @@ if(length(trim_samp) > 0) {
             subsamp <- trim_samp[idx]
             nsubsamp <- length(subsamp)
             cat("\n\n")
-            par(mfrow=c(nsubsamp+1, 2))
+            par(mfrow=c(lg_cutoff+1, 2))
             # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
             par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
             dummy <- plotqual_first(subsamp[1], one_samp)
@@ -1482,7 +1482,7 @@ if(length(trim_samp) > 0) {
             cat("\n\n")
         }
     } else {
-        par(mfrow=c(nsamp+1, 2))
+        par(mfrow=c(lg_cutoff+1, 2))
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
         dummy <- plotqual_first(samplenames[1], one_samp)
