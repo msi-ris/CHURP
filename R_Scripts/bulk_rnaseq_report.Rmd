@@ -273,10 +273,14 @@ if(large_dataset) {
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
         dummy <- plotqual_first(subsamp[1], one_samp)
-        par(mar=c(1.1, 5, 1.1, 0.1))
-        dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
-        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-        dummy <- plotqual_last(subsamp[nsubsamp])
+        if(nsubsamp > 2) {
+            par(mar=c(1.1, 5, 1.1, 0.1))
+            dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
+        }
+        if(nsubsamp > 1) {
+            par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+            dummy <- plotqual_last(subsamp[nsubsamp])
+        }
         cat("\n\n")
     }
 } else {
@@ -411,10 +415,14 @@ if(length(trim_samp) > 0) {
             # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
             par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
             dummy <- plotqual_first(subsamp[1], one_samp)
-            par(mar=c(1.1, 5, 1.1, 0.1))
-            dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
-            par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-            dummy <- plotqual_last(subsamp[nsubsamp])
+            if(nsubsamp > 2) {
+                par(mar=c(1.1, 5, 1.1, 0.1))
+                dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
+            }
+            if(nsubsamp > 1) {
+                par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+                dummy <- plotqual_last(subsamp[nsubsamp])
+            }
             cat("\n\n")
         }
     } else {
@@ -1321,10 +1329,14 @@ if(large_dataset) {
         # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
         par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
         dummy <- plotqual_first(subsamp[1], one_samp)
-        par(mar=c(1.1, 5, 1.1, 0.1))
-        dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
-        par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-        dummy <- plotqual_last(subsamp[nsubsamp])
+        if(nsubsamp > 2) {
+            par(mar=c(1.1, 5, 1.1, 0.1))
+            dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
+        }
+        if(nsubsamp > 1) {
+            par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+            dummy <- plotqual_last(subsamp[nsubsamp])
+        }
         cat("\n\n")
     }
 } else {
@@ -1459,10 +1471,14 @@ if(length(trim_samp) > 0) {
             # Set the margins of the top to be high on the first two so we can add the R1/R2 labels
             par(mar=c(1.1, 5, 1.1, 0.1), mgp=c(1.25, 0.15, 0))
             dummy <- plotqual_first(subsamp[1], one_samp)
-            par(mar=c(1.1, 5, 1.1, 0.1))
-            dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
-            par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
-            dummy <- plotqual_last(subsamp[nsubsamp])
+            if(nsubsamp > 2) {
+                par(mar=c(1.1, 5, 1.1, 0.1))
+                dummy <- sapply(subsamp[3:nsubsamp-1], plotqual)
+            }
+            if(nsubsamp > 1) {
+                par(mar=c(2.5, 5, 0.1, 0.1), mgp=c(1.25, 0.15, 0))
+                dummy <- plotqual_last(subsamp[nsubsamp])
+            }
             cat("\n\n")
         }
     } else {
