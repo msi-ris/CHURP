@@ -46,7 +46,8 @@ raw_mat <- read.table(fc_mat, header = T, sep = '\t', comment.char = '#')
 samp_ids <- names(raw_mat)[-(1:6)]
 sheet <- sheet[which(make.names(sheet$V1) %in% samp_ids),]
 
-# Now we can proceed with group determinations.
+# Now we can proceed with group determinations. We have to call make.names()
+# for the groups because level names must be valid R object names.
 groups <- make.names(as.vector(sheet$V2))
 uniq_groups <- unique(groups)
 true_groups <- groups[which(groups != 'NULL')]
@@ -182,12 +183,6 @@ if (n_groups == 1){
 write("Only 1 grouping present, skipping differential expression tests.", stderr())
 quit(status = 0, save = "no")
 }
-
-# # Check if group IDs are numbers and if so, modify them
-# if (is.numeric(uniq_groups)){
-# write("Group IDs are numeric, prepending 'group' to group ID for compatibility with edgeR tools", stderr())
-# uniq_groups <- sub('^', 'group', uniq_groups)
-# }
 
 # Subset the data object to get rid of samples with a 'NULL' group
 edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
