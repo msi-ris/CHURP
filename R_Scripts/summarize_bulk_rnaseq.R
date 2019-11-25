@@ -27,8 +27,8 @@ out_dir <- args[1]
 work_dir <- args[2]
 samp_sheet <- args[3]
 fc_mat <- args[4]
-min_len <- args[5]
-min_cts <- args[6]
+min_len <- as.numeric(args[5])
+min_cts <- as.numeric(args[6])
 
 setwd(work_dir)
 # Boolean to check if we will attempt DEG testing
