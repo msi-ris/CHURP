@@ -400,6 +400,12 @@ if [ ! -f dup.done ]; then
     touch dup.done
 else
     echo "# ${PBS_JOBID} $(date '+%F %T'): Found deduplicated/marked BAM files." >> "${LOG_FNAME}"
+    # But, be sure to set the TO_FLT variable:
+    if [ "${RMDUP}" = "yes" ]; then
+        TO_FLT="${SAMPLENM}_DeDup.bam"
+    else
+        TO_FLT="${SAMPLENM}_MarkDup.bam"
+    fi
 fi
 
 # Next, remove unmapped reads and reads with MAPQ<60
