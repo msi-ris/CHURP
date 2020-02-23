@@ -215,6 +215,14 @@ def add_args(ap):
     ap_sched = ap.add_argument_group(
         'Scheduler Options')
     ap_sched.add_argument(
+        '--queue',
+        '-q',
+        metavar='<Queue>',
+        dest='msi_queue',
+        help='Job queue to send the scheduler requests. Defaults to "mesabi"',
+        type=str,
+        default='mesabi')
+    ap_sched.add_argument(
         '--group',
         '-A',
         metavar='<MSI group>',

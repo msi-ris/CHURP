@@ -48,6 +48,8 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # Set the subsampling level
         self.rrna_screen = str(valid_args['rrna_screen'])
         self.subsample = str(valid_args['subsample'])
+        # Set the destination queue
+        self.msi_queue = str(valid_args['msi_queue'])
 
         # And make a sample sheet from the args
         self.sheet = BulkRNASeqSampleSheet.BulkRNASeqSampleSheet(valid_args)
@@ -310,7 +312,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         handle.write('PIPE_SCRIPT="$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )/$(basename $0)"\n')
         aln_cmd = [
             'qsub',
-            '-q', 'mesabi',
+            '-q', self.msi_queue,
             '-m', 'abe',
             '-M', '"${user_email}"',
             qsub_group,
@@ -337,7 +339,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             ',BULK_RNASEQ_REPORT=${REPORT_SCRIPT}'])
         summary_cmd = [
             'qsub',
-            '-q', 'mesabi',
+            '-q', self.msi_queue,
             '-m', 'abe',
             '-M', '"${user_email}"',
             qsub_group,

@@ -6,6 +6,8 @@ Python exception or the debug console messages."""
 import sys
 import os
 
+import GopherPipelines
+
 # The error codes are constants
 BAD_OUTDIR = 10
 BAD_WORKDIR = 11
@@ -13,6 +15,7 @@ BAD_RESOURCES = 12
 BAD_FASTQ = 13
 EMPTY_FASTQ = 14
 BAD_NUMBER = 15
+BAD_QUEUE = 16
 BRNASEQ_INC_ARGS = 20
 BRNASEQ_CONFLICT = 21
 BAD_HISAT = 22
@@ -371,9 +374,21 @@ def bad_number(op):
 ERROR
 
 You specified an invalid value for the {opt} option.\n"""
-    sys.stderr.write(
-        msg.format(
-            opt=op))
+    sys.stderr.write(msg.format(opt=op))
+    return
+
+
+def bad_queue():
+    """Call this function when the user requests a queue that is not in the
+    list of allowed queues, which is defined in GopherPipelines/__init__.py"""
+    msg = CREDITS + """----------
+ERROR
+
+You specified a queue that is not in the list of allowed queues. Please choose
+one of the following:
+
+{q}\n"""
+    sys.stderr.write(msg.format(q='\n'.join(GopherPipelines.QUEUES)))
     return
 
 
@@ -387,6 +402,7 @@ def die_gracefully(e, *args):
         EMPTY_FASTQ: empty_fastq,
         BAD_HISAT: bad_hisat2,
         BAD_NUMBER: bad_number,
+        BAD_QUEUE: bad_queue,
         BRNASEQ_INC_ARGS: brnaseq_inc,
         BRNASEQ_CONFLICT: brnaseq_conflict,
         BAD_GTF: bad_gtf,
