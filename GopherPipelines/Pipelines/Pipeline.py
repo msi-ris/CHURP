@@ -6,6 +6,7 @@ programs exist and checking sample lists."""
 
 import pprint
 
+import GopherPipelines
 from GopherPipelines.ArgHandling import set_verbosity
 from GopherPipelines.FileOps import dir_funcs
 from GopherPipelines import DieGracefully
@@ -51,7 +52,8 @@ class Pipeline(object):
     def _check_scheduler(self):
         """Check that the scheduler resource requests make sense. ppn should be
         between 1 and 24; mem should be between 2000 and 62000; walltime should
-        be between 2h and 96h."""
+        be between 2h and 96h; and the queues should be one of the valid queues
+        on Mesabi or Mangi."""
         try:
             assert self.ppn >= 1 and self.ppn <= 24
         except AssertionError as e:
@@ -73,6 +75,13 @@ class Pipeline(object):
                 'Walltime value of %i is invalid! Specify between 1 and 96.',
                 self.walltime)
             DieGracefully.die_gracefully(DieGracefully.BAD_RESOURCES)
+        try:
+            assert self.msi_queue in GopherPipelines.QUEUES
+        except AssertionError as e:
+            self.logger.error(
+                'Queue %s is not in the allowed list of queues.',
+                self.msi_queue)
+            DieGracefully.die_gracefully(DieGracefully.BAD_QUEUE)
         return
 
     def _check_dirs(self):
