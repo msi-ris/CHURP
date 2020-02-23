@@ -425,6 +425,13 @@ echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="BAM.Coord.Sort"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f coord_sort.done ]; then
+    echo "$ ${PBS_JOBID} $(date '+%F %T' ): Removing any old SAMtools sort files." >> "${LOG_FNAME}"
+    find "${WORKDIR}/singlesamples/${SAMPLENM}" \
+        -mindepth 1 \
+        -maxdepth 1 \
+        -regextype posix-extended \
+        -regex '.*/temp\\.[0-9]{4}+.bam' \
+        -exec rm {} \\;
     echo "# ${PBS_JOBID} $(date '+%F %T'): Sorting filtered BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
         -O bam \
