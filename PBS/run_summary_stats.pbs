@@ -276,8 +276,9 @@ do
         echo -e "${sample}\\t$(cat ${WORKDIR}/singlesamples/${sample}/IS_Stats.txt)" >> "${WORKDIR}/allsamples/IS_Stats.txt"
     fi
     # And collect the RNAseq metrics into a single file for summarization
-    sed -e "s/^/${sample}\\t/g" <(tail -n +2 "${WORKDIR}/singlesamples/${sample}/RNASeQC_Out/${sample}.metrics.tsv") >> "${WORKDIR}/allsamples/RNASeq_Metrics.txt"
-    sed -e "s/^/${sample}\\t/g" <(tail -n +2 "${WORKDIR}/singlesamples/${sample}/RNASeQC_Out/${sample}_Unstranded.metrics.tsv") >> "${WORKDIR}/allsamples/RNASeq_Metrics_Unstranded.txt"
+    # Add the || true to the end of the command because these are optional steps
+    sed -e "s/^/${sample}\\t/g" <(tail -n +2 "${WORKDIR}/singlesamples/${sample}/RNASeQC_Out/${sample}.metrics.tsv") >> "${WORKDIR}/allsamples/RNASeq_Metrics.txt" || true
+    sed -e "s/^/${sample}\\t/g" <(tail -n +2 "${WORKDIR}/singlesamples/${sample}/RNASeQC_Out/${sample}_Unstranded.metrics.tsv") >> "${WORKDIR}/allsamples/RNASeq_Metrics_Unstranded.txt" || true
 done
 
 # We will generate an HTML report

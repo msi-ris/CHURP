@@ -485,18 +485,19 @@ fi
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="RNASeQC"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
+echo "# $(date '+%F %T'): Note, this section is OPTIONAL (errors will not kill pipeline jobs)." >> /dev/stderr
 if [ ! -f rnaseqc.done ]; then
     echo "# ${PBS_JOBID} $(date '+%F %T'): 'Collapsing' gene models in GTF for use with RNASeQC." >> "${LOG_FNAME}"
-    source activate "${CONDA_ENV}"
-    python "${COLLAPSE_GTF}" <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf"
-    source deactivate
+    source activate "${CONDA_ENV}" || true
+    python "${COLLAPSE_GTF}" <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" || true
+    source deactivate || true
     echo "# ${PBS_JOBID} $(date '+%F %T'): Collecting unstranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
     RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM}_Unstranded --legacy"
     "${RNASEQC}" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/${RAW_COORD}" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/RNASeQC_Out" \
-        ${RNASEQC_OPTIONS}
+        ${RNASEQC_OPTIONS} || true
         2>> "${LOG_FNAME}"
     echo "# ${PBS_JOBID} $(date '+%F %T'): Collecting stranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
     RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM} --legacy"
@@ -515,11 +516,11 @@ if [ ! -f rnaseqc.done ]; then
         "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/${RAW_COORD}" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/RNASeQC_Out" \
-        ${RNASEQC_OPTIONS}
+        ${RNASEQC_OPTIONS} || true
         2>> "${LOG_FNAME}"
     touch rnaseqc.done
 else
-    echo "# ${PBS_JOBID} $(date '+%F %T'): Found RNAseq metrics." >> "${LOG_FNAME}"
+    echo "# ${PBS_JOBID} $(date '+%F %T'): Found RNAseq metrics checkpoint." >> "${LOG_FNAME}"
 fi
 
 # Use picard to collect the insert size metrics, but only if paired end

@@ -39,10 +39,17 @@ hisat_summary <- read.table(paste(params["workdir"], "allsamples", "HISAT_Stats.
 names(hisat_summary) <- c("SampleName", "Total", "Unmapped", "UniqueMapped", "MultiMapped", "DiscoMapped")
 bbduk_summary <- read.table(paste(params["workdir"], "allsamples", "rRNA_kmers.txt", sep="/"), header=F)
 names(bbduk_summary) <- c("SampleName", "rRNA_Fragments", "rRNA_Pct")
-rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F, sep="\t", quote=NULL)
-names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
-rnaseqc_summary_uns <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics_Unstranded.txt", sep="/"), header=F, sep="\t", quote=NULL)
-names(rnaseqc_summary_uns) <- c("SampleName", "Statistic", "Value")
+# If the RNASeQC run failed, then we will not have this file
+rnaseqc_fname <- paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/")
+if(!file.exists(rnaseqc_fname)) {
+    rnaseqc_do <- FALSE
+} else {
+    rnaseqc_do <- TRUE
+    rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F, sep="\t", quote=NULL)
+    names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
+    rnaseqc_summary_uns <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics_Unstranded.txt", sep="/"), header=F, sep="\t", quote=NULL)
+    names(rnaseqc_summary_uns) <- c("SampleName", "Statistic", "Value")
+}
 # Assume that the first sample is part of the same dataset as the others
 first_read <- as.character(sheet$V3[1])
 fastq_dir <- dirname(first_read)
@@ -982,15 +989,31 @@ messenger RNA libraries, this value is expected to be close to 1.
 
 ```{r epe_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=4, results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
-epe_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Expression Profiling Efficiency"])
-if(large_dataset) {
-    cat("#### Plots {.tabset}\n")
-    for(i in unique(chunks)) {
-        idx <- which(chunks == i)
-        subdat <- epe_dat[idx]
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+if(rnaseqc_do) {
+    epe_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Expression Profiling Efficiency"])
+    if(large_dataset) {
+        cat("#### Plots {.tabset}\n")
+        for(i in unique(chunks)) {
+            idx <- which(chunks == i)
+            subdat <- epe_dat[idx]
+            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            at <- barplot(
+                subdat,
+                axes=FALSE,
+                horiz=TRUE,
+                xlim=c(0, 1),
+                xlab="Efficiency",
+                main="Expression Profiling Efficiency",
+                ylab="",
+                col="#1f78b4")
+            axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+            axis(side=1)
+            axis(side=3)
+            cat("\n\n")
+        }
+    } else {
         at <- barplot(
-            subdat,
+            epe_dat,
             axes=FALSE,
             horiz=TRUE,
             xlim=c(0, 1),
@@ -998,24 +1021,13 @@ if(large_dataset) {
             main="Expression Profiling Efficiency",
             ylab="",
             col="#1f78b4")
-        axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         axis(side=3)
-        cat("\n\n")
     }
 } else {
-    at <- barplot(
-        epe_dat,
-        axes=FALSE,
-        horiz=TRUE,
-        xlim=c(0, 1),
-        xlab="Efficiency",
-        main="Expression Profiling Efficiency",
-        ylab="",
-        col="#1f78b4")
-    axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
-    axis(side=1)
-    axis(side=3)
+    plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+    text(x=0.5, y=0.5, "No RNASeQC Metrics", cex=1, col="black")
 }
 ```
 
@@ -1026,15 +1038,31 @@ each sample, as determined in the default algorithm of the
 
 ```{r dup_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=4, results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
-dup_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Duplicate Rate of Mapped"])
-if(large_dataset) {
-    cat("#### Plots {.tabset}\n")
-    for(i in unique(chunks)) {
-        idx <- which(chunks == i)
-        subdat <- dup_dat[idx]
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+if(rnaseqc_do) {
+    dup_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Duplicate Rate of Mapped"])
+    if(large_dataset) {
+        cat("#### Plots {.tabset}\n")
+        for(i in unique(chunks)) {
+            idx <- which(chunks == i)
+            subdat <- dup_dat[idx]
+            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            at <- barplot(
+                subdat,
+                axes=FALSE,
+                horiz=TRUE,
+                xlim=c(0, 1),
+                xlab="Proportion of Fragments",
+                main="Sequence Duplication Levels",
+                ylab="",
+                col="#1f78b4")
+            axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+            axis(side=1)
+            axis(side=3)
+            cat("\n\n")
+        }
+    } else {
         at <- barplot(
-            subdat,
+            dup_dat,
             axes=FALSE,
             horiz=TRUE,
             xlim=c(0, 1),
@@ -1042,24 +1070,13 @@ if(large_dataset) {
             main="Sequence Duplication Levels",
             ylab="",
             col="#1f78b4")
-        axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         axis(side=3)
-        cat("\n\n")
-    }
+    } 
 } else {
-    at <- barplot(
-        dup_dat,
-        axes=FALSE,
-        horiz=TRUE,
-        xlim=c(0, 1),
-        xlab="Proportion of Fragments",
-        main="Sequence Duplication Levels",
-        ylab="",
-        col="#1f78b4")
-    axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
-    axis(side=1)
-    axis(side=3)
+    plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+    text(x=0.5, y=0.5, "No RNASeQC Metrics", cex=1, col="black")
 }
 ```
 
@@ -1078,35 +1095,68 @@ given the correct strand-specificity.
 
 ```{r gdna_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=8, results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0), mfrow=c(1, 2))
-gdna_dat <- matrix(
-    c(
-        as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Exonic Rate"]),
-        as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Intronic Rate"]),
-        as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Intergenic Rate"])
-        ),
-    byrow=TRUE,
-    nrow=3
-    )
-gdna_dat_uns <- matrix(
-    c(
-        as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary_uns$Statistic == "Exonic Rate"]),
-        as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary_uns$Statistic == "Intronic Rate"]),
-        as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary_uns$Statistic == "Intergenic Rate"])
-        ),
-    byrow=TRUE,
-    nrow=3
-    )
-bar_cols <- c("#a6cee3", "#1f78b4", "#b2df8a")
+if(rnaseqc_do) {
+    gdna_dat <- matrix(
+        c(
+            as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Exonic Rate"]),
+            as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Intronic Rate"]),
+            as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Intergenic Rate"])
+            ),
+        byrow=TRUE,
+        nrow=3
+        )
+    gdna_dat_uns <- matrix(
+        c(
+            as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary_uns$Statistic == "Exonic Rate"]),
+            as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary_uns$Statistic == "Intronic Rate"]),
+            as.numeric(rnaseqc_summary_uns$Value[rnaseqc_summary_uns$Statistic == "Intergenic Rate"])
+            ),
+        byrow=TRUE,
+        nrow=3
+        )
+    bar_cols <- c("#a6cee3", "#1f78b4", "#b2df8a")
 
-if(large_dataset) {
-    cat("#### Plots {.tabset}\n")
-    for(i in unique(chunks)) {
-        idx <- which(chunks == i)
-        subdat <- gdna_dat[,idx,drop=FALSE]
-        subdat_uns <- gdna_dat_uns[,idx,drop=FALSE]
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+    if(large_dataset) {
+        cat("#### Plots {.tabset}\n")
+        for(i in unique(chunks)) {
+            idx <- which(chunks == i)
+            subdat <- gdna_dat[,idx,drop=FALSE]
+            subdat_uns <- gdna_dat_uns[,idx,drop=FALSE]
+            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            at <- barplot(
+                subdat,
+                beside=TRUE,
+                axes=FALSE,
+                horiz=TRUE,
+                xlim=c(0, 1.25),
+                xlab="Proportion of Fragments",
+                main="Strand-aware Metrics",
+                ylab="",
+                col=bar_cols)
+            axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+            axis(side=1)
+            axis(side=3)
+            legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
+
+            at <- barplot(
+                subdat_uns,
+                beside=TRUE,
+                axes=FALSE,
+                horiz=TRUE,
+                xlim=c(0, 1.25),
+                xlab="Proportion of Fragments",
+                main="Unstranded Metrics",
+                ylab="",
+                col=bar_cols)
+            axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+            axis(side=1)
+            axis(side=3)
+            legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
+            cat("\n\n")
+        }
+    } else {
         at <- barplot(
-            subdat,
+            gdna_dat,
             beside=TRUE,
             axes=FALSE,
             horiz=TRUE,
@@ -1115,13 +1165,13 @@ if(large_dataset) {
             main="Strand-aware Metrics",
             ylab="",
             col=bar_cols)
-        axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         axis(side=3)
         legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
 
         at <- barplot(
-            subdat_uns,
+            gdna_dat_uns,
             beside=TRUE,
             axes=FALSE,
             horiz=TRUE,
@@ -1130,42 +1180,14 @@ if(large_dataset) {
             main="Unstranded Metrics",
             ylab="",
             col=bar_cols)
-        axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         axis(side=3)
         legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
-        cat("\n\n")
     }
 } else {
-    at <- barplot(
-        gdna_dat,
-        beside=TRUE,
-        axes=FALSE,
-        horiz=TRUE,
-        xlim=c(0, 1.25),
-        xlab="Proportion of Fragments",
-        main="Strand-aware Metrics",
-        ylab="",
-        col=bar_cols)
-    axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
-    axis(side=1)
-    axis(side=3)
-    legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
-
-    at <- barplot(
-        gdna_dat_uns,
-        beside=TRUE,
-        axes=FALSE,
-        horiz=TRUE,
-        xlim=c(0, 1.25),
-        xlab="Proportion of Fragments",
-        main="Unstranded Metrics",
-        ylab="",
-        col=bar_cols)
-    axis(side=2, at=apply(at, 2, mean), labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
-    axis(side=1)
-    axis(side=3)
-    legend("right", c("Exon", "Intron", "Intergenic"), fill=bar_cols, ncol=1, cex=0.8)
+    plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+    text(x=0.5, y=0.5, "No RNASeQC Metrics", cex=1, col="black")
 }
 ```
 
@@ -1174,15 +1196,31 @@ This plot shows the proportion of alignments that are in annotated rRNA features
 
 ```{r rrna_map_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=4, results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
-rrna_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "rRNA Rate"])
-if(large_dataset) {
-    cat("#### Plots {.tabset}\n")
-    for(i in unique(chunks)) {
-        idx <- which(chunks == i)
-        subdat <- rrna_dat[idx]
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+if(rnaseqc_do) {
+    rrna_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "rRNA Rate"])
+    if(large_dataset) {
+        cat("#### Plots {.tabset}\n")
+        for(i in unique(chunks)) {
+            idx <- which(chunks == i)
+            subdat <- rrna_dat[idx]
+            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            at <- barplot(
+                subdat,
+                axes=FALSE,
+                horiz=TRUE,
+                xlim=c(0, 1),
+                xlab="Proportion of Fragments",
+                main="rRNA Mapping Rate",
+                ylab="",
+                col="#e41a1c")
+            axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+            axis(side=1)
+            axis(side=3)
+            cat("\n\n")
+        }
+    } else {
         at <- barplot(
-            subdat,
+            rrna_dat,
             axes=FALSE,
             horiz=TRUE,
             xlim=c(0, 1),
@@ -1190,24 +1228,13 @@ if(large_dataset) {
             main="rRNA Mapping Rate",
             ylab="",
             col="#e41a1c")
-        axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+        axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
         axis(side=1)
         axis(side=3)
-        cat("\n\n")
     }
 } else {
-    at <- barplot(
-        rrna_dat,
-        axes=FALSE,
-        horiz=TRUE,
-        xlim=c(0, 1),
-        xlab="Proportion of Fragments",
-        main="rRNA Mapping Rate",
-        ylab="",
-        col="#e41a1c")
-    axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
-    axis(side=1)
-    axis(side=3)
+    plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+    text(x=0.5, y=0.5, "No RNASeQC Metrics", cex=1, col="black")
 }
 ```
 
