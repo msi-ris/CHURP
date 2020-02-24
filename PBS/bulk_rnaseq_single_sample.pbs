@@ -119,10 +119,10 @@ mkdir -p "${WORKDIR}/singlesamples/${SAMPLENM}" && cd "${WORKDIR}/singlesamples/
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="Subsampling"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
-if [ "${SUBSAMPLE}" = 0 ]; then
+if [ "${SUBSAMPLE}" -eq 0 ]; then
     echo "# $(date '+%F %T'): Not subsampling reads for sample ${SAMPLENM} for analysis" >> "${LOG_FNAME}"
 else
-    echo "# $(date '+%F %T'): Subsampling ${SAMPLENM} to ${SUBSAMPLE} fragments for analysis" >> "${LOG_FNAME}"
+    echo "# $(date '+%F %T'): Subsampling ${SAMPLENM} to ${SUBSAMPLE} fragments for rRNA quantification" >> "${LOG_FNAME}"
     ${SEQTK} sample -s123 -2 "${R1FILE}" "${SUBSAMPLE}" | gzip -c > "${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R1.fastq.gz"
     R1FILE="${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R1.fastq.gz"
     if [ "${PE}" = "true" ]; then
