@@ -41,11 +41,11 @@ bbduk_summary <- read.table(paste(params["workdir"], "allsamples", "rRNA_kmers.t
 names(bbduk_summary) <- c("SampleName", "rRNA_Fragments", "rRNA_Pct")
 # If the RNASeQC run failed, then we will not have this file
 rnaseqc_fname <- paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/")
-if(!file.exists(rnaseqc_fname)) {
+if(!file.exists(rnaseqc_fname) | file.info(rnaseqc_fname)$size == 0) {
     rnaseqc_do <- FALSE
 } else {
     rnaseqc_do <- TRUE
-    rnaseqc_summary <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/"), header=F, sep="\t", quote=NULL)
+    rnaseqc_summary <- read.table(rnaseqc_fname, header=F, sep="\t", quote=NULL)
     names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
     rnaseqc_summary_uns <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics_Unstranded.txt", sep="/"), header=F, sep="\t", quote=NULL)
     names(rnaseqc_summary_uns) <- c("SampleName", "Statistic", "Value")
