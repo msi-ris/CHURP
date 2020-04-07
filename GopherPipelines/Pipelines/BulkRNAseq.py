@@ -149,7 +149,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         self.pipe_logger.debug('Working Dir: %s', a['workdir'])
         self.pipe_logger.debug('HISAT2 Idx: %s', a['hisat2_idx'])
         self.pipe_logger.debug('Expr Groups: %s', a['expr_groups'])
-        self.pipe_logger.debug('Strandedness: %s', a['strand'])
+        self.pipe_logger.debug('Strandness: %s', a['strand'])
         # Check that the adapters and GTF file exist
         try:
             handle = open(a['gtf'], 'r')
@@ -232,7 +232,24 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         dictionary that will hold all samplesheet data, and then write it into
         the output directory."""
         self._run_checks()
-        self.sheet.compile(self.real_out, self.real_work)
+        is_pe = self.sheet.compile(self.real_out, self.real_work)
+        # We want to throw an error if there is a mix of PE and SE samples.
+        if len(set(is_pe)) > 1:
+            # If we get here, then we should separate the list of samples into
+            # those that are SE and those that are PE
+            se = []
+            pe = []
+            for samp in sorted(self.sheet.final_sheet):
+                # Check for entries in the R1 and R2 slots
+                r1 = self.sheet.final_sheet[samp]['FastqR1files']
+                r2 = self.sheet.final_sheet[samp]['FastqR2file']
+                grp = self.sheet.final_sheet[samp]['Group']
+                sname = samp + ' (Group: ' + grp + ')'
+                if r1 and not r2:
+                    se.append(sname)
+                elif r1 and r2:
+                    pe.append(sname)
+            DieGracefully.die_gracefully(DieGracefully.PE_SE_MIX, pe, se)
         ss_path = self.sheet.write_sheet(self.real_out, self.pipe_name, '|')
         return ss_path
 
