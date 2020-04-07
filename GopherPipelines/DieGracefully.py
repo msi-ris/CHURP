@@ -26,6 +26,7 @@ BRNASEQ_NO_SAMP_GPS = 26
 BRNASEQ_SUCCESS = 27
 BRNASEQ_SUBMIT_OK = 28
 BRNASEQ_SUBMIT_FAIL = 29
+PE_SE_MIX = 30
 GROUP_NO_PIPE = 50
 GROUP_BAD_COL = 51
 BRNASEQ_GROUP_SUCCESS = 52
@@ -392,6 +393,31 @@ one of the following:
     return
 
 
+def pe_se_mix(pe, se):
+    """Call this function if the FASTQ folder has a mix of PE and SE samples.
+    We will print the lists of PE and SE samples, and advise the user on
+    strategies for handling it."""
+    msg = CREDITS + """----------
+ERROR
+
+Your data contain a mixture of single-read and paired-end samples. This will
+cause problems with generating raw read counts. You can either separate the
+single-read data from the paired-end data and run CHURP separately on both
+subsets of your data, or remove the R2 files from the paired-end data, and
+treat the entire dataset as single-read.
+
+The single-read samples are:
+{singles}
+
+The paired-end sample are:
+{paired}\n"""
+    sys.stderr.write(
+        msg.format(
+            singles='\n'.join(se),
+            paired='\n'.join(pe)))
+    return
+
+
 def die_gracefully(e, *args):
     """Print user-friendly error messages and exit."""
     err_dict = {
@@ -416,10 +442,11 @@ def die_gracefully(e, *args):
         BRNASEQ_SUBMIT_OK: brnaseq_auto_submit_ok,
         BRNASEQ_SUBMIT_FAIL: brnaseq_auto_submit_fail,
         NEFARIOUS_CHAR: nefarious_cmd,
+        PE_SE_MIX: pe_se_mix
         }
     try:
         err_dict[e](*args)
     except KeyError:
         general_error()
-    exit(e)
+    sys.exit(e)
     return

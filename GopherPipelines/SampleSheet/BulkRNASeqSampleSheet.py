@@ -156,12 +156,16 @@ class BulkRNASeqSampleSheet(SampleSheet.Samplesheet):
     def compile(self, od, wd):
         """Iterate through the dictionary of samples, and fill-in the values
         that were supplied by the user."""
+        # Keep a list of whether there is a mix of PE or SE samples in the
+        # dataset
+        is_pe = []
         # For each sample...
         for s in self.samples:
             if self.samples[s]['R2'] == '':
                 pe = False
             else:
                 pe = True
+            is_pe.append(pe)
             if pe:
                 # Key in the values based on the column names
                 self.final_sheet[s] = {
@@ -203,4 +207,5 @@ class BulkRNASeqSampleSheet(SampleSheet.Samplesheet):
         self.sheet_logger.debug(
             'Samplesheet:\n%s',
             pprint.pformat(self.final_sheet))
-        return
+        # Return the boolean list of PE/SE values. True=PE, False=SE
+        return is_pe
