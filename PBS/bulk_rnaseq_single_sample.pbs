@@ -10,14 +10,126 @@ set -o pipefail
 LOG_SECTION="General"
 export PS4='+[$(date "+%F %T")] [${PBS_JOBID}] [${LOG_SECTION}]: '
 
+# Define a function to report errors to the job log and give meawningful exit
+# codes. This just wraps a bunch of exit calls into a case block
+pipeline_error() {
+    # Take the pipeline section as a positional argument
+    case "${1}" in
+    "General")
+        echo "${SampleSheet} is incompatible with this version of CHURP." > /dev/stderr
+        echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}." > /dev/stderr
+        exit 100
+        ;;
+    "Subsampling")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "There was an error during read subsampling!" >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        exit 101
+        ;;
+    "rRNA.Subsampling")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "There was an error during read subsampling for rRNA abundance estimation!" >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        exit 102
+        ;;
+    "BBDuk")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "BBDuk encountered an error!" >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        exit 103
+        ;;
+    "FastQC.Raw")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "FastQC failed on the raw FASTQ files!" >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        exit 104
+        ;;
+    "Trimmomatic")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "Trimmomatic encountered an error!" >> "${LOG_FNAME}"
+        echo "Please see the error message above for details." >> "${LOG_FNAME}"
+        echo "If you see a message about 'Error: Unable to detect quality encoding' then your FASTQ files do not have a standard quality encoding." >> "${LOG_FNAME}"
+        echo "If you see a Java exception and you have specified custom Trimmomatic options, then this suggests a problem with your option string." >> "${LOG_FNAME}"
+        exit 105
+        ;;
+    "FastQC.Trimmed")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "FastQC failed on the trimmed FASTQ files!" >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        exit 106
+        ;;
+    "HISAT2")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "HISAT2 encountered an error!" >> "${LOG_FNAME}"
+        echo "If you specified custom options for HISAT2, then this indicates a problem with your options string." >> "${LOG_FNAME}"
+        exit 107
+        ;;
+    "MarkDuplicates")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "Picard MarkDuplicates encountered an error!" >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        exit 108
+        ;;
+    "BAM.Filtering")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "SAMTools encountered an error while filtering the HISAT2 alignment!" >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        exit 109
+        ;;
+    "BAM.Coord.Sort")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "SAMTools encountered an error while coordinate-sorting the HISAT2 alignment!" >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        exit 110
+        ;;
+    "BAM.Stats")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "SAMTools encountered an error while generating summary statistics for the HISAT2 alignment!" >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        exit 111
+        ;;
+    "InsertSizeMetrics")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "Picard InsertSizeMetrics encountered an error!" >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        exit 112
+        ;;
+    "Alignment.Summary")
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "CHURP encountered an error while extracting alignment summaries!" >> "${LOG_FNAME}"
+        echo "This means the alignment summary output file from HISAT2 has gone missing." >> "${LOG_FNAME}"
+        echo "Please re-run CHURP with the --purge option to rerun the pipeline from the beginning." >> "${LOG_FNAME}"
+        exit 113
+        ;;
+    *)
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "CHURP encountered an undefined error!" 2>> "${LOG_FNAME}"
+        echo "Please send the CHURP command, version, samplesheet, and pipeline.sh script to help@msi.umn.edu for debugging." >> "${LOG_FNAME}"
+        exit 200
+        ;;
+    esac
+}
+
 # Check the major version of the pipeline. If they mismatch, then quit with an error
 PIPELINE_VERSION="0"
 SAMPLESHEET_VERSION=$(tail -n 1 "${SampleSheet}" | sed -E 's/#//g')
 if [ "${SAMPLESHEET_VERSION}" -ne "${PIPELINE_VERSION}" ]
 then
-    echo "${SampleSheet} is incompatible with this version of gopher-pipelines."
-    echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}."
-    exit 100
+    pipeline_error "${LOG_SECTION}"
 fi
 
 # Parse SampleSheet using $PBS_ARRAYID
@@ -119,14 +231,14 @@ mkdir -p "${WORKDIR}/singlesamples/${SAMPLENM}" && cd "${WORKDIR}/singlesamples/
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="Subsampling"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
-if [ "${SUBSAMPLE}" = 0 ]; then
+if [ "${SUBSAMPLE}" -eq 0 ]; then
     echo "# $(date '+%F %T'): Not subsampling reads for sample ${SAMPLENM} for analysis" >> "${LOG_FNAME}"
 else
-    echo "# $(date '+%F %T'): Subsampling ${SAMPLENM} to ${SUBSAMPLE} fragments for analysis" >> "${LOG_FNAME}"
-    ${SEQTK} sample -s123 -2 "${R1FILE}" "${SUBSAMPLE}" | gzip -c > "${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R1.fastq.gz"
+    echo "# $(date '+%F %T'): Subsampling ${SAMPLENM} to ${SUBSAMPLE} fragments for rRNA quantification" >> "${LOG_FNAME}"
+    ${SEQTK} sample -s123 -2 "${R1FILE}" "${SUBSAMPLE}" | gzip -c > "${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R1.fastq.gz" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     R1FILE="${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R1.fastq.gz"
     if [ "${PE}" = "true" ]; then
-        ${SEQTK} sample -s123 -2 "${R2FILE}" "${SUBSAMPLE}" | gzip -c > "${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R2.fastq.gz"
+        ${SEQTK} sample -s123 -2 "${R2FILE}" "${SUBSAMPLE}" | gzip -c > "${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R2.fastq.gz" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
         R2FILE="${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R2.fastq.gz"
     fi
 fi
@@ -138,9 +250,9 @@ echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f subsamp.done ]; then
     # subsample the FASTQ and assay for rRNA contamination
     echo "# ${PBS_JOBID} $(date '+%F %T'): Subsampling reads to ${RRNA_SCREEN} fragments." >> "${LOG_FNAME}"
-    ${SEQTK} sample -s123 -2 "${R1FILE}" "${RRNA_SCREEN}" > "${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R1.fastq"
+    ${SEQTK} sample -s123 -2 "${R1FILE}" "${RRNA_SCREEN}" > "${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R1.fastq" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     if [ "${PE}" = "true" ]; then
-        ${SEQTK} sample -s123 -2 "${R2FILE}" "${RRNA_SCREEN}" > "${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R2.fastq"
+        ${SEQTK} sample -s123 -2 "${R2FILE}" "${RRNA_SCREEN}" > "${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R2.fastq" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     fi
     touch subsamp.done
 else
@@ -164,7 +276,7 @@ if [ ! -f bbduk.done ]; then
             prealloc=t \
             threads="${PBS_NUM_PPN}" \
             -Xmx10g \
-            2>> "${LOG_FNAME}"
+            2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     else
         ${BBDUK} \
             in="${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R1.fastq" \
@@ -175,7 +287,7 @@ if [ ! -f bbduk.done ]; then
             prealloc=t \
             threads="${PBS_NUM_PPN}" \
             -Xmx10g \
-            2>> "${LOG_FNAME}"
+             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     fi
     touch bbduk.done
 else
@@ -195,7 +307,7 @@ if [ ! -f fastqc.done ]; then
             --outdir="${WORKDIR}/singlesamples/${SAMPLENM}" \
             "${R1FILE}" \
             "${R2FILE}" \
-            2>> "${LOG_FNAME}" \
+            2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}" \
         && touch fastqc.done
     else
         echo "# ${PBS_JOBID} $(date '+%F %T'): Running fastqc on ${R1FILE}." >> "${LOG_FNAME}"
@@ -203,7 +315,7 @@ if [ ! -f fastqc.done ]; then
             --extract \
             --outdir="${WORKDIR}/singlesamples/${SAMPLENM}" \
             "${R1FILE}" \
-            2>> "${LOG_FNAME}" \
+            2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}" \
             && touch fastqc.done
     fi
 fi
@@ -245,7 +357,7 @@ if [ "${TRIM}" = "yes" ]; then
                 "${R1FILE}" "${R2FILE}" \
                 "${SAMPLENM}_1P.fq.gz" "${SAMPLENM}_1U.fq.gz" "${SAMPLENM}_2P.fq.gz" "${SAMPLENM}_2U.fq.gz" \
                 $(echo "${TRIMOPTS}" | envsubst) \
-                2>> "${LOG_FNAME}" \
+                2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}" \
                 && touch trimmomatic.done
         else
             echo "# ${PBS_JOBID} $(date '+%F %T'): Running trimmomatic on ${R1FILE}." >> "${LOG_FNAME}"
@@ -255,7 +367,7 @@ if [ "${TRIM}" = "yes" ]; then
                 "${R1FILE}" \
                 "${SAMPLENM}_trimmed.fq.gz" \
                 $(echo "${TRIMOPTS}" | envsubst) \
-                2>> "${LOG_FNAME}" \
+                2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}" \
                 && touch trimmomatic.done
         fi
     fi
@@ -272,7 +384,7 @@ if [ "${TRIM}" = "yes" ]; then
                 --outdir="${WORKDIR}/singlesamples/${SAMPLENM}" \
                 "${SAMPLENM}_1P.fq.gz" \
                 "${SAMPLENM}_2P.fq.gz" \
-                2>> "${LOG_FNAME}" \
+                2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}" \
                 && touch fastqc.trim.done
         else
             echo "# ${PBS_JOBID} $(date '+%F %T'): Running fastqc on trimmed fastq file." >> "${LOG_FNAME}"
@@ -280,7 +392,7 @@ if [ "${TRIM}" = "yes" ]; then
                 --extract \
                 --outdir="${WORKDIR}/singlesamples/${SAMPLENM}" \
                 "${SAMPLENM}_trimmed.fq.gz" \
-                2>> "${LOG_FNAME}" \
+                2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}" \
                 && touch fastqc.trim.done
         fi
     fi
@@ -319,11 +431,12 @@ if [ ! -f hisat2.done ]; then
             hisat2 \
                 ${HISAT2OPTS} \
                 -x "${HISAT2INDEX}" \
-                -1 <(gzip -cd "${SAMPLENM}_1P.fq.gz" || cat "${SAMPLENM}_1P.fq.gz") \
-                -2 <(gzip -cd "${SAMPLENM}_2P.fq.gz" || cat "${SAMPLENM}_2P.fq.gz") \
+                -1 <(gzip -cd "${SAMPLENM}_1P.fq.gz" || cat "${SAMPLENM}_1P.fq") \
+                -2 <(gzip -cd "${SAMPLENM}_2P.fq.gz" || cat "${SAMPLENM}_2P.fq") \
                 2> alignment.summary \
                 | samtools view -hb -o "${SAMPLENM}.bam" - \
-                && touch hisat2.done
+                && touch hisat2.done \
+                || pipeline_error "${LOG_SECTION}"
         else
             echo "# ${PBS_JOBID} $(date '+%F %T'): Aligning trimmed reads with HISAT2." >> "${LOG_FNAME}"
             hisat2 \
@@ -332,7 +445,8 @@ if [ ! -f hisat2.done ]; then
                 -U <(gzip -cd "${SAMPLENM}_trimmed.fq.gz" || cat "${SAMPLENM}_trimmed.fq.gz") \
                 2> alignment.summary \
                 | samtools view -hb -o "${SAMPLENM}.bam" - \
-                && touch hisat2.done
+                && touch hisat2.done \
+                || pipeline_error "${LOG_SECTION}"
         fi
     else
         if [ "${PE}" = "true" ]
@@ -345,7 +459,8 @@ if [ ! -f hisat2.done ]; then
                 -2 <(gzip -cd "${R2FILE}" || cat "${R2FILE}") \
                 2> alignment.summary \
                 | samtools view -hb -o "${SAMPLENM}.bam" - \
-                && touch hisat2.done
+                && touch hisat2.done \
+                || pipeline_error "${LOG_SECTION}"
         else
             echo "# ${PBS_JOBID} $(date '+%F %T'): Aligning reads with HISAT2." >> "${LOG_FNAME}"
             hisat2 \
@@ -354,7 +469,8 @@ if [ ! -f hisat2.done ]; then
                 -U <(gzip -cd "${R1FILE}" || cat "${R1FILE}") \
                 2> alignment.summary \
                 | samtools view -hb -o "${SAMPLENM}.bam" - \
-                && touch hisat2.done
+                && touch hisat2.done \
+                || pipeline_error "${LOG_SECTION}"
         fi
     fi
     # Stick the alignment summary onto the analysis log
@@ -372,7 +488,7 @@ if [ ! -f dup.done ]; then
         I="${SAMPLENM}.bam" \
         O="${SAMPLENM}_Raw_QuerySort.bam" \
         SORT_ORDER="queryname" \
-        2>> "${LOG_FNAME}"
+        2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     if [ "${RMDUP}" = "yes" ]; then 
         echo "# ${PBS_JOBID} $(date '+%F %T'): Removing duplicate reads with Picard MarkDuplicates." >> "${LOG_FNAME}"
         _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
@@ -382,7 +498,7 @@ if [ ! -f dup.done ]; then
             REMOVE_DUPLICATES="true" \
             ASSUME_SORT_ORDER="queryname" \
             M="${SAMPLENM}_MarkDup_Metrics.txt" \
-            2>> "${LOG_FNAME}"
+            2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
         # Set the name of the bam to filter
         TO_FLT="${SAMPLENM}_DeDup.bam"
     else
@@ -394,12 +510,18 @@ if [ ! -f dup.done ]; then
             REMOVE_DUPLICATES="false" \
             ASSUME_SORT_ORDER="queryname" \
             M="${SAMPLENM}_MarkDup_Metrics.txt" \
-            2>> "${LOG_FNAME}"
+            2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
         TO_FLT="${SAMPLENM}_MarkDup.bam"
     fi
     touch dup.done
 else
     echo "# ${PBS_JOBID} $(date '+%F %T'): Found deduplicated/marked BAM files." >> "${LOG_FNAME}"
+    # But, be sure to set the TO_FLT variable:
+    if [ "${RMDUP}" = "yes" ]; then
+        TO_FLT="${SAMPLENM}_DeDup.bam"
+    else
+        TO_FLT="${SAMPLENM}_MarkDup.bam"
+    fi
 fi
 
 # Next, remove unmapped reads and reads with MAPQ<60
@@ -425,6 +547,13 @@ echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="BAM.Coord.Sort"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f coord_sort.done ]; then
+    echo "$ ${PBS_JOBID} $(date '+%F %T' ): Removing any old SAMtools sort files." >> "${LOG_FNAME}"
+    find "${WORKDIR}/singlesamples/${SAMPLENM}" \
+        -mindepth 1 \
+        -maxdepth 1 \
+        -regextype posix-extended \
+        -regex '.*/temp\\.[0-9]{4}+.bam' \
+        -exec rm {} \\;
     echo "# ${PBS_JOBID} $(date '+%F %T'): Sorting filtered BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
         -O bam \
@@ -432,7 +561,7 @@ if [ ! -f coord_sort.done ]; then
         -T temp \
         -o "${SAMPLENM}_Filtered_CoordSort.bam" \
         "${SAMPLENM}_Filtered.bam" \
-        2>> "${LOG_FNAME}"
+        2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     echo "# ${PBS_JOBID} $(date '+%F %T'): Sorting raw BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
         -O bam \
@@ -440,7 +569,7 @@ if [ ! -f coord_sort.done ]; then
         -T temp \
         -o "${SAMPLENM}_Raw_CoordSort.bam" \
         "${TO_FLT}" \
-        2>> "${LOG_FNAME}"
+        2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     echo "# ${PBS_JOBID} $(date '+%F %T'): Indexing coordinate-sorted BAM files." >> "${LOG_FNAME}"
     samtools index "${SAMPLENM}_Filtered_CoordSort.bam"
     samtools index "${SAMPLENM}_Raw_CoordSort.bam"
@@ -472,35 +601,40 @@ fi
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="RNASeQC"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
+echo "# $(date '+%F %T'): Note, this section is OPTIONAL (errors will not kill pipeline jobs)." >> /dev/stderr
 if [ ! -f rnaseqc.done ]; then
     echo "# ${PBS_JOBID} $(date '+%F %T'): 'Collapsing' gene models in GTF for use with RNASeQC." >> "${LOG_FNAME}"
-    source activate "${CONDA_ENV}"
-    python "${COLLAPSE_GTF}" <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf"
-    source deactivate
+    source activate "${CONDA_ENV}" || true
+    python "${COLLAPSE_GTF}" <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" || true
+    source deactivate || true
     echo "# ${PBS_JOBID} $(date '+%F %T'): Collecting unstranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
     RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM}_Unstranded --legacy"
     "${RNASEQC}" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/${RAW_COORD}" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/RNASeQC_Out" \
-        ${RNASEQC_OPTIONS}
-        2>> "${LOG_FNAME}"
+        ${RNASEQC_OPTIONS} 2>> "${LOG_FNAME}" || true
     echo "# ${PBS_JOBID} $(date '+%F %T'): Collecting stranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
     RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM} --legacy"
-    if [ "${STRAND}" = "2" ]; then
+    # A bit strange - if the data are single-read data, then the strand has to
+    # be flipped. This was confirmed with single-read pico v2 and pico v1 data.
+    if [[ "${STRAND}" = "2" && "${PE}" = "true" ]]; then
         RNASEQC_OPTIONS="${RNASEQC_OPTIONS} --stranded=RF"
-    elif [ "${STRAND}" = "1" ]; then
+    elif [[ "${STRAND}" = "1" && "${PE}" = "true" ]]; then
         RNASEQC_OPTIONS="${RNASEQC_OPTIONS} --stranded=FR"
+    elif [[ "${STRAND}" = "2" && "${PE}" = "false" ]]; then
+        RNASEQC_OPTIONS="${RNASEQC_OPTIONS} --stranded=FR"
+    elif [[ "${STRAND}" = "1" && "${PE}" = "false" ]]; then
+        RNASEQC_OPTIONS="${RNASEQC_OPTIONS} --stranded=RF"
     fi
     "${RNASEQC}" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/${RAW_COORD}" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/RNASeQC_Out" \
-        ${RNASEQC_OPTIONS}
-        2>> "${LOG_FNAME}"
+        ${RNASEQC_OPTIONS} 2>> "${LOG_FNAME}" || true
     touch rnaseqc.done
 else
-    echo "# ${PBS_JOBID} $(date '+%F %T'): Found RNAseq metrics." >> "${LOG_FNAME}"
+    echo "# ${PBS_JOBID} $(date '+%F %T'): Found RNAseq metrics checkpoint." >> "${LOG_FNAME}"
 fi
 
 # Use picard to collect the insert size metrics, but only if paired end
@@ -517,7 +651,7 @@ if [ ! -f is_stats.done ]; then
             I="${WORKDIR}/singlesamples/${SAMPLENM}/${FOR_COUNTS}" \
             O="${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_metrics.txt" \
             H="${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_hist.pdf" \
-            2>> "${LOG_FNAME}"
+            2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
         # Extract the mean, median, standard deviation from the metrics file
         if [ -s "${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_metrics.txt" ]; then
             grep \
@@ -545,16 +679,16 @@ LOG_SECTION="Alignment.Summary"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ "${PE}" = "true" ]
 then
-    TOTAL_READS=$(awk '/Total pairs:/ {print $NF}' alignment.summary)
-    UNMAP=$(awk '/Aligned concordantly or discordantly 0 time/ {F=NF-1; print $F}' alignment.summary)
-    SINGLE_MAP=$(awk '/Aligned concordantly 1 time/ {F=NF-1; print $F}' alignment.summary)
-    MULTI_MAP=$(awk '/Aligned concordantly >1 times/ {F=NF-1; print $F}' alignment.summary)
-    DISCO_MAP=$(awk '/Aligned discordantly 1 time/ {F=NF-1; print $F}' alignment.summary)
+    TOTAL_READS=$(awk '/Total pairs:/ {print $NF}' alignment.summary 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}")
+    UNMAP=$(awk '/Aligned concordantly or discordantly 0 time/ {F=NF-1; print $F}' alignment.summary 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}")
+    SINGLE_MAP=$(awk '/Aligned concordantly 1 time/ {F=NF-1; print $F}' alignment.summary 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}")
+    MULTI_MAP=$(awk '/Aligned concordantly >1 times/ {F=NF-1; print $F}' alignment.summary 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}")
+    DISCO_MAP=$(awk '/Aligned discordantly 1 time/ {F=NF-1; print $F}' alignment.summary 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}")
 else
-    TOTAL_READS=$(awk '/Total reads:/ {print $NF}' alignment.summary)
-    UNMAP=$(awk '/Aligned 0 time/ {F=NF-1; print $F}' alignment.summary)
-    SINGLE_MAP=$(awk '/Aligned 1 time/ {F=NF-1; print $F}' alignment.summary)
-    MULTI_MAP=$(awk '/Aligned >1 times/ {F=NF-1; print $F}' alignment.summary)
+    TOTAL_READS=$(awk '/Total reads:/ {print $NF}' alignment.summary 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}")
+    UNMAP=$(awk '/Aligned 0 time/ {F=NF-1; print $F}' alignment.summary 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}")
+    SINGLE_MAP=$(awk '/Aligned 1 time/ {F=NF-1; print $F}' alignment.summary 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}")
+    MULTI_MAP=$(awk '/Aligned >1 times/ {F=NF-1; print $F}' alignment.summary 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}")
     DISCO_MAP="NA"
 fi
 echo "${SAMPLENM} ${TOTAL_READS} ${UNMAP} ${SINGLE_MAP} ${MULTI_MAP} ${DISCO_MAP}" > "hisat_map_summary.txt"

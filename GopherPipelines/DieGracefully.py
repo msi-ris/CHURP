@@ -6,6 +6,8 @@ Python exception or the debug console messages."""
 import sys
 import os
 
+import GopherPipelines
+
 # The error codes are constants
 BAD_OUTDIR = 10
 BAD_WORKDIR = 11
@@ -13,6 +15,7 @@ BAD_RESOURCES = 12
 BAD_FASTQ = 13
 EMPTY_FASTQ = 14
 BAD_NUMBER = 15
+BAD_QUEUE = 16
 BRNASEQ_INC_ARGS = 20
 BRNASEQ_CONFLICT = 21
 BAD_HISAT = 22
@@ -23,6 +26,7 @@ BRNASEQ_NO_SAMP_GPS = 26
 BRNASEQ_SUCCESS = 27
 BRNASEQ_SUBMIT_OK = 28
 BRNASEQ_SUBMIT_FAIL = 29
+PE_SE_MIX = 30
 GROUP_NO_PIPE = 50
 GROUP_BAD_COL = 51
 BRNASEQ_GROUP_SUCCESS = 52
@@ -182,10 +186,19 @@ def empty_fastq():
     msg = CREDITS + """----------
 ERROR
 
-The FASTQ directory that you have supplied does not appear to contain any FASTQ
-or gzipped FASTQ files. Please ensure that the files in the directory have names
-that end in one of the following: .fastq, .fastq.gz, .fq., .fq.gz
-(case sensitive).\n"""
+The FASTQ directory that you have supplied does not contain any valid FASTQ
+or gzipped FASTQ files. Please ensure that the files  have names that conform
+to either the standard Illumina filename or the SRA file name format and end in
+one of the following: .fastq, .fastq.gz, .fq., .fq.gz (case sensitive).
+
+Example valid filenames:
+Sample01_S01_R1_001.fastq.gz
+Sample01_S01_R2_001.fastq.gz
+
+or
+
+SRR7989635_1.fastq.gz
+SRR7989635_2.fastq.gz\n"""
     sys.stderr.write(msg)
     return
 
@@ -362,9 +375,46 @@ def bad_number(op):
 ERROR
 
 You specified an invalid value for the {opt} option.\n"""
+    sys.stderr.write(msg.format(opt=op))
+    return
+
+
+def bad_queue():
+    """Call this function when the user requests a queue that is not in the
+    list of allowed queues, which is defined in GopherPipelines/__init__.py"""
+    msg = CREDITS + """----------
+ERROR
+
+You specified a queue that is not in the list of allowed queues. Please choose
+one of the following:
+
+{q}\n"""
+    sys.stderr.write(msg.format(q='\n'.join(GopherPipelines.QUEUES)))
+    return
+
+
+def pe_se_mix(pe, se):
+    """Call this function if the FASTQ folder has a mix of PE and SE samples.
+    We will print the lists of PE and SE samples, and advise the user on
+    strategies for handling it."""
+    msg = CREDITS + """----------
+ERROR
+
+Your data contain a mixture of single-read and paired-end samples. This will
+cause problems with generating raw read counts. You can either separate the
+single-read data from the paired-end data and run CHURP separately on both
+subsets of your data, or remove the R2 files from the paired-end data, and
+treat the entire dataset as single-read.
+
+The single-read samples are:
+{singles}
+
+The paired-end sample are:
+{paired}\n"""
     sys.stderr.write(
         msg.format(
-            opt=op))
+            singles='\n'.join(se),
+            paired='\n'.join(pe)))
     return
 
 
@@ -378,6 +428,7 @@ def die_gracefully(e, *args):
         EMPTY_FASTQ: empty_fastq,
         BAD_HISAT: bad_hisat2,
         BAD_NUMBER: bad_number,
+        BAD_QUEUE: bad_queue,
         BRNASEQ_INC_ARGS: brnaseq_inc,
         BRNASEQ_CONFLICT: brnaseq_conflict,
         BAD_GTF: bad_gtf,
@@ -391,10 +442,11 @@ def die_gracefully(e, *args):
         BRNASEQ_SUBMIT_OK: brnaseq_auto_submit_ok,
         BRNASEQ_SUBMIT_FAIL: brnaseq_auto_submit_fail,
         NEFARIOUS_CHAR: nefarious_cmd,
+        PE_SE_MIX: pe_se_mix
         }
     try:
         err_dict[e](*args)
     except KeyError:
         general_error()
-    exit(e)
+    sys.exit(e)
     return

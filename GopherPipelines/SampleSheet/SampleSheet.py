@@ -8,6 +8,7 @@ import pprint
 import re
 
 import GopherPipelines
+from GopherPipelines import DieGracefully
 from GopherPipelines.FileOps import default_files
 from GopherPipelines.FileOps import default_dirs
 from GopherPipelines.FileOps import dir_funcs
@@ -139,6 +140,11 @@ class Samplesheet(object):
         self.sheet_logger.debug(
             'Found samples:\n%s',
             pprint.pformat(self.samples))
+        # Simple check - if there are no samples, then throw an error here
+        if len(self.samples) == 0:
+                self.sheet_logger.error(
+                    'No valid FASTQ files were found in the directory.')
+                DieGracefully.die_gracefully(DieGracefully.EMPTY_FASTQ)
         return
 
     def write_sheet(self, od, pn, delim):
