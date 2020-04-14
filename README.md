@@ -2,7 +2,7 @@
 This repository contains the **C**ollection of **H**ierarchical **U**MII-**R**IS **P**ipelines (CHURP).
 
 ## Citing CHURP
-If you use CHURP in your research, please cite our paper from PEARC 2019: https://dl.acm.org/doi/10.1145/3332186.3333156
+If you use CHURP in your research, please cite our paper from Practice and Experience in Advanced Research Computing (PEARC) 2019:
 
 >Joshua Baller, Thomas Kono, Adam Herman, and Ying Zhang. 2019. CHURP: A Lightweight CLI Framework to Enable Novice Users to Analyze Sequencing Datasets in Parallel. In Proceedings of the Practice and Experience in Advanced Research Computing on Rise of the Machines (learning) (PEARC ’19). Association for Computing Machinery, New York, NY, USA, Article 96, 1–5. DOI:https://doi.org/10.1145/3332186.3333156
 
