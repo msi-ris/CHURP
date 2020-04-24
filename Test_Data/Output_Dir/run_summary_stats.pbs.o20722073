@@ -1,0 +1,420 @@
+  |                                                                         |                                                                 |   0%  |                                                                         |.                                                                |   1%
+   inline R code fragments
+
+  |                                                                         |..                                                               |   2%
+label: exportvars (with options) 
+List of 2
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+
+  |                                                                         |..                                                               |   4%
+   inline R code fragments
+
+  |                                                                         |...                                                              |   5%
+label: samplesheet_sum (with options) 
+List of 2
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+
+  |                                                                         |....                                                             |   6%
+  ordinary text without R code
+
+  |                                                                         |.....                                                            |   8%
+label: counts_sum (with options) 
+List of 2
+ $ echo   : logi FALSE
+ $ results: chr "asis"
+
+  |                                                                         |......                                                           |   9%
+  ordinary text without R code
+
+  |                                                                         |......                                                           |  10%
+label: raw_qual_sum (with options) 
+List of 4
+ $ echo      : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: num 8
+ $ results   : chr "asis"
+
+  |                                                                         |.......                                                          |  11%
+  ordinary text without R code
+
+  |                                                                         |........                                                         |  12%
+label: trim_qual_sum (with options) 
+List of 4
+ $ echo      : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: num 8
+ $ results   : chr "asis"
+
+  |                                                                         |.........                                                        |  14%
+  ordinary text without R code
+
+  |                                                                         |..........                                                       |  15%
+label: hisat2_counts_sum (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+ $ results: chr "asis"
+
+  |                                                                         |...........                                                      |  16%
+  ordinary text without R code
+
+  |                                                                         |...........                                                      |  18%
+label: hisat2_prop_sum (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+ $ results: chr "asis"
+
+  |                                                                         |............                                                     |  19%
+  ordinary text without R code
+
+  |                                                                         |.............                                                    |  20%
+label: expressed_sum (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+ $ results: chr "asis"
+
+  |                                                                         |..............                                                   |  21%
+  ordinary text without R code
+
+  |                                                                         |...............                                                  |  22%
+label: cpm_sum (with options) 
+List of 4
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ out.width : chr "800"
+ $ out.height: chr "800"
+
+  |                                                                         |...............                                                  |  24%
+  ordinary text without R code
+
+  |                                                                         |................                                                 |  25%
+label: hmp_sum (with options) 
+List of 4
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ out.width : chr "800"
+ $ out.height: chr "800"
+
+  |                                                                         |.................                                                |  26%
+  ordinary text without R code
+
+  |                                                                         |..................                                               |  28%
+label: mds_sum (with options) 
+List of 4
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ out.width : chr "800"
+ $ out.height: chr "800"
+
+  |                                                                         |...................                                              |  29%
+  ordinary text without R code
+
+  |                                                                         |....................                                             |  30%
+label: deg_overview (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+ $ results: chr "asis"
+
+  |                                                                         |....................                                             |  31%
+   inline R code fragments
+
+  |                                                                         |.....................                                            |  32%
+label: pipeline_script (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ comment: logi NA
+ $ engine : chr "bash"
+
+  |                                                                         |......................                                           |  34%
+   inline R code fragments
+
+  |                                                                         |.......................                                          |  35%
+label: samplesheet (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ comment: logi NA
+ $ engine : chr "bash"
+
+  |                                                                         |........................                                         |  36%
+  ordinary text without R code
+
+  |                                                                         |........................                                         |  38%
+label: samplesheet_readable (with options) 
+List of 2
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+
+  |                                                                         |.........................                                        |  39%
+  ordinary text without R code
+
+  |                                                                         |..........................                                       |  40%
+label: single_sample_modules (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ comment: logi NA
+ $ engine : chr "bash"
+
+  |                                                                         |...........................                                      |  41%
+  ordinary text without R code
+
+  |                                                                         |............................                                     |  42%
+label: summary_modules (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ comment: logi NA
+ $ engine : chr "bash"
+
+  |                                                                         |............................                                     |  44%
+  ordinary text without R code
+
+  |                                                                         |.............................                                    |  45%
+label: read_counts (with options) 
+List of 2
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+
+  |                                                                         |..............................                                   |  46%
+  ordinary text without R code
+
+  |                                                                         |...............................                                  |  48%
+label: bbduk_plot (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+ $ results: chr "asis"
+
+  |                                                                         |................................                                 |  49%
+  ordinary text without R code
+
+  |                                                                         |................................                                 |  50%
+label: bbduk_table (with options) 
+List of 2
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+
+  |                                                                         |.................................                                |  51%
+  ordinary text without R code
+
+  |                                                                         |..................................                               |  52%
+label: epe_plot (with options) 
+List of 5
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: num 4
+ $ results   : chr "asis"
+
+  |                                                                         |...................................                              |  54%
+  ordinary text without R code
+
+  |                                                                         |....................................                             |  55%
+label: dup_plot (with options) 
+List of 5
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: num 4
+ $ results   : chr "asis"
+
+  |                                                                         |.....................................                            |  56%
+  ordinary text without R code
+
+  |                                                                         |.....................................                            |  58%
+label: gdna_plot (with options) 
+List of 5
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: num 8
+ $ results   : chr "asis"
+
+  |                                                                         |......................................                           |  59%
+  ordinary text without R code
+
+  |                                                                         |.......................................                          |  60%
+label: rrna_map_plot (with options) 
+List of 5
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: num 4
+ $ results   : chr "asis"
+
+  |                                                                         |........................................                         |  61%
+  ordinary text without R code
+
+  |                                                                         |.........................................                        |  62%
+label: raw_read_quals (with options) 
+List of 5
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: num 8
+ $ results   : chr "asis"
+
+  |                                                                         |.........................................                        |  64%
+  ordinary text without R code
+
+  |                                                                         |..........................................                       |  65%
+label: trim_read_quals (with options) 
+List of 5
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: num 8
+ $ results   : chr "asis"
+
+  |                                                                         |...........................................                      |  66%
+  ordinary text without R code
+
+  |                                                                         |............................................                     |  68%
+label: raw_read_quals_fastqc (with options) 
+List of 5
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: language min(1.7 * nrow(sheet), 1.7 * lg_cutoff)
+ $ results   : chr "asis"
+
+  |                                                                         |.............................................                    |  69%
+  ordinary text without R code
+
+  |                                                                         |..............................................                   |  70%
+label: trim_read_quals_fastqc (with options) 
+List of 5
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: language min(1.7 * nrow(sheet), 1.7 * lg_cutoff)
+ $ results   : chr "asis"
+
+  |                                                                         |..............................................                   |  71%
+  ordinary text without R code
+
+  |                                                                         |...............................................                  |  72%
+label: hisat2_counts (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+ $ results: chr "asis"
+
+  |                                                                         |................................................                 |  74%
+  ordinary text without R code
+
+  |                                                                         |.................................................                |  75%
+label: hisat2_prop (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+ $ results: chr "asis"
+
+  |                                                                         |..................................................               |  76%
+  ordinary text without R code
+
+  |                                                                         |..................................................               |  78%
+label: map_stats (with options) 
+List of 2
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+
+  |                                                                         |...................................................              |  79%
+  ordinary text without R code
+
+  |                                                                         |....................................................             |  80%
+label: is_stats (with options) 
+List of 2
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+
+  |                                                                         |.....................................................            |  81%
+  ordinary text without R code
+
+  |                                                                         |......................................................           |  82%
+label: subread_summary (with options) 
+List of 5
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ fig.width : num 8
+ $ fig.height: num 8
+ $ results   : chr "asis"
+
+  |                                                                         |......................................................           |  84%
+  ordinary text without R code
+
+  |                                                                         |.......................................................          |  85%
+label: subread_summary_prop (with options) 
+List of 4
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ fig.height: num 4
+ $ results   : chr "asis"
+
+  |                                                                         |........................................................         |  86%
+  ordinary text without R code
+
+  |                                                                         |.........................................................        |  88%
+label: expressed_features (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+ $ results: chr "asis"
+
+  |                                                                         |..........................................................       |  89%
+  ordinary text without R code
+
+  |                                                                         |..........................................................       |  90%
+label: cpm_summary (with options) 
+List of 4
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ out.width : chr "750"
+ $ out.height: chr "750"
+
+  |                                                                         |...........................................................      |  91%
+  ordinary text without R code
+
+  |                                                                         |............................................................     |  92%
+label: var_hmp (with options) 
+List of 4
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ out.width : chr "750"
+ $ out.height: chr "750"
+
+  |                                                                         |.............................................................    |  94%
+  ordinary text without R code
+
+  |                                                                         |..............................................................   |  95%
+label: mds_plot (with options) 
+List of 4
+ $ echo      : logi FALSE
+ $ message   : logi FALSE
+ $ out.width : chr "750"
+ $ out.height: chr "750"
+
+  |                                                                         |...............................................................  |  96%
+  ordinary text without R code
+
+  |                                                                         |...............................................................  |  98%
+label: expr_groups (with options) 
+List of 2
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+
+  |                                                                         |................................................................ |  99%
+  ordinary text without R code
+
+  |                                                                         |.................................................................| 100%
+label: degs (with options) 
+List of 3
+ $ echo   : logi FALSE
+ $ message: logi FALSE
+ $ results: chr "asis"
+
+
+/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/pandoc +RTS -K512m -RTS Report.utf8.md --to html4 --from markdown+autolink_bare_uris+ascii_identifiers+tex_math_single_backslash --output /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Bulk_RNAseq_Report.html --email-obfuscation none --self-contained --standalone --section-divs --table-of-contents --toc-depth 3 --variable toc_float=1 --variable toc_selectors=h1,h2,h3 --variable toc_smooth_scroll=1 --variable toc_print=1 --template /panfs/roc/groups/14/msistaff/public/CHURP_Deps/v0/R/rmarkdown/rmd/h/default.html --no-highlight --variable highlightjs=1 --number-sections --variable 'theme:cerulean' --include-in-header /tmp/RtmpkE5HRl/rmarkdown-str78de379458a9.html --mathjax --variable 'mathjax-url:https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML' 

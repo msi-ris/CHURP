@@ -1,0 +1,27 @@
+Analysis complete for BoneMarrow-4_S17_R2_001.fastq.gz
+Analysis complete for BoneMarrow-4_S17_R1_001.fastq.gz
+Analysis complete for BoneMarrow-4_1P.fq.gz
+Analysis complete for BoneMarrow-4_2P.fq.gz
+Parsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1000 genes processedParsing GTF: 1100 genes processed
+Collapsing transcripts
+Reading GTF Features...
+Processing GTF Features...
+Finished processing GTF in 0 seconds
+Checking bam header...
+Parsing bam...
+Time elapsed: 10; Alignments processed: 2000000
+Time Elapsed: 10; Alignments processed: 2031364
+Total runtime: 10; Total CPU Time: 9
+Average Reads/Sec: 203136
+Estimating library complexity...
+Generating report
+Reading GTF Features...
+Processing GTF Features...
+Finished processing GTF in 0 seconds
+Checking bam header...
+Parsing bam...
+Time Elapsed: 9; Alignments processed: 2031364
+Total runtime: 9; Total CPU Time: 9
+Average Reads/Sec: 225707
+Estimating library complexity...
+Generating report

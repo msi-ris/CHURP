@@ -1,0 +1,394 @@
+##### BEGIN TRACE FOR 20722072[8].mesabim1.msi.umn.edu #####
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: DEPS_DIR=/home/msistaff/public/CHURP_Deps/v0
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: SILVA_REF=/home/msistaff/public/CHURP_Deps/v0/db/SILVA_132_LSU_SSU_Ref_Dedup_Kmers_min100.fasta.gz
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: BBDUK=/home/msistaff/public/CHURP_Deps/v0/Supp/bbmap/bbduk.sh
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: SEQTK=/home/msistaff/public/CHURP_Deps/v0/Supp/seqtk-1.3/seqtk
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: GTFTOGENEPRED=/home/msistaff/public/CHURP_Deps/v0/Supp/UCSC/gtfToGenePred
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: CONDA_ENV=/home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: COLLAPSE_GTF=/home/msistaff/public/CHURP_Deps/v0/Supp/GTEx_Pipeline/collapse_annotation.py
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: RNASEQC=/home/msistaff/public/CHURP_Deps/v0/Supp/RNASeQC/rnaseqc.v2.3.4.linux
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: '[' -z /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R2_001.fastq.gz ']'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: PE=true
+++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: date '+%F %T'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:13:03: R2 file detected; running Spleen-4 as paired-end'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: '[' false = true ']'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: mkdir -p /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: cd /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: '[' -f Spleen-4.done ']'
+++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: date '+%F %T'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: echo '# 2020-04-24 15:13:03: Finished section General'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [General]: LOG_SECTION=Subsampling
+++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [Subsampling]: date '+%F %T'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [Subsampling]: echo '# 2020-04-24 15:13:03: Entering section Subsampling'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [Subsampling]: '[' 0 -eq 0 ']'
+++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [Subsampling]: date '+%F %T'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [Subsampling]: echo '# 2020-04-24 15:13:03: Not subsampling reads for sample Spleen-4 for analysis'
+++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [Subsampling]: date '+%F %T'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [Subsampling]: echo '# 2020-04-24 15:13:03: Finished section Subsampling'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [Subsampling]: LOG_SECTION=rRNA.Subsampling
+++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: date '+%F %T'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: echo '# 2020-04-24 15:13:03: Entering section rRNA.Subsampling'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: '[' '!' -f subsamp.done ']'
+++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: date '+%F %T'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:13:03: Subsampling reads to 10000 fragments.'
++[2020-04-24 15:13:03] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: /home/msistaff/public/CHURP_Deps/v0/Supp/seqtk-1.3/seqtk sample -s123 -2 /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R1_001.fastq.gz 10000
++[2020-04-24 15:13:08] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: '[' true = true ']'
++[2020-04-24 15:13:08] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: /home/msistaff/public/CHURP_Deps/v0/Supp/seqtk-1.3/seqtk sample -s123 -2 /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R2_001.fastq.gz 10000
++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: touch subsamp.done
+++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: date '+%F %T'
++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: echo '# 2020-04-24 15:13:13: Finished section rRNA.Subsampling'
++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [rRNA.Subsampling]: LOG_SECTION=BBDuk
+++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: date '+%F %T'
++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: echo '# 2020-04-24 15:13:13: Entering section BBDuk'
++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: '[' '!' -f bbduk.done ']'
+++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: date '+%F %T'
++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:13:13: Using BBDuk to search for rRNA contamination in subsampled reads.'
++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: '[' true = true ']'
++[2020-04-24 15:13:13] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: /home/msistaff/public/CHURP_Deps/v0/Supp/bbmap/bbduk.sh in=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/BBDuk_R1.fastq in2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/BBDuk_R2.fastq ref=/home/msistaff/public/CHURP_Deps/v0/db/SILVA_132_LSU_SSU_Ref_Dedup_Kmers_min100.fasta.gz stats=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/BBDuk_rRNA_Stats.txt k=25 editdistance=1 prealloc=t threads=4 -Xmx10g
++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: touch bbduk.done
+++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: date '+%F %T'
++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: echo '# 2020-04-24 15:14:45: Finished section BBDuk'
++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [BBDuk]: LOG_SECTION=FastQC.Raw
+++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: date '+%F %T'
++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: echo '# 2020-04-24 15:14:45: Entering section FastQC.Raw'
++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: '[' '!' -f fastqc.done ']'
++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: '[' true = true ']'
+++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: date '+%F %T'
++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:14:45: Running fastqc on /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R1_001.fastq.gz and /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R2_001.fastq.gz.'
++[2020-04-24 15:14:45] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: fastqc -t 2 --extract --outdir=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4 /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R1_001.fastq.gz /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R2_001.fastq.gz
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: touch fastqc.done
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4 -maxdepth 1 -type d -name '*_fastqc'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: for fastqc_out_dir in '$(find "${WORKDIR}/singlesamples/${SAMPLENM}" -maxdepth 1 -type d -name '\''*_fastqc'\'')'
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R1_001_fastqc
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: sed -nr 's/.*_R?(1|2)_(001_)?fastqc/\1/p'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: read_no=1
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: '[' -z 1 ']'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: out_pref=Spleen-4_1.raw_readcount.txt
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: grep '^Total Sequences' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R1_001_fastqc/fastqc_data.txt
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: cut -f 2
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: echo 'Spleen-4 1020670'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: awk '/>>Per base sequence quality/{flag=1; next} />>END_MODULE/{flag=0} flag' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R1_001_fastqc/fastqc_data.txt
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: sed -e 's/ /./g'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: rm -rf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R1_001_fastqc.processed
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: mv -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R1_001_fastqc /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R1_001_fastqc.processed
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: for fastqc_out_dir in '$(find "${WORKDIR}/singlesamples/${SAMPLENM}" -maxdepth 1 -type d -name '\''*_fastqc'\'')'
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R2_001_fastqc
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: sed -nr 's/.*_R?(1|2)_(001_)?fastqc/\1/p'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: read_no=2
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: '[' -z 2 ']'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: out_pref=Spleen-4_2.raw_readcount.txt
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: grep '^Total Sequences' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R2_001_fastqc/fastqc_data.txt
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: cut -f 2
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: echo 'Spleen-4 1020670'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: awk '/>>Per base sequence quality/{flag=1; next} />>END_MODULE/{flag=0} flag' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R2_001_fastqc/fastqc_data.txt
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: sed -e 's/ /./g'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: rm -rf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R2_001_fastqc.processed
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: mv -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R2_001_fastqc /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_S25_R2_001_fastqc.processed
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: date '+%F %T'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: echo '# 2020-04-24 15:15:01: Finished section FastQC.Raw'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Raw]: LOG_SECTION=Trimmomatic
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: date '+%F %T'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: echo '# 2020-04-24 15:15:01: Entering section Trimmomatic'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: '[' yes = yes ']'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: '[' '!' -f trimmomatic.done ']'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: '[' true = true ']'
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: date '+%F %T'
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:15:01: Running trimmomatic on /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R1_001.fastq.gz and /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R2_001.fastq.gz.'
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: echo 'ILLUMINACLIP:$TRIMMOMATIC/adapters/all_illumina_adapters.fa:4:15:7:2:true LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:18'
+++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: envsubst
++[2020-04-24 15:15:01] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: java -jar /panfs/roc/msisoft/trimmomatic/0.33//trimmomatic.jar PE -threads 4 /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R1_001.fastq.gz /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-4_S25_R2_001.fastq.gz Spleen-4_1P.fq.gz Spleen-4_1U.fq.gz Spleen-4_2P.fq.gz Spleen-4_2U.fq.gz ILLUMINACLIP:/panfs/roc/msisoft/trimmomatic/0.33//adapters/all_illumina_adapters.fa:4:15:7:2:true LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:18
++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: touch trimmomatic.done
+++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: date '+%F %T'
++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: echo '# 2020-04-24 15:15:51: Finished section Trimmomatic'
++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [Trimmomatic]: LOG_SECTION=FastQC.Trimmed
+++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: date '+%F %T'
++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: echo '# 2020-04-24 15:15:51: Entering section FastQC.Trimmed'
++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: '[' '!' -f fastqc.trim.done ']'
++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: '[' true = true ']'
+++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: date '+%F %T'
++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:15:51: Running fastqc on trimmed fastq files.'
++[2020-04-24 15:15:51] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: fastqc -t 2 --extract --outdir=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4 Spleen-4_1P.fq.gz Spleen-4_2P.fq.gz
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: touch fastqc.trim.done
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4 -maxdepth 1 -type d -name '*_fastqc'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: for fastqc_out_dir in '$(find "${WORKDIR}/singlesamples/${SAMPLENM}" -maxdepth 1 -type d -name '\''*_fastqc'\'')'
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1P_fastqc
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: sed -nr 's/.*(1|2)P_fastqc/\1/p'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: read_no=1
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: '[' -z 1 ']'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: out_pref=Spleen-4_1.trimmed_readcount.txt
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: grep '^Total Sequences' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1P_fastqc/fastqc_data.txt
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: cut -f 2
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: echo 'Spleen-4 1014689'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: awk '/>>Per base sequence quality/{flag=1; next} />>END_MODULE/{flag=0} flag' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1P_fastqc/fastqc_data.txt
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: sed -e 's/ /./g'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: rm -rf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1P_fastqc.processed
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: mv -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1P_fastqc /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1P_fastqc.processed
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: for fastqc_out_dir in '$(find "${WORKDIR}/singlesamples/${SAMPLENM}" -maxdepth 1 -type d -name '\''*_fastqc'\'')'
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2P_fastqc
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: sed -nr 's/.*(1|2)P_fastqc/\1/p'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: read_no=2
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: '[' -z 2 ']'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: out_pref=Spleen-4_2.trimmed_readcount.txt
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: grep '^Total Sequences' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2P_fastqc/fastqc_data.txt
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: cut -f 2
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: echo 'Spleen-4 1014689'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: awk '/>>Per base sequence quality/{flag=1; next} />>END_MODULE/{flag=0} flag' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2P_fastqc/fastqc_data.txt
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: sed -e 's/ /./g'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: rm -rf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2P_fastqc.processed
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: mv -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2P_fastqc /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2P_fastqc.processed
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: date '+%F %T'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: echo '# 2020-04-24 15:16:07: Finished section FastQC.Trimmed'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [FastQC.Trimmed]: LOG_SECTION=HISAT2
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: date '+%F %T'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: echo '# 2020-04-24 15:16:07: Entering section HISAT2'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: '[' '!' -f hisat2.done ']'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: '[' yes = yes ']'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: '[' true = true ']'
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: date '+%F %T'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:16:07: Aligning trimmed reads with HISAT2.'
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: samtools view -hb -o Spleen-4.bam -
++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: hisat2 -p 4 --no-mixed --new-summary -x /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reference/GRCm38_19 -1 /dev/fd/63 -2 /dev/fd/62
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: gzip -cd Spleen-4_1P.fq.gz
+++[2020-04-24 15:16:07] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: gzip -cd Spleen-4_2P.fq.gz
++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: touch hisat2.done
++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: cat alignment.summary
+++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: date '+%F %T'
++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: echo '# 2020-04-24 15:16:56: Finished section HISAT2'
++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [HISAT2]: LOG_SECTION=MarkDuplicates
+++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: date '+%F %T'
++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: echo '# 2020-04-24 15:16:56: Entering section MarkDuplicates'
++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: '[' '!' -f dup.done ']'
+++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: date '+%F %T'
++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:16:56: Soring raw HISAT2 BAM by query in prep for deduplication.'
++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: _JAVA_OPTIONS=-Djava.io.tmpdir=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/picard_tmp
++[2020-04-24 15:16:56] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: java -jar /panfs/roc/msisoft/picard/2.9.0/picard.jar SortSam I=Spleen-4.bam O=Spleen-4_Raw_QuerySort.bam SORT_ORDER=queryname
++[2020-04-24 15:17:38] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: '[' no = yes ']'
+++[2020-04-24 15:17:38] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: date '+%F %T'
++[2020-04-24 15:17:39] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:17:38: Marking duplicate reads with Picard MarkDuplicates.'
++[2020-04-24 15:17:39] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: _JAVA_OPTIONS=-Djava.io.tmpdir=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/picard_tmp
++[2020-04-24 15:17:39] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: java -jar /panfs/roc/msisoft/picard/2.9.0/picard.jar MarkDuplicates I=Spleen-4_Raw_QuerySort.bam O=Spleen-4_MarkDup.bam REMOVE_DUPLICATES=false ASSUME_SORT_ORDER=queryname M=Spleen-4_MarkDup_Metrics.txt
++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: TO_FLT=Spleen-4_MarkDup.bam
++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: touch dup.done
+++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: date '+%F %T'
++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: echo '# 2020-04-24 15:18:30: Finished section MarkDuplicates'
++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [MarkDuplicates]: LOG_SECTION=BAM.Filtering
+++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [BAM.Filtering]: date '+%F %T'
++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [BAM.Filtering]: echo '# 2020-04-24 15:18:30: Entering section BAM.Filtering'
++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [BAM.Filtering]: '[' '!' -f mapq_flt.done ']'
+++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [BAM.Filtering]: date '+%F %T'
++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [BAM.Filtering]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:18:30: Removing unmapped and MAPQ<60 reads for counting.'
++[2020-04-24 15:18:30] [20722072[8].mesabim1.msi.umn.edu] [BAM.Filtering]: samtools view -bhu -@ 4 -F 4 -q 60 -o Spleen-4_Filtered.bam Spleen-4_MarkDup.bam
++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Filtering]: touch mapq_flt.done
+++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Filtering]: date '+%F %T'
++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Filtering]: echo '# 2020-04-24 15:18:34: Finished section BAM.Filtering'
++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Filtering]: LOG_SECTION=BAM.Coord.Sort
+++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: date '+%F %T'
++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: echo '# 2020-04-24 15:18:34: Entering section BAM.Coord.Sort'
++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: '[' '!' -f coord_sort.done ']'
+++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: date '+%F %T'
++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: echo '$ 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:18:34: Removing any old SAMtools sort files.'
++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4 -mindepth 1 -maxdepth 1 -regextype posix-extended -regex '.*/temp\.[0-9]{4}+.bam' -exec rm '{}' ';'
+++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: date '+%F %T'
++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:18:34: Sorting filtered BAM file by coordinate.'
++[2020-04-24 15:18:34] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: samtools sort -O bam -@ 4 -T temp -o Spleen-4_Filtered_CoordSort.bam Spleen-4_Filtered.bam
+++[2020-04-24 15:18:40] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: date '+%F %T'
++[2020-04-24 15:18:40] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:18:40: Sorting raw BAM file by coordinate.'
++[2020-04-24 15:18:40] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: samtools sort -O bam -@ 4 -T temp -o Spleen-4_Raw_CoordSort.bam Spleen-4_MarkDup.bam
+++[2020-04-24 15:18:49] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: date '+%F %T'
++[2020-04-24 15:18:49] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:18:49: Indexing coordinate-sorted BAM files.'
++[2020-04-24 15:18:49] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: samtools index Spleen-4_Filtered_CoordSort.bam
++[2020-04-24 15:18:52] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: samtools index Spleen-4_Raw_CoordSort.bam
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: touch coord_sort.done
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: FOR_COUNTS=Spleen-4_Filtered.bam
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: RAW_COORD=Spleen-4_Raw_CoordSort.bam
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: RAW_COORD_IDX=Spleen-4_Raw_CoordSort.bam.bai
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: FLT_COORD=Spleen-4_Filtered_CoordSort.bam
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: FLT_COORD_IDX=Spleen-4_Filtered_CoordSort.bam.bai
+++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: date '+%F %T'
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: echo '# 2020-04-24 15:18:54: Finished section BAM.Coord.Sort'
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Coord.Sort]: LOG_SECTION=BAM.Stats
+++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Stats]: date '+%F %T'
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Stats]: echo '# 2020-04-24 15:18:54: Entering section BAM.Stats'
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Stats]: '[' '!' -f bamstats.done ']'
+++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Stats]: date '+%F %T'
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Stats]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:18:54: Generating alignment stats based on raw BAM.'
++[2020-04-24 15:18:54] [20722072[8].mesabim1.msi.umn.edu] [BAM.Stats]: samtools stats Spleen-4_Raw_CoordSort.bam
++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [BAM.Stats]: touch bamstats.done
+++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [BAM.Stats]: date '+%F %T'
++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [BAM.Stats]: echo '# 2020-04-24 15:19:01: Finished section BAM.Stats'
++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [BAM.Stats]: LOG_SECTION=RNASeQC
+++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: date '+%F %T'
++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: echo '# 2020-04-24 15:19:01: Entering section RNASeQC'
+++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: date '+%F %T'
++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: echo '# 2020-04-24 15:19:01: Note, this section is OPTIONAL (errors will not kill pipeline jobs).'
++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: '[' '!' -f rnaseqc.done ']'
+++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: date '+%F %T'
++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:19:01: '\''Collapsing'\'' gene models in GTF for use with RNASeQC.'
++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: source activate /home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep
+++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _CONDA_ROOT=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1
+++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: . /panfs/roc/msisoft/anaconda/anaconda3-5.0.1/etc/profile.d/conda.sh
++++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _CONDA_EXE=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/conda
++++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _CONDA_ROOT=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1
++++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _conda_set_vars
++++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: '[' -n x ']'
++++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _CONDA_SHELL_FLAVOR=bash
++++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: '[' -z x ']'
++++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: '[' -z x ']'
++++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: '[' -z x ']'
+++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _conda_activate /home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep
+++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: '[' -n '' ']'
+++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: local ask_conda
++++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: PS1='[\[\]\t\[\] \[\]msistaff\[\]] [\[\]\u\[\]@\[\]\h\[\]] (\[\]\w\[\]) $ \[\]'
++++[2020-04-24 15:19:01] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: /panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/conda shell.posix activate /home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep
+++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: ask_conda='PS1='\''(RNASeQC_RefPrep) [\[\]\t\[\] \[\]msistaff\[\]] [\[\]\u\[\]@\[\]\h\[\]] (\[\]\w\[\]) $ \[\]'\''
+\export CONDA_DEFAULT_ENV='\''RNASeQC_RefPrep'\''
+\export CONDA_EXE='\''/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/conda'\''
+\export CONDA_PREFIX='\''/home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep'\''
+\export CONDA_PROMPT_MODIFIER='\''(RNASeQC_RefPrep) '\''
+\export CONDA_PYTHON_EXE='\''/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/python'\''
+\export CONDA_SHLVL='\''1'\''
+\export PATH='\''/home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep/bin:/panfs/roc/msisoft/java/openjdk-11.0.2/bin:/panfs/roc/msisoft/R/3.5.0/bin:/panfs/roc/msisoft/libtiff/4.0.8/bin:/panfs/roc/msisoft/gcc/8.1.0/bin:/panfs/roc/msisoft/curl/7.59.0_gcc7.2.0/bin:/panfs/roc/msisoft/pcre/8.42_gcc7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gcc7.2.0/bin:/panfs/roc/msisoft/picard/2.9.0:/panfs/roc/msisoft/java/jdk1.8.0_45/bin:/panfs/roc/msisoft/samtools/1.7/bin/:/panfs/roc/msisoft/gcc/7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gnu6.1.0_PIC/bin:/panfs/roc/msisoft/xz-utils/5.2.3_gcc7.2.0/bin:/panfs/roc/msisoft/trimmomatic/0.33:/panfs/roc/msisoft/fastqc/0.11.7:/panfs/roc/msisoft/java/jdk1.7.0_45/bin:/panfs/roc/msisoft/hisat2/2.1.0/bin:/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/moab/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/msi/bin:/usr/share/Modules/bin:/opt/moab/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin'\'''
+++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: eval 'PS1='\''(RNASeQC_RefPrep) [\[\]\t\[\] \[\]msistaff\[\]] [\[\]\u\[\]@\[\]\h\[\]] (\[\]\w\[\]) $ \[\]'\''
+\export CONDA_DEFAULT_ENV='\''RNASeQC_RefPrep'\''
+\export CONDA_EXE='\''/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/conda'\''
+\export CONDA_PREFIX='\''/home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep'\''
+\export CONDA_PROMPT_MODIFIER='\''(RNASeQC_RefPrep) '\''
+\export CONDA_PYTHON_EXE='\''/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/python'\''
+\export CONDA_SHLVL='\''1'\''
+\export PATH='\''/home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep/bin:/panfs/roc/msisoft/java/openjdk-11.0.2/bin:/panfs/roc/msisoft/R/3.5.0/bin:/panfs/roc/msisoft/libtiff/4.0.8/bin:/panfs/roc/msisoft/gcc/8.1.0/bin:/panfs/roc/msisoft/curl/7.59.0_gcc7.2.0/bin:/panfs/roc/msisoft/pcre/8.42_gcc7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gcc7.2.0/bin:/panfs/roc/msisoft/picard/2.9.0:/panfs/roc/msisoft/java/jdk1.8.0_45/bin:/panfs/roc/msisoft/samtools/1.7/bin/:/panfs/roc/msisoft/gcc/7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gnu6.1.0_PIC/bin:/panfs/roc/msisoft/xz-utils/5.2.3_gcc7.2.0/bin:/panfs/roc/msisoft/trimmomatic/0.33:/panfs/roc/msisoft/fastqc/0.11.7:/panfs/roc/msisoft/java/jdk1.7.0_45/bin:/panfs/roc/msisoft/hisat2/2.1.0/bin:/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/moab/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/msi/bin:/usr/share/Modules/bin:/opt/moab/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin'\'''
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: PS1='(RNASeQC_RefPrep) [\[\]\t\[\] \[\]msistaff\[\]] [\[\]\u\[\]@\[\]\h\[\]] (\[\]\w\[\]) $ \[\]'
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: export CONDA_DEFAULT_ENV=RNASeQC_RefPrep
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: CONDA_DEFAULT_ENV=RNASeQC_RefPrep
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: export CONDA_EXE=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/conda
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: CONDA_EXE=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/conda
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: export CONDA_PREFIX=/home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: CONDA_PREFIX=/home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: export 'CONDA_PROMPT_MODIFIER=(RNASeQC_RefPrep) '
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: CONDA_PROMPT_MODIFIER='(RNASeQC_RefPrep) '
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: export CONDA_PYTHON_EXE=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/python
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: CONDA_PYTHON_EXE=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/python
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: export CONDA_SHLVL=1
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: CONDA_SHLVL=1
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: export PATH=/home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep/bin:/panfs/roc/msisoft/java/openjdk-11.0.2/bin:/panfs/roc/msisoft/R/3.5.0/bin:/panfs/roc/msisoft/libtiff/4.0.8/bin:/panfs/roc/msisoft/gcc/8.1.0/bin:/panfs/roc/msisoft/curl/7.59.0_gcc7.2.0/bin:/panfs/roc/msisoft/pcre/8.42_gcc7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gcc7.2.0/bin:/panfs/roc/msisoft/picard/2.9.0:/panfs/roc/msisoft/java/jdk1.8.0_45/bin:/panfs/roc/msisoft/samtools/1.7/bin/:/panfs/roc/msisoft/gcc/7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gnu6.1.0_PIC/bin:/panfs/roc/msisoft/xz-utils/5.2.3_gcc7.2.0/bin:/panfs/roc/msisoft/trimmomatic/0.33:/panfs/roc/msisoft/fastqc/0.11.7:/panfs/roc/msisoft/java/jdk1.7.0_45/bin:/panfs/roc/msisoft/hisat2/2.1.0/bin:/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/moab/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/msi/bin:/usr/share/Modules/bin:/opt/moab/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin
++++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: PATH=/home/msistaff/public/CHURP_Deps/v0/Conda/envs/RNASeQC_RefPrep/bin:/panfs/roc/msisoft/java/openjdk-11.0.2/bin:/panfs/roc/msisoft/R/3.5.0/bin:/panfs/roc/msisoft/libtiff/4.0.8/bin:/panfs/roc/msisoft/gcc/8.1.0/bin:/panfs/roc/msisoft/curl/7.59.0_gcc7.2.0/bin:/panfs/roc/msisoft/pcre/8.42_gcc7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gcc7.2.0/bin:/panfs/roc/msisoft/picard/2.9.0:/panfs/roc/msisoft/java/jdk1.8.0_45/bin:/panfs/roc/msisoft/samtools/1.7/bin/:/panfs/roc/msisoft/gcc/7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gnu6.1.0_PIC/bin:/panfs/roc/msisoft/xz-utils/5.2.3_gcc7.2.0/bin:/panfs/roc/msisoft/trimmomatic/0.33:/panfs/roc/msisoft/fastqc/0.11.7:/panfs/roc/msisoft/java/jdk1.7.0_45/bin:/panfs/roc/msisoft/hisat2/2.1.0/bin:/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/moab/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/msi/bin:/usr/share/Modules/bin:/opt/moab/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin
+++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _conda_hashr
+++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: case "$_CONDA_SHELL_FLAVOR" in
+++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: case "$_CONDA_SHELL_FLAVOR" in
+++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: hash -r
++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: python /home/msistaff/public/CHURP_Deps/v0/Supp/GTEx_Pipeline/collapse_annotation.py /dev/fd/63 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/collapsed.gtf
+++[2020-04-24 15:19:02] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: gzip -cd /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reference/Annotations.gtf.gz
++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: source deactivate
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _CONDA_ROOT=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: . /panfs/roc/msisoft/anaconda/anaconda3-5.0.1/etc/profile.d/conda.sh
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _CONDA_EXE=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/conda
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _CONDA_ROOT=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _conda_set_vars
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: '[' -n x ']'
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _CONDA_SHELL_FLAVOR=bash
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: '[' -z x ']'
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: '[' -z x ']'
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: '[' -z x ']'
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _conda_deactivate
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: local ask_conda
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: PS1='(RNASeQC_RefPrep) [\[\]\t\[\] \[\]msistaff\[\]] [\[\]\u\[\]@\[\]\h\[\]] (\[\]\w\[\]) $ \[\]'
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: /panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin/conda shell.posix deactivate
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: ask_conda='\unset CONDA_DEFAULT_ENV
+\unset CONDA_EXE
+\unset CONDA_PREFIX
+\unset CONDA_PROMPT_MODIFIER
+\unset CONDA_PYTHON_EXE
+PS1='\''[\[\]\t\[\] \[\]msistaff\[\]] [\[\]\u\[\]@\[\]\h\[\]] (\[\]\w\[\]) $ \[\]'\''
+\export CONDA_SHLVL='\''0'\''
+\export PATH='\''/panfs/roc/msisoft/java/openjdk-11.0.2/bin:/panfs/roc/msisoft/R/3.5.0/bin:/panfs/roc/msisoft/libtiff/4.0.8/bin:/panfs/roc/msisoft/gcc/8.1.0/bin:/panfs/roc/msisoft/curl/7.59.0_gcc7.2.0/bin:/panfs/roc/msisoft/pcre/8.42_gcc7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gcc7.2.0/bin:/panfs/roc/msisoft/picard/2.9.0:/panfs/roc/msisoft/java/jdk1.8.0_45/bin:/panfs/roc/msisoft/samtools/1.7/bin/:/panfs/roc/msisoft/gcc/7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gnu6.1.0_PIC/bin:/panfs/roc/msisoft/xz-utils/5.2.3_gcc7.2.0/bin:/panfs/roc/msisoft/trimmomatic/0.33:/panfs/roc/msisoft/fastqc/0.11.7:/panfs/roc/msisoft/java/jdk1.7.0_45/bin:/panfs/roc/msisoft/hisat2/2.1.0/bin:/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/moab/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/msi/bin:/usr/share/Modules/bin:/opt/moab/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin'\'''
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: eval '\unset CONDA_DEFAULT_ENV
+\unset CONDA_EXE
+\unset CONDA_PREFIX
+\unset CONDA_PROMPT_MODIFIER
+\unset CONDA_PYTHON_EXE
+PS1='\''[\[\]\t\[\] \[\]msistaff\[\]] [\[\]\u\[\]@\[\]\h\[\]] (\[\]\w\[\]) $ \[\]'\''
+\export CONDA_SHLVL='\''0'\''
+\export PATH='\''/panfs/roc/msisoft/java/openjdk-11.0.2/bin:/panfs/roc/msisoft/R/3.5.0/bin:/panfs/roc/msisoft/libtiff/4.0.8/bin:/panfs/roc/msisoft/gcc/8.1.0/bin:/panfs/roc/msisoft/curl/7.59.0_gcc7.2.0/bin:/panfs/roc/msisoft/pcre/8.42_gcc7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gcc7.2.0/bin:/panfs/roc/msisoft/picard/2.9.0:/panfs/roc/msisoft/java/jdk1.8.0_45/bin:/panfs/roc/msisoft/samtools/1.7/bin/:/panfs/roc/msisoft/gcc/7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gnu6.1.0_PIC/bin:/panfs/roc/msisoft/xz-utils/5.2.3_gcc7.2.0/bin:/panfs/roc/msisoft/trimmomatic/0.33:/panfs/roc/msisoft/fastqc/0.11.7:/panfs/roc/msisoft/java/jdk1.7.0_45/bin:/panfs/roc/msisoft/hisat2/2.1.0/bin:/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/moab/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/msi/bin:/usr/share/Modules/bin:/opt/moab/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin'\'''
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: unset CONDA_DEFAULT_ENV
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: unset CONDA_EXE
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: unset CONDA_PREFIX
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: unset CONDA_PROMPT_MODIFIER
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: unset CONDA_PYTHON_EXE
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: PS1='[\[\]\t\[\] \[\]msistaff\[\]] [\[\]\u\[\]@\[\]\h\[\]] (\[\]\w\[\]) $ \[\]'
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: export CONDA_SHLVL=0
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: CONDA_SHLVL=0
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: export PATH=/panfs/roc/msisoft/java/openjdk-11.0.2/bin:/panfs/roc/msisoft/R/3.5.0/bin:/panfs/roc/msisoft/libtiff/4.0.8/bin:/panfs/roc/msisoft/gcc/8.1.0/bin:/panfs/roc/msisoft/curl/7.59.0_gcc7.2.0/bin:/panfs/roc/msisoft/pcre/8.42_gcc7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gcc7.2.0/bin:/panfs/roc/msisoft/picard/2.9.0:/panfs/roc/msisoft/java/jdk1.8.0_45/bin:/panfs/roc/msisoft/samtools/1.7/bin/:/panfs/roc/msisoft/gcc/7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gnu6.1.0_PIC/bin:/panfs/roc/msisoft/xz-utils/5.2.3_gcc7.2.0/bin:/panfs/roc/msisoft/trimmomatic/0.33:/panfs/roc/msisoft/fastqc/0.11.7:/panfs/roc/msisoft/java/jdk1.7.0_45/bin:/panfs/roc/msisoft/hisat2/2.1.0/bin:/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/moab/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/msi/bin:/usr/share/Modules/bin:/opt/moab/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin
++++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: PATH=/panfs/roc/msisoft/java/openjdk-11.0.2/bin:/panfs/roc/msisoft/R/3.5.0/bin:/panfs/roc/msisoft/libtiff/4.0.8/bin:/panfs/roc/msisoft/gcc/8.1.0/bin:/panfs/roc/msisoft/curl/7.59.0_gcc7.2.0/bin:/panfs/roc/msisoft/pcre/8.42_gcc7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gcc7.2.0/bin:/panfs/roc/msisoft/picard/2.9.0:/panfs/roc/msisoft/java/jdk1.8.0_45/bin:/panfs/roc/msisoft/samtools/1.7/bin/:/panfs/roc/msisoft/gcc/7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gnu6.1.0_PIC/bin:/panfs/roc/msisoft/xz-utils/5.2.3_gcc7.2.0/bin:/panfs/roc/msisoft/trimmomatic/0.33:/panfs/roc/msisoft/fastqc/0.11.7:/panfs/roc/msisoft/java/jdk1.7.0_45/bin:/panfs/roc/msisoft/hisat2/2.1.0/bin:/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/moab/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/msi/bin:/usr/share/Modules/bin:/opt/moab/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: _conda_hashr
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: case "$_CONDA_SHELL_FLAVOR" in
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: case "$_CONDA_SHELL_FLAVOR" in
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: hash -r
+++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: date '+%F %T'
++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:19:10: Collecting unstranded RNAseq metrics with RNASeQC.'
++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: RNASEQC_OPTIONS='-v -v --sample=Spleen-4_Unstranded --legacy'
++[2020-04-24 15:19:10] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: /home/msistaff/public/CHURP_Deps/v0/Supp/RNASeQC/rnaseqc.v2.3.4.linux /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/collapsed.gtf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_Raw_CoordSort.bam /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/RNASeQC_Out -v -v --sample=Spleen-4_Unstranded --legacy
+++[2020-04-24 15:19:42] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: date '+%F %T'
++[2020-04-24 15:19:42] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:19:42: Collecting stranded RNAseq metrics with RNASeQC.'
++[2020-04-24 15:19:42] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: RNASEQC_OPTIONS='-v -v --sample=Spleen-4 --legacy'
++[2020-04-24 15:19:42] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: [[ 0 = \2 ]]
++[2020-04-24 15:19:42] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: [[ 0 = \1 ]]
++[2020-04-24 15:19:42] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: [[ 0 = \2 ]]
++[2020-04-24 15:19:42] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: [[ 0 = \1 ]]
++[2020-04-24 15:19:42] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: /home/msistaff/public/CHURP_Deps/v0/Supp/RNASeQC/rnaseqc.v2.3.4.linux /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/collapsed.gtf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_Raw_CoordSort.bam /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/RNASeQC_Out -v -v --sample=Spleen-4 --legacy
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: touch rnaseqc.done
+++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: date '+%F %T'
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: echo '# 2020-04-24 15:20:14: Finished section RNASeQC'
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [RNASeQC]: LOG_SECTION=InsertSizeMetrics
+++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: date '+%F %T'
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: echo '# 2020-04-24 15:20:14: Entering section InsertSizeMetrics'
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: '[' '!' -f is_stats.done ']'
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: '[' true = true ']'
+++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: date '+%F %T'
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:20:14: Collecting insert size metrics with Picard InsertSizeMetrics.'
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: mkdir -p /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/InsertSizeMetrics
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: mkdir -p /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/picard_tmp
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: _JAVA_OPTIONS=-Djava.io.tmpdir=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/picard_tmp
++[2020-04-24 15:20:14] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: java -jar /panfs/roc/msisoft/picard/2.9.0/picard.jar CollectInsertSizeMetrics I=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_Filtered.bam O=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/InsertSizeMetrics/Spleen-4_metrics.txt H=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/InsertSizeMetrics/Spleen-4_hist.pdf
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: '[' -s /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/InsertSizeMetrics/Spleen-4_metrics.txt ']'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: grep -A 1 '^MEDIAN_INSERT_SIZE' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/InsertSizeMetrics/Spleen-4_metrics.txt
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: tail -n 1
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: cut -f 1,5,6,9,11,15,17
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: date '+%F %T'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: echo '# 2020-04-24 15:20:24: Finished section InsertSizeMetrics'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [InsertSizeMetrics]: LOG_SECTION=Alignment.Summary
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: date '+%F %T'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: echo '# 2020-04-24 15:20:24: Entering section Alignment.Summary'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: '[' true = true ']'
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: awk '/Total pairs:/ {print $NF}' alignment.summary
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: TOTAL_READS=1014689
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: awk '/Aligned concordantly or discordantly 0 time/ {F=NF-1; print $F}' alignment.summary
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: UNMAP=128485
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: awk '/Aligned concordantly 1 time/ {F=NF-1; print $F}' alignment.summary
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: SINGLE_MAP=870373
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: awk '/Aligned concordantly >1 times/ {F=NF-1; print $F}' alignment.summary
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: MULTI_MAP=13196
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: awk '/Aligned discordantly 1 time/ {F=NF-1; print $F}' alignment.summary
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: DISCO_MAP=2635
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: echo 'Spleen-4 1014689 128485 870373 13196 2635'
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: date '+%F %T'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: echo '# 2020-04-24 15:20:24: Finished section Alignment.Summary'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Alignment.Summary]: LOG_SECTION=Cleanup
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: date '+%F %T'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: echo '# 2020-04-24 15:20:24: Entering section Cleanup'
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: date '+%F %T'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:20:24: Linking Spleen-4 into /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: mkdir -p /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: ln -sf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_Filtered.bam /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples/Spleen-4
+++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: date '+%F %T'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:20:24: Linking coordinate-sorted BAMs into /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Coordinate_Sorted_BAMs/'
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: mkdir -p /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Coordinate_Sorted_BAMs
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: ln -sf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_Raw_CoordSort.bam /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Coordinate_Sorted_BAMs/Spleen-4_Raw_CoordSort.bam
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: ln -sf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_Raw_CoordSort.bam.bai /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Coordinate_Sorted_BAMs/Spleen-4_Raw_CoordSort.bam.bai
++[2020-04-24 15:20:24] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: ln -sf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_Filtered_CoordSort.bam /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Coordinate_Sorted_BAMs/Spleen-4_Filtered_CoordSort.bam
++[2020-04-24 15:20:25] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: ln -sf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_Filtered_CoordSort.bam.bai /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Coordinate_Sorted_BAMs/Spleen-4_Filtered_CoordSort.bam.bai
+++[2020-04-24 15:20:25] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: date '+%F %T'
++[2020-04-24 15:20:25] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:20:25: Finished processing Spleen-4.'
++[2020-04-24 15:20:25] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: touch Spleen-4.done
+++[2020-04-24 15:20:25] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: date '+%F %T'
++[2020-04-24 15:20:25] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: echo '# 20722072[8].mesabim1.msi.umn.edu 2020-04-24 15:20:25: Removing HISAT2 bam, markdup/dedup bam, and raw querysort bam to reduce disk usage.'
++[2020-04-24 15:20:25] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: rm -f Spleen-4.bam Spleen-4_MarkDup.bam Spleen-4_DeDup.bam Spleen-4_Raw_QuerySort.bam
++[2020-04-24 15:20:25] [20722072[8].mesabim1.msi.umn.edu] [Cleanup]: exec

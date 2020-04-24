@@ -1,0 +1,13 @@
+Status	BoneMarrow-1	BoneMarrow-2	BoneMarrow-3	BoneMarrow-4	Spleen-1	Spleen-2	Spleen-3	Spleen-4
+Assigned	731944	775410	591842	715001	709948	418543	704223	729557
+Unassigned_Unmapped	0	0	0	0	0	0	0	0
+Unassigned_MappingQuality	0	0	0	0	0	0	0	0
+Unassigned_Chimera	0	0	0	0	0	0	0	0
+Unassigned_FragmentLength	0	0	0	0	0	0	0	0
+Unassigned_Duplicate	0	0	0	0	0	0	0	0
+Unassigned_MultiMapping	0	0	0	0	0	0	0	0
+Unassigned_Secondary	0	0	0	0	0	0	0	0
+Unassigned_Nonjunction	0	0	0	0	0	0	0	0
+Unassigned_NoFeatures	96957	149189	80677	135095	130518	65667	112183	124879
+Unassigned_Overlapping_Length	0	0	0	0	0	0	0	0
+Unassigned_Ambiguity	22865	19508	15518	12533	19043	11421	18747	18572

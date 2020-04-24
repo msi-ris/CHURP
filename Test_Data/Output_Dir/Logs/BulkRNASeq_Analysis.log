@@ -1,0 +1,61 @@
+###############################################################################
+# 2020-04-24 15:23:06: Summary job started
+# 2020-04-24 15:23:06: Job ID: 20722073.mesabim1.msi.umn.edu
+#BEGIN_MODULES
+Currently Loaded Modulefiles:
+zlib/1.2.11_gcc7.2.0
+bzip2/1.0.6-gnu7.2.0_PIC
+gmp/6.1.2_gcc7.2.0
+mpfr/3.1.6_gcc7.2.0
+mpc/1.0.3_gcc7.2.0
+isl/0.18_gcc7.2.0
+gcc/7.2.0
+pcre/8.42_gcc7.2.0
+xz-utils/5.2.3_gcc7.2.0
+curl/7.59.0_gcc7.2.0
+gmp/6.1.2_gcc8.1.0
+mpfr/4.0.1_gcc8.1.0
+mpc/1.1.0_gcc8.1.0
+isl/0.19_gcc8.1.0
+gcc/8.1.0
+libtiff/4.0.8
+R/3.5.0
+python/3.6.3
+#END_MODULES
+# R2 file detected; running as paired-end
+# NOTE! We are assuming that all samples were subject to the same preparation and sequencing protocols.
+# NOTE! We do not support mixing of single-end and paired-end samples for counts and differential expression testing.
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:06: Adding /home/msistaff/public/CHURP_Deps/v0/R to R_LIBS_USER
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:06: Using counting reads with featureCounts v. 1.6.2
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:06: Making a counts matrix for all samples.
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:06: Library is paired-end with strand 0.
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:17: Running edgeR analysis on counts
+# ----- Output from /panfs/roc/groups/14/msistaff/konox006/Soft/CHURP/R_Scripts/summarize_bulk_rnaseq.R below
+
+Attaching package: ‘gplots’
+
+The following object is masked from ‘package:stats’:
+
+    lowess
+
+null device 
+          1 
+null device 
+          1 
+null device 
+          1 
+Only 1 grouping present, skipping differential expression tests.
+# ----- End output from /panfs/roc/groups/14/msistaff/konox006/Soft/CHURP/R_Scripts/summarize_bulk_rnaseq.R
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Copying merged counts matrix and summary into /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Counts
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Copying GTF into /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out.
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Generating translation table of gene name and Ensembl ID.
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Linking gene symbol with Ensembl ID for subread_counts.txt
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Collecting summaries for BoneMarrow-1
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Collecting summaries for BoneMarrow-2
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:23: Collecting summaries for BoneMarrow-3
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:23: Collecting summaries for BoneMarrow-4
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:23: Collecting summaries for Spleen-1
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:24: Collecting summaries for Spleen-2
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:24: Collecting summaries for Spleen-3
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:24: Collecting summaries for Spleen-4
+# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:35: Done summarizing bulk RNAseq run

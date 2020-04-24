@@ -1,0 +1,85 @@
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+# 2020-04-24 15:13:06 PBS error file for Spleen-2
+# 2020-04-24 15:13:06: For a human-readable log, see /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Logs/Spleen-2_Analysis.log
+# 2020-04-24 15:13:06: For a debugging trace, see /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Logs/Spleen-2_Trace.log
+# 2020-04-24 15:13:06: Entering section General
+picard is set to write temporary files to /scratch.local/konox006/picard_temp
+Invoke a specific picard tool with the command: java -jar /panfs/roc/msisoft/picard/2.9.0/picard.jar
+Currently Loaded Modulefiles:
+python3/3.6.3_anaconda5.0.1
+hisat2/2.1.0
+/panfs/roc/soft/modulefiles.legacy/modulefiles.common/java/jdk1.7.0_45
+fastqc/0.11.7
+trimmomatic/0.33
+xz-utils/5.2.3_gcc7.2.0
+bzip2/1.0.6-gnu6.1.0_PIC
+gmp/6.1.2_gcc7.2.0
+mpfr/3.1.6_gcc7.2.0
+mpc/1.0.3_gcc7.2.0
+isl/0.18_gcc7.2.0
+gcc/7.2.0
+samtools/1.7
+/panfs/roc/soft/modulefiles.legacy/modulefiles.common/java/jdk1.8.0_45
+picard/2.9.0
+zlib/1.2.11_gcc7.2.0
+bzip2/1.0.6-gnu7.2.0_PIC
+pcre/8.42_gcc7.2.0
+curl/7.59.0_gcc7.2.0
+gmp/6.1.2_gcc8.1.0
+mpfr/4.0.1_gcc8.1.0
+mpc/1.1.0_gcc8.1.0
+isl/0.19_gcc8.1.0
+gcc/8.1.0
+libtiff/4.0.8
+R/3.5.0
+java/openjdk-11.0.2
+# 2020-04-24 15:13:07: Finished section General
+# 2020-04-24 15:13:07: Entering section Subsampling
+# 2020-04-24 15:13:07: Finished section Subsampling
+# 2020-04-24 15:13:07: Entering section rRNA.Subsampling
+# 2020-04-24 15:13:14: Finished section rRNA.Subsampling
+# 2020-04-24 15:13:14: Entering section BBDuk
+# 2020-04-24 15:14:46: Finished section BBDuk
+# 2020-04-24 15:14:46: Entering section FastQC.Raw
+# 2020-04-24 15:15:00: Finished section FastQC.Raw
+# 2020-04-24 15:15:00: Entering section Trimmomatic
+# 2020-04-24 15:15:37: Finished section Trimmomatic
+# 2020-04-24 15:15:37: Entering section FastQC.Trimmed
+# 2020-04-24 15:15:49: Finished section FastQC.Trimmed
+# 2020-04-24 15:15:49: Entering section HISAT2
+# 2020-04-24 15:16:25: Finished section HISAT2
+# 2020-04-24 15:16:25: Entering section MarkDuplicates
+# 2020-04-24 15:17:39: Finished section MarkDuplicates
+# 2020-04-24 15:17:39: Entering section BAM.Filtering
+# 2020-04-24 15:17:41: Finished section BAM.Filtering
+# 2020-04-24 15:17:41: Entering section BAM.Coord.Sort
+# 2020-04-24 15:17:57: Finished section BAM.Coord.Sort
+# 2020-04-24 15:17:57: Entering section BAM.Stats
+# 2020-04-24 15:18:02: Finished section BAM.Stats
+# 2020-04-24 15:18:02: Entering section RNASeQC
+# 2020-04-24 15:18:02: Note, this section is OPTIONAL (errors will not kill pipeline jobs).
+# 2020-04-24 15:19:33: Finished section RNASeQC
+# 2020-04-24 15:19:33: Entering section InsertSizeMetrics
+# 2020-04-24 15:19:43: Finished section InsertSizeMetrics
+# 2020-04-24 15:19:43: Entering section Alignment.Summary
+# 2020-04-24 15:19:43: Finished section Alignment.Summary
+# 2020-04-24 15:19:43: Entering section Cleanup

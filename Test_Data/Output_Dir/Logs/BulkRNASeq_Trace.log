@@ -1,0 +1,617 @@
+##### BEGIN TRACE FOR 20722073.mesabim1.msi.umn.edu #####
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: '[' -z /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/BoneMarrow-1_S23_R2_001.fastq.gz ']'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: PE=true
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: echo '# R2 file detected; running as paired-end'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: echo '# NOTE! We are assuming that all samples were subject to the same preparation and sequencing protocols.'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: echo '# NOTE! We do not support mixing of single-end and paired-end samples for counts and differential expression testing.'
+++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: date '+%F %T'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:06: Adding /home/msistaff/public/CHURP_Deps/v0/R to R_LIBS_USER'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: export R_LIBS_USER=/home/msistaff/public/CHURP_Deps/v0/R
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: R_LIBS_USER=/home/msistaff/public/CHURP_Deps/v0/R
+++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: date '+%F %T'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:06: Using counting reads with featureCounts v. 1.6.2'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: FEATURECOUNTS=/home/msistaff/public/CHURP_Deps/v0/Supp/subread-1.6.2-Linux-x86_64/bin/featureCounts
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: mkdir -p /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: cd /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples
+++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: date '+%F %T'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: echo '# 2020-04-24 15:23:06: Finished section General'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [General]: LOG_SECTION=featureCounts
+++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: date '+%F %T'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: echo '# 2020-04-24 15:23:06: Entering section featureCounts'
+++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: date '+%F %T'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:06: Making a counts matrix for all samples.'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: BAM_LIST=($(find . -type l -exec basename {} \;| sort -V))
+++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: find . -type l -exec basename '{}' ';'
+++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: sort -V
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: '[' true = true ']'
+++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: date '+%F %T'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:06: Library is paired-end with strand 0.'
++[2020-04-24 15:23:06] [20722073.mesabim1.msi.umn.edu] [featureCounts]: /home/msistaff/public/CHURP_Deps/v0/Supp/subread-1.6.2-Linux-x86_64/bin/featureCounts -a /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reference/Annotations.gtf.gz -T 8 -B -p -Q 10 -s 0 -o subread_counts.txt BoneMarrow-1 BoneMarrow-2 BoneMarrow-3 BoneMarrow-4 Spleen-1 Spleen-2 Spleen-3 Spleen-4
+++[2020-04-24 15:23:17] [20722073.mesabim1.msi.umn.edu] [featureCounts]: date '+%F %T'
++[2020-04-24 15:23:17] [20722073.mesabim1.msi.umn.edu] [featureCounts]: echo '# 2020-04-24 15:23:17: Finished section featureCounts'
++[2020-04-24 15:23:17] [20722073.mesabim1.msi.umn.edu] [featureCounts]: LOG_SECTION=edgeR
+++[2020-04-24 15:23:17] [20722073.mesabim1.msi.umn.edu] [edgeR]: date '+%F %T'
++[2020-04-24 15:23:17] [20722073.mesabim1.msi.umn.edu] [edgeR]: echo '# 2020-04-24 15:23:17: Entering section edgeR'
+++[2020-04-24 15:23:17] [20722073.mesabim1.msi.umn.edu] [edgeR]: date '+%F %T'
++[2020-04-24 15:23:17] [20722073.mesabim1.msi.umn.edu] [edgeR]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:17: Running edgeR analysis on counts'
++[2020-04-24 15:23:17] [20722073.mesabim1.msi.umn.edu] [edgeR]: Rscript /panfs/roc/groups/14/msistaff/konox006/Soft/CHURP/R_Scripts/summarize_bulk_rnaseq.R /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/2020-04-24.konox006.bulk_rnaseq.samplesheet.txt /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples/subread_counts.txt 200 1.0
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [edgeR]: echo '# ----- Output from /panfs/roc/groups/14/msistaff/konox006/Soft/CHURP/R_Scripts/summarize_bulk_rnaseq.R below'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [edgeR]: cat Rout.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [edgeR]: echo '# ----- End output from /panfs/roc/groups/14/msistaff/konox006/Soft/CHURP/R_Scripts/summarize_bulk_rnaseq.R'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [edgeR]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [edgeR]: echo '# 2020-04-24 15:23:22: Finished section edgeR'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [edgeR]: LOG_SECTION=GTF.Summary
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: echo '# 2020-04-24 15:23:22: Entering section GTF.Summary'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Copying merged counts matrix and summary into /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Counts'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: cp -u subread_counts.txt /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Counts/subread_counts.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: cp -u subread_counts.txt.summary /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Counts/subread_counts.txt.summary
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Copying GTF into /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out.'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: cp -u /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reference/Annotations.gtf.gz /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Generating translation table of gene name and Ensembl ID.'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: awk -F '\t' '$3 == "gene" {print $9}' /dev/fd/63
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: awk -F ';' -v 'OFS=\t' '{
+    found_gene="false"
+    for(i = 1; i <= NF; i++) {
+        if( $i ~ /gene_id/ ) {
+            split($i,GI," ")
+        }
+        if( $i ~ /gene_name/ ) {
+            split($i,GN," ")
+            found_gene="true"
+        }
+    }
+    if(found_gene=="true") {
+        print GI[2],GN[2]
+    } else {
+        print GI[2],GI[2]
+    }
+}'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: sed -e 's/"//g'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: gzip -cd /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reference/Annotations.gtf.gz
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Linking gene symbol with Ensembl ID for subread_counts.txt'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: cut -f 7-
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: head -n 2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Counts/subread_counts.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: tail -n 1
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: echo -e 'GeneName\tBoneMarrow-1	BoneMarrow-2	BoneMarrow-3	BoneMarrow-4	Spleen-1	Spleen-2	Spleen-3	Spleen-4'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: cut -f 2- -d ' '
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: join -e NA -a 2 /dev/fd/63 /dev/fd/62
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: sort -k 1,1 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/gene_id_gene_name_map.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: tr ' ' '\t'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: tail -n +3 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Counts/subread_counts.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: sort -k 1,1
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: cut -f 1,7-
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: echo '# 2020-04-24 15:23:22: Finished section GTF.Summary'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [GTF.Summary]: LOG_SECTION=Linking
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Linking]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Linking]: echo '# 2020-04-24 15:23:22: Entering section Linking'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Linking]: rm -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/singlesamples_work_directory /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/allsamples_work_directory
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Linking]: ln -sf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/singlesamples_work_directory
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Linking]: ln -sf /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/allsamples_work_directory
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Linking]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Linking]: echo '# 2020-04-24 15:23:22: Finished section Linking'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Linking]: LOG_SECTION=Collate.Samples
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: rm -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples/Read_Counts.txt /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples/Samtools_Stats.txt /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples/HISAT_Stats.txt /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples/IS_Stats.txt /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples/RNASeq_Metrics.txt /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples/RNASeq_Metrics_Unstranded.txt /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples/rRNA_kmers.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: SDIRS=($(find "${WORKDIR}/singlesamples" -maxdepth 1 -mindepth 1 -type d | sort -V))
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples -maxdepth 1 -mindepth 1 -type d
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sort -V
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: for sampledir in '"${SDIRS[@]}"'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sample=BoneMarrow-1
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' '!' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1.done ']'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Collecting summaries for BoneMarrow-1'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1 -maxdepth 1 -type f -name '*1.raw_readcount.txt'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_1.raw_readcount.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1 -maxdepth 1 -type f -name '*2.raw_readcount.txt'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_2.raw_readcount.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_1.raw_readcount.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R1_COUNT=1006504
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_2.raw_readcount.txt ']'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_2.raw_readcount.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R2_COUNT=1006504
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1 -maxdepth 1 -type f -name '*1.trimmed_readcount.txt'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_1.trimmed_readcount.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1 -maxdepth 1 -type f -name '*2.trimmed_readcount.txt'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_2.trimmed_readcount.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_1.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_1.trimmed_readcount.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR1_COUNT=998695
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_2.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_2.trimmed_readcount.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR2_COUNT=998695
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-1\t1006504\t1006504\t998695\t998695'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/hisat_map_summary.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: BAMSTAT=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_bamstats.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_bamstats.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'raw total sequences'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: NMAPPED=1997390
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_bamstats.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads duplicated'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: DUPLICATED=322482
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_bamstats.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads MQ0'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MQ0=886
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'maximum length'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_bamstats.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MAXLEN=150
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_bamstats.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average length'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGLEN=136
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BoneMarrow-1_bamstats.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average quality'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGQUAL=37.7
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-1\t1997390\t322482\t886\t150\t136\t37.7'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '#Matched' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/BBDuk_rRNA_Stats.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 2-3
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-1\t40	0.20000%'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/IS_Stats.txt ']'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/IS_Stats.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-1\t275	282.29124	104.934738	23	69	193	459'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/BoneMarrow-1\t/g' /dev/fd/63
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/RNASeQC_Out/BoneMarrow-1.metrics.tsv
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/BoneMarrow-1\t/g' /dev/fd/63
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-1/RNASeQC_Out/BoneMarrow-1_Unstranded.metrics.tsv
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: for sampledir in '"${SDIRS[@]}"'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sample=BoneMarrow-2
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' '!' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2.done ']'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: date '+%F %T'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:22: Collecting summaries for BoneMarrow-2'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2 -maxdepth 1 -type f -name '*1.raw_readcount.txt'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_1.raw_readcount.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2 -maxdepth 1 -type f -name '*2.raw_readcount.txt'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_2.raw_readcount.txt
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_1.raw_readcount.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R1_COUNT=1092217
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_2.raw_readcount.txt ']'
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_2.raw_readcount.txt
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R2_COUNT=1092217
+++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2 -maxdepth 1 -type f -name '*1.trimmed_readcount.txt'
++[2020-04-24 15:23:22] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_1.trimmed_readcount.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2 -maxdepth 1 -type f -name '*2.trimmed_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_2.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_1.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_1.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR1_COUNT=1086386
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_2.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_2.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR2_COUNT=1086386
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-2\t1092217\t1092217\t1086386\t1086386'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/hisat_map_summary.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: BAMSTAT=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'raw total sequences'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: NMAPPED=2172772
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads duplicated'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: DUPLICATED=444630
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads MQ0'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MQ0=484
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'maximum length'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MAXLEN=150
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average length'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGLEN=144
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BoneMarrow-2_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average quality'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGQUAL=39.1
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-2\t2172772\t444630\t484\t150\t144\t39.1'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '#Matched' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/BBDuk_rRNA_Stats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 2-3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-2\t99	0.49500%'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/IS_Stats.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/IS_Stats.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-2\t303	304.034039	80.939559	19	55	157	275'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/BoneMarrow-2\t/g' /dev/fd/63
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/RNASeQC_Out/BoneMarrow-2.metrics.tsv
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/BoneMarrow-2\t/g' /dev/fd/63
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-2/RNASeQC_Out/BoneMarrow-2_Unstranded.metrics.tsv
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: for sampledir in '"${SDIRS[@]}"'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sample=BoneMarrow-3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' '!' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3.done ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: date '+%F %T'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:23: Collecting summaries for BoneMarrow-3'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3 -maxdepth 1 -type f -name '*1.raw_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_1.raw_readcount.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3 -maxdepth 1 -type f -name '*2.raw_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_2.raw_readcount.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_1.raw_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R1_COUNT=840077
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_2.raw_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_2.raw_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R2_COUNT=840077
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3 -maxdepth 1 -type f -name '*1.trimmed_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_1.trimmed_readcount.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3 -maxdepth 1 -type f -name '*2.trimmed_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_2.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_1.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_1.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR1_COUNT=833111
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_2.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_2.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR2_COUNT=833111
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-3\t840077\t840077\t833111\t833111'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/hisat_map_summary.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: BAMSTAT=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'raw total sequences'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: NMAPPED=1666222
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads duplicated'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: DUPLICATED=289006
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads MQ0'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MQ0=456
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'maximum length'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MAXLEN=150
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average length'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGLEN=137
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BoneMarrow-3_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average quality'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGQUAL=37.7
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-3\t1666222\t289006\t456\t150\t137\t37.7'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '#Matched' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/BBDuk_rRNA_Stats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 2-3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-3\t34	0.17000%'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/IS_Stats.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/IS_Stats.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-3\t300	307.503654	99.823805	21	65	185	379'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/BoneMarrow-3\t/g' /dev/fd/63
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/RNASeQC_Out/BoneMarrow-3.metrics.tsv
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/BoneMarrow-3\t/g' /dev/fd/63
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-3/RNASeQC_Out/BoneMarrow-3_Unstranded.metrics.tsv
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: for sampledir in '"${SDIRS[@]}"'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sample=BoneMarrow-4
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' '!' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4.done ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: date '+%F %T'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:23: Collecting summaries for BoneMarrow-4'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4 -maxdepth 1 -type f -name '*1.raw_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_1.raw_readcount.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4 -maxdepth 1 -type f -name '*2.raw_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_2.raw_readcount.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_1.raw_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R1_COUNT=1044925
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_2.raw_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_2.raw_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R2_COUNT=1044925
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4 -maxdepth 1 -type f -name '*1.trimmed_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_1.trimmed_readcount.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4 -maxdepth 1 -type f -name '*2.trimmed_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_2.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_1.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_1.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR1_COUNT=1005803
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_2.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_2.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR2_COUNT=1005803
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-4\t1044925\t1044925\t1005803\t1005803'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/hisat_map_summary.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: BAMSTAT=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'raw total sequences'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: NMAPPED=2011606
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads duplicated'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: DUPLICATED=634418
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads MQ0'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MQ0=554
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'maximum length'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MAXLEN=150
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average length'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGLEN=139
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BoneMarrow-4_bamstats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average quality'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGQUAL=37.7
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-4\t2011606\t634418\t554\t150\t139\t37.7'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '#Matched' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/BBDuk_rRNA_Stats.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 2-3
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-4\t34	0.17000%'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/IS_Stats.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/IS_Stats.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'BoneMarrow-4\t273	282.778578	91.259946	23	55	165	325'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/BoneMarrow-4\t/g' /dev/fd/63
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/RNASeQC_Out/BoneMarrow-4.metrics.tsv
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/BoneMarrow-4\t/g' /dev/fd/63
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/BoneMarrow-4/RNASeQC_Out/BoneMarrow-4_Unstranded.metrics.tsv
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: for sampledir in '"${SDIRS[@]}"'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sample=Spleen-1
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' '!' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1.done ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: date '+%F %T'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:23: Collecting summaries for Spleen-1'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1 -maxdepth 1 -type f -name '*1.raw_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_1.raw_readcount.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1 -maxdepth 1 -type f -name '*2.raw_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_2.raw_readcount.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_1.raw_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R1_COUNT=1007898
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_2.raw_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_2.raw_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R2_COUNT=1007898
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1 -maxdepth 1 -type f -name '*1.trimmed_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_1.trimmed_readcount.txt
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1 -maxdepth 1 -type f -name '*2.trimmed_readcount.txt'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_2.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_1.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_1.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR1_COUNT=1001505
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_2.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_2.trimmed_readcount.txt
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR2_COUNT=1001505
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-1\t1007898\t1007898\t1001505\t1001505'
++[2020-04-24 15:23:23] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/hisat_map_summary.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: BAMSTAT=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'raw total sequences'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: NMAPPED=2003010
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads duplicated'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: DUPLICATED=390088
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads MQ0'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MQ0=322
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'maximum length'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MAXLEN=150
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average length'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGLEN=142
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/Spleen-1_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average quality'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGQUAL=38.5
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-1\t2003010\t390088\t322\t150\t142\t38.5'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '#Matched' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/BBDuk_rRNA_Stats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 2-3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-1\t325	1.62500%'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/IS_Stats.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/IS_Stats.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-1\t313	314.414734	82.936615	19	57	161	285'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/Spleen-1\t/g' /dev/fd/63
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/RNASeQC_Out/Spleen-1.metrics.tsv
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/Spleen-1\t/g' /dev/fd/63
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-1/RNASeQC_Out/Spleen-1_Unstranded.metrics.tsv
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: for sampledir in '"${SDIRS[@]}"'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sample=Spleen-2
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' '!' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2.done ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: date '+%F %T'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:24: Collecting summaries for Spleen-2'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2 -maxdepth 1 -type f -name '*1.raw_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_1.raw_readcount.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2 -maxdepth 1 -type f -name '*2.raw_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_2.raw_readcount.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_1.raw_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R1_COUNT=641889
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_2.raw_readcount.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_2.raw_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R2_COUNT=641889
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2 -maxdepth 1 -type f -name '*1.trimmed_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_1.trimmed_readcount.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2 -maxdepth 1 -type f -name '*2.trimmed_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_2.trimmed_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_1.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_1.trimmed_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR1_COUNT=635273
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_2.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_2.trimmed_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR2_COUNT=635273
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-2\t641889\t641889\t635273\t635273'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/hisat_map_summary.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: BAMSTAT=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'raw total sequences'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: NMAPPED=1270546
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads duplicated'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: DUPLICATED=171316
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads MQ0'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MQ0=414
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'maximum length'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MAXLEN=150
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average length'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_bamstats.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGLEN=139
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average quality'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGQUAL=38.0
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-2\t1270546\t171316\t414\t150\t139\t38.0'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '#Matched' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/BBDuk_rRNA_Stats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 2-3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-2\t48	0.24000%'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/IS_Stats.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/IS_Stats.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-2\t281	288.4301	97.030787	21	65	179	391'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/Spleen-2\t/g' /dev/fd/63
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/RNASeQC_Out/Spleen-2.metrics.tsv
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/Spleen-2\t/g' /dev/fd/63
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/RNASeQC_Out/Spleen-2_Unstranded.metrics.tsv
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: for sampledir in '"${SDIRS[@]}"'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sample=Spleen-3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' '!' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3.done ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: date '+%F %T'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:24: Collecting summaries for Spleen-3'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3 -maxdepth 1 -type f -name '*1.raw_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_1.raw_readcount.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3 -maxdepth 1 -type f -name '*2.raw_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_2.raw_readcount.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_1.raw_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R1_COUNT=982184
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_2.raw_readcount.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_2.raw_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R2_COUNT=982184
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3 -maxdepth 1 -type f -name '*1.trimmed_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_1.trimmed_readcount.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3 -maxdepth 1 -type f -name '*2.trimmed_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_2.trimmed_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_1.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_1.trimmed_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR1_COUNT=975857
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_2.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_2.trimmed_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR2_COUNT=975857
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-3\t982184\t982184\t975857\t975857'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/hisat_map_summary.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: BAMSTAT=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'raw total sequences'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: NMAPPED=1951714
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads duplicated'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: DUPLICATED=373332
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads MQ0'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MQ0=406
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'maximum length'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MAXLEN=150
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average length'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_bamstats.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGLEN=144
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average quality'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/Spleen-3_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGQUAL=39.1
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-3\t1951714\t373332\t406\t150\t144\t39.1'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '#Matched' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/BBDuk_rRNA_Stats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 2-3
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-3\t202	1.01000%'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/IS_Stats.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/IS_Stats.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-3\t306	307.497497	84.534969	19	57	163	289'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/Spleen-3\t/g' /dev/fd/63
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/RNASeQC_Out/Spleen-3.metrics.tsv
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/Spleen-3\t/g' /dev/fd/63
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-3/RNASeQC_Out/Spleen-3_Unstranded.metrics.tsv
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: for sampledir in '"${SDIRS[@]}"'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: basename /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sample=Spleen-4
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' '!' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4.done ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: date '+%F %T'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:24: Collecting summaries for Spleen-4'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4 -maxdepth 1 -type f -name '*1.raw_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1.raw_readcount.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4 -maxdepth 1 -type f -name '*2.raw_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: RAW_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2.raw_readcount.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1.raw_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R1_COUNT=1020670
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2.raw_readcount.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2.raw_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: R2_COUNT=1020670
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4 -maxdepth 1 -type f -name '*1.trimmed_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R1=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1.trimmed_readcount.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: find /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4 -maxdepth 1 -type f -name '*2.trimmed_readcount.txt'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TRIMMED_R2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2.trimmed_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_1.trimmed_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR1_COUNT=1014689
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -z /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2.trimmed_readcount.txt ']'
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: awk '{print $NF}' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_2.trimmed_readcount.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: TR2_COUNT=1014689
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-4\t1020670\t1020670\t1014689\t1014689'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/hisat_map_summary.txt
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: BAMSTAT=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_bamstats.txt
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'raw total sequences'
++[2020-04-24 15:23:24] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: NMAPPED=2029378
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_bamstats.txt
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads duplicated'
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: DUPLICATED=367768
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_bamstats.txt
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'reads MQ0'
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MQ0=410
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_bamstats.txt
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'maximum length'
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: MAXLEN=150
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average length'
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_bamstats.txt
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGLEN=144
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '^SN' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/Spleen-4_bamstats.txt
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep 'average quality'
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 3
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: AVGQUAL=39.1
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-4\t2029378\t367768\t410\t150\t144\t39.1'
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: grep '#Matched' /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/BBDuk_rRNA_Stats.txt
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cut -f 2-3
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-4\t50	0.25000%'
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: '[' -f /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/IS_Stats.txt ']'
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: cat /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/IS_Stats.txt
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo -e 'Spleen-4\t305	306.711681	84.622065	19	59	165	289'
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/Spleen-4\t/g' /dev/fd/63
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/RNASeQC_Out/Spleen-4.metrics.tsv
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: sed -e 's/^/Spleen-4\t/g' /dev/fd/63
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: tail -n +2 /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-4/RNASeQC_Out/Spleen-4_Unstranded.metrics.tsv
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: date '+%F %T'
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: echo '# 2020-04-24 15:23:25: Finished section Collate.Samples'
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [Collate.Samples]: LOG_SECTION=HTML.Report
+++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [HTML.Report]: date '+%F %T'
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [HTML.Report]: echo '# 2020-04-24 15:23:25: Entering section HTML.Report'
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [HTML.Report]: cp -u /panfs/roc/groups/14/msistaff/konox006/Soft/CHURP/R_Scripts/bulk_rnaseq_report.Rmd ./Report.Rmd
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [HTML.Report]: PATH=/panfs/roc/msisoft/anaconda/anaconda3-5.0.1/bin:/panfs/roc/msisoft/R/3.5.0/bin:/panfs/roc/msisoft/libtiff/4.0.8/bin:/panfs/roc/msisoft/gcc/8.1.0/bin:/panfs/roc/msisoft/curl/7.59.0_gcc7.2.0/bin:/panfs/roc/msisoft/xz-utils/5.2.3_gcc7.2.0/bin:/panfs/roc/msisoft/pcre/8.42_gcc7.2.0/bin:/panfs/roc/msisoft/gcc/7.2.0/bin:/panfs/roc/msisoft/bzip2/1.0.6-gcc7.2.0/bin:/usr/local/bin:/usr/local/sbin:/home/msistaff/konox006/bin:/home/msistaff/konox006/.local/bin:/scratch.local/smrtlink/smrtcmds/bin:/home/msistaff/konox006/Soft/bedops-2.4.30/bin:/usr/local/bin:/usr/local/sbin:/opt/msi/bin:/usr/share/Modules/bin:/opt/moab/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin:/panfs/roc/groups/14/msistaff/public/CHURP_Deps/v0/Supp/pandoc-2.3.1/bin
++[2020-04-24 15:23:25] [20722073.mesabim1.msi.umn.edu] [HTML.Report]: Rscript -e 'library(rmarkdown); rmarkdown::render('\''./Report.Rmd'\'', output_file='\''/panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Bulk_RNAseq_Report.html'\'', params=list(outdir='\''/panfs/roc/scratch/RIS_RNAseq_Tutorial/Out'\'', workdir='\''/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work'\'', pipeline='\''/panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/2020-04-24.konox006.bulk_rnaseq.pipeline.sh'\'', samplesheet='\''/panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/2020-04-24.konox006.bulk_rnaseq.samplesheet.txt'\''))'
+++[2020-04-24 15:23:35] [20722073.mesabim1.msi.umn.edu] [HTML.Report]: date '+%F %T'
++[2020-04-24 15:23:35] [20722073.mesabim1.msi.umn.edu] [HTML.Report]: echo '# 20722073.mesabim1.msi.umn.edu 2020-04-24 15:23:35: Done summarizing bulk RNAseq run'
++[2020-04-24 15:23:35] [20722073.mesabim1.msi.umn.edu] [HTML.Report]: exec

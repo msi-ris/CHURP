@@ -1,0 +1,254 @@
+###############################################################################
+# 2020-04-24 15:13:06: Analysis started for Spleen-2
+# 2020-04-24 15:13:06: Job ID: 20722072[6].mesabim1.msi.umn.edu
+#BEGIN_MODULES
+Currently Loaded Modulefiles:
+python3/3.6.3_anaconda5.0.1
+hisat2/2.1.0
+/panfs/roc/soft/modulefiles.legacy/modulefiles.common/java/jdk1.7.0_45
+fastqc/0.11.7
+trimmomatic/0.33
+xz-utils/5.2.3_gcc7.2.0
+bzip2/1.0.6-gnu6.1.0_PIC
+gmp/6.1.2_gcc7.2.0
+mpfr/3.1.6_gcc7.2.0
+mpc/1.0.3_gcc7.2.0
+isl/0.18_gcc7.2.0
+gcc/7.2.0
+samtools/1.7
+/panfs/roc/soft/modulefiles.legacy/modulefiles.common/java/jdk1.8.0_45
+picard/2.9.0
+zlib/1.2.11_gcc7.2.0
+bzip2/1.0.6-gnu7.2.0_PIC
+pcre/8.42_gcc7.2.0
+curl/7.59.0_gcc7.2.0
+gmp/6.1.2_gcc8.1.0
+mpfr/4.0.1_gcc8.1.0
+mpc/1.1.0_gcc8.1.0
+isl/0.19_gcc8.1.0
+gcc/8.1.0
+libtiff/4.0.8
+R/3.5.0
+java/openjdk-11.0.2
+#END_MODULES
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:13:06: Using /panfs/roc/msisoft/java/openjdk-11.0.2/bin/java
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:13:07: R2 file detected; running Spleen-2 as paired-end
+# 2020-04-24 15:13:07: Not subsampling reads for sample Spleen-2 for analysis
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:13:07: Subsampling reads to 10000 fragments.
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:13:14: Using BBDuk to search for rRNA contamination in subsampled reads.
+java -ea -Xmx10g -Xms10g -cp /home/msistaff/public/CHURP_Deps/v0/Supp/bbmap/current/ jgi.BBDuk in=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/BBDuk_R1.fastq in2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/BBDuk_R2.fastq ref=/home/msistaff/public/CHURP_Deps/v0/db/SILVA_132_LSU_SSU_Ref_Dedup_Kmers_min100.fasta.gz stats=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/BBDuk_rRNA_Stats.txt k=25 editdistance=1 prealloc=t threads=4 -Xmx10g
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=/scratch.local/konox006/picard_temp
+Executing jgi.BBDuk [in=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/BBDuk_R1.fastq, in2=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/BBDuk_R2.fastq, ref=/home/msistaff/public/CHURP_Deps/v0/db/SILVA_132_LSU_SSU_Ref_Dedup_Kmers_min100.fasta.gz, stats=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/BBDuk_rRNA_Stats.txt, k=25, editdistance=1, prealloc=t, threads=4, -Xmx10g]
+Version 38.39
+
+Set threads to 4
+Initial size set to 98612295
+No output stream specified.  To write to stdout, please specify 'out=stdout.fq' or similar.
+3.285 seconds.
+Initial:
+Memory: max=10737m, total=10737m, free=2657m, used=8080m
+
+Added 499703827 kmers; time: 	84.137 seconds.
+Memory: max=10737m, total=10737m, free=2613m, used=8124m
+
+Input is being processed as paired
+Processing time:   		0.342 seconds.
+
+Input:                  	20000 reads 		3000000 bases.
+Contaminants:           	90 reads (0.45%) 	13500 bases (0.45%)
+Total Removed:          	90 reads (0.45%) 	13500 bases (0.45%)
+Result:                 	19910 reads (99.55%) 	2986500 bases (99.55%)
+
+Time:                         	84.500 seconds.
+Reads Processed:       20000 	0.24k reads/sec
+Bases Processed:       3000k 	0.04m bases/sec
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:14:46: Running fastqc on /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-2_S29_R1_001.fastq.gz and /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-2_S29_R2_001.fastq.gz.
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=/scratch.local/konox006/picard_temp
+Started analysis of Spleen-2_S29_R1_001.fastq.gz
+Started analysis of Spleen-2_S29_R2_001.fastq.gz
+Approx 5% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 5% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 10% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 10% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 15% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 20% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 15% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 25% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 20% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 30% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 25% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 35% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 30% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 40% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 35% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 45% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 40% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 50% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 45% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 55% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 50% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 60% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 55% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 65% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 60% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 70% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 65% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 75% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 70% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 80% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 75% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 85% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 80% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 90% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 85% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 95% complete for Spleen-2_S29_R1_001.fastq.gz
+Approx 90% complete for Spleen-2_S29_R2_001.fastq.gz
+Approx 95% complete for Spleen-2_S29_R2_001.fastq.gz
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:15:00: Running trimmomatic on /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-2_S29_R1_001.fastq.gz and /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-2_S29_R2_001.fastq.gz.
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=/scratch.local/konox006/picard_temp
+TrimmomaticPE: Started with arguments: -threads 4 /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-2_S29_R1_001.fastq.gz /panfs/roc/groups/14/msistaff/public/RNAseq_Tutorial/Reads/Spleen-2_S29_R2_001.fastq.gz Spleen-2_1P.fq.gz Spleen-2_1U.fq.gz Spleen-2_2P.fq.gz Spleen-2_2U.fq.gz ILLUMINACLIP:/panfs/roc/msisoft/trimmomatic/0.33//adapters/all_illumina_adapters.fa:4:15:7:2:true LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:18
+Using PrefixPair: 'AGATGTGTATAAGAGACAG' and 'AGATGTGTATAAGAGACAG'
+Using PrefixPair: 'AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT' and 'CAAGCAGAAGACGGCATACGAGATCGGTCTCGGCATTCCTGCTGAACCGCTCTTCCGATCT'
+Using Long Clipping Sequence: 'GTCTCGTGGGCTCGGAGATGTGTATAAGAGACAG'
+Using Long Clipping Sequence: 'TCGTCGGCAGCGTCAGATGTGTATAAGAGACAG'
+Using Long Clipping Sequence: 'TACACTCTTTCCCTACACGACGCTCTTCCGATCT'
+Using Long Clipping Sequence: 'GTGACTGGAGTTCAGACGTGTGCTCTTCCGATCT'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCTCGTATGCCGTCTTCTGCTTG'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA'
+Skipping duplicate Clipping Sequence: 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAG'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGCCGTCTTCTGCTTG'
+Using Long Clipping Sequence: 'TTTTTTTTTTAATGATACGGCGACCACCGAGATCTACAC'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT'
+Using Long Clipping Sequence: 'TTTTTTTTTTCAAGCAGAAGACGGCATACGA'
+Skipping duplicate Clipping Sequence: 'AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
+Skipping duplicate Clipping Sequence: 'GTGACTGGAGTTCAGACGTGTGCTCTTCCGATCT'
+Skipping duplicate Clipping Sequence: 'TACACTCTTTCCCTACACGACGCTCTTCCGATCT'
+Using Long Clipping Sequence: 'CAAGCAGAAGACGGCATACGAGATCGGTCTCGGCATTCCTGCTGAACCGCTCTTCCGATCT'
+Using Long Clipping Sequence: 'CTGTCTCTTATACACATCTCCGAGCCCACGAGAC'
+Using Long Clipping Sequence: 'AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT'
+Using Long Clipping Sequence: 'CTGTCTCTTATACACATCTGACGCTGCCGACGA'
+ILLUMINACLIP: Using 2 prefix pairs, 17 forward/reverse sequences, 0 forward only sequences, 0 reverse only sequences
+Quality encoding detected as phred33
+Input Read Pairs: 641889 Both Surviving: 635273 (98.97%) Forward Only Surviving: 6351 (0.99%) Reverse Only Surviving: 201 (0.03%) Dropped: 64 (0.01%)
+TrimmomaticPE: Completed successfully
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:15:37: Running fastqc on trimmed fastq files.
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=/scratch.local/konox006/picard_temp
+Started analysis of Spleen-2_1P.fq.gz
+Started analysis of Spleen-2_2P.fq.gz
+Approx 5% complete for Spleen-2_1P.fq.gz
+Approx 5% complete for Spleen-2_2P.fq.gz
+Approx 10% complete for Spleen-2_1P.fq.gz
+Approx 10% complete for Spleen-2_2P.fq.gz
+Approx 15% complete for Spleen-2_1P.fq.gz
+Approx 15% complete for Spleen-2_2P.fq.gz
+Approx 20% complete for Spleen-2_1P.fq.gz
+Approx 20% complete for Spleen-2_2P.fq.gz
+Approx 25% complete for Spleen-2_1P.fq.gz
+Approx 25% complete for Spleen-2_2P.fq.gz
+Approx 30% complete for Spleen-2_1P.fq.gz
+Approx 30% complete for Spleen-2_2P.fq.gz
+Approx 35% complete for Spleen-2_1P.fq.gz
+Approx 35% complete for Spleen-2_2P.fq.gz
+Approx 40% complete for Spleen-2_1P.fq.gz
+Approx 40% complete for Spleen-2_2P.fq.gz
+Approx 45% complete for Spleen-2_1P.fq.gz
+Approx 45% complete for Spleen-2_2P.fq.gz
+Approx 50% complete for Spleen-2_1P.fq.gz
+Approx 50% complete for Spleen-2_2P.fq.gz
+Approx 55% complete for Spleen-2_1P.fq.gz
+Approx 55% complete for Spleen-2_2P.fq.gz
+Approx 60% complete for Spleen-2_1P.fq.gz
+Approx 60% complete for Spleen-2_2P.fq.gz
+Approx 65% complete for Spleen-2_1P.fq.gz
+Approx 65% complete for Spleen-2_2P.fq.gz
+Approx 70% complete for Spleen-2_1P.fq.gz
+Approx 70% complete for Spleen-2_2P.fq.gz
+Approx 75% complete for Spleen-2_1P.fq.gz
+Approx 75% complete for Spleen-2_2P.fq.gz
+Approx 80% complete for Spleen-2_1P.fq.gz
+Approx 80% complete for Spleen-2_2P.fq.gz
+Approx 85% complete for Spleen-2_1P.fq.gz
+Approx 85% complete for Spleen-2_2P.fq.gz
+Approx 90% complete for Spleen-2_1P.fq.gz
+Approx 90% complete for Spleen-2_2P.fq.gz
+Approx 95% complete for Spleen-2_1P.fq.gz
+Approx 95% complete for Spleen-2_2P.fq.gz
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:15:49: Aligning trimmed reads with HISAT2.
+HISAT2 summary stats:
+	Total pairs: 635273
+		Aligned concordantly or discordantly 0 time: 131605 (20.72%)
+		Aligned concordantly 1 time: 494392 (77.82%)
+		Aligned concordantly >1 times: 8037 (1.27%)
+		Aligned discordantly 1 time: 1239 (0.20%)
+	Total unpaired reads: 263210
+		Aligned 0 time: 263210 (100.00%)
+		Aligned 1 time: 0 (0.00%)
+		Aligned >1 times: 0 (0.00%)
+	Overall alignment rate: 79.28%
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:16:25: Soring raw HISAT2 BAM by query in prep for deduplication.
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/picard_tmp
+[Fri Apr 24 15:16:26 CDT 2020] picard.sam.SortSam INPUT=Spleen-2.bam OUTPUT=Spleen-2_Raw_QuerySort.bam SORT_ORDER=queryname    VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json
+[Fri Apr 24 15:16:26 CDT 2020] Executing as konox006@cn0530 on Linux 3.10.0-1062.18.1.el7.x86_64 amd64; OpenJDK 64-Bit Server VM 11.0.2+9; Picard version: 2.9.0-1-gf5b9f50-SNAPSHOT
+INFO	2020-04-24 15:16:36	SortSam	Finished reading inputs, merging and writing to output now.
+[Fri Apr 24 15:16:58 CDT 2020] picard.sam.SortSam done. Elapsed time: 0.54 minutes.
+Runtime.totalMemory()=2365587456
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:16:58: Marking duplicate reads with Picard MarkDuplicates.
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/picard_tmp
+[Fri Apr 24 15:16:59 CDT 2020] picard.sam.markduplicates.MarkDuplicates INPUT=[Spleen-2_Raw_QuerySort.bam] OUTPUT=Spleen-2_MarkDup.bam METRICS_FILE=Spleen-2_MarkDup_Metrics.txt REMOVE_DUPLICATES=false ASSUME_SORT_ORDER=queryname    MAX_SEQUENCES_FOR_DISK_READ_ENDS_MAP=50000 MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=8000 SORTING_COLLECTION_SIZE_RATIO=0.25 REMOVE_SEQUENCING_DUPLICATES=false TAGGING_POLICY=DontTag ASSUME_SORTED=false DUPLICATE_SCORING_STRATEGY=SUM_OF_BASE_QUALITIES PROGRAM_RECORD_ID=MarkDuplicates PROGRAM_GROUP_NAME=MarkDuplicates READ_NAME_REGEX=<optimized capture of last three ':' separated fields as numeric values> OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json
+[Fri Apr 24 15:16:59 CDT 2020] Executing as konox006@cn0530 on Linux 3.10.0-1062.18.1.el7.x86_64 amd64; OpenJDK 64-Bit Server VM 11.0.2+9; Picard version: 2.9.0-1-gf5b9f50-SNAPSHOT
+INFO	2020-04-24 15:16:59	MarkDuplicates	Start of doWork freeMemory: 13412320; totalMemory: 17825792; maxMemory: 3145728000
+INFO	2020-04-24 15:16:59	MarkDuplicates	Reading input file and constructing read end information.
+INFO	2020-04-24 15:16:59	MarkDuplicates	Will retain up to 12098953 data points before spilling to disk.
+WARNING	2020-04-24 15:16:59	AbstractOpticalDuplicateFinderCommandLineProgram	A field field parsed out of a read name was expected to contain an integer and did not. Read name: SRR7989586:10000006:CAGATC:300. Cause: String 'CAGATC' did not start with a parsable number.
+INFO	2020-04-24 15:17:05	MarkDuplicates	Read     1,000,000 records.  Elapsed time: 00:00:06s.  Time for last 1,000,000:    6s.  Last read position: 19:6,058,290
+INFO	2020-04-24 15:17:05	MarkDuplicates	Tracking 0 as yet unmatched pairs. 0 records in RAM.
+INFO	2020-04-24 15:17:07	MarkDuplicates	Read 1291644 records. 0 pairs never matched.
+INFO	2020-04-24 15:17:07	MarkDuplicates	After buildSortedReadEndLists freeMemory: 466572384; totalMemory: 679477248; maxMemory: 3145728000
+INFO	2020-04-24 15:17:07	MarkDuplicates	Will retain up to 98304000 duplicate indices before spilling to disk.
+INFO	2020-04-24 15:17:07	MarkDuplicates	Traversing read pair information and detecting duplicates.
+INFO	2020-04-24 15:17:08	MarkDuplicates	Traversing fragment information and detecting duplicates.
+INFO	2020-04-24 15:17:09	MarkDuplicates	Sorting list of duplicate records.
+INFO	2020-04-24 15:17:09	MarkDuplicates	After generateDuplicateIndexes freeMemory: 673929584; totalMemory: 1466957824; maxMemory: 3145728000
+INFO	2020-04-24 15:17:09	MarkDuplicates	Marking 85658 records as duplicates.
+INFO	2020-04-24 15:17:09	MarkDuplicates	Found 0 optical duplicate clusters.
+INFO	2020-04-24 15:17:09	MarkDuplicates	Reads are assumed to be ordered by: queryname
+INFO	2020-04-24 15:17:39	MarkDuplicates	Before output close freeMemory: 15372992; totalMemory: 20971520; maxMemory: 3145728000
+INFO	2020-04-24 15:17:39	MarkDuplicates	After output close freeMemory: 15372040; totalMemory: 20971520; maxMemory: 3145728000
+[Fri Apr 24 15:17:39 CDT 2020] picard.sam.markduplicates.MarkDuplicates done. Elapsed time: 0.67 minutes.
+Runtime.totalMemory()=20971520
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:17:39: Removing unmapped and MAPQ<60 reads for counting.
+$ 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:17:41: Removing any old SAMtools sort files.
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:17:41: Sorting filtered BAM file by coordinate.
+[bam_sort_core] merging from 0 files and 4 in-memory blocks...
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:17:46: Sorting raw BAM file by coordinate.
+[bam_sort_core] merging from 0 files and 4 in-memory blocks...
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:17:53: Indexing coordinate-sorted BAM files.
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:17:57: Generating alignment stats based on raw BAM.
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:18:02: 'Collapsing' gene models in GTF for use with RNASeQC.
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:18:23: Collecting unstranded RNAseq metrics with RNASeQC.
+Legacy mode excluded feature: ENSMUSG00000024939_2
+Legacy mode excluded feature: ENSMUSG00000024691_4
+Legacy mode excluded feature: ENSMUSG00000049164_1
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:18:59: Collecting stranded RNAseq metrics with RNASeQC.
+Legacy mode excluded feature: ENSMUSG00000024939_2
+Legacy mode excluded feature: ENSMUSG00000024691_4
+Legacy mode excluded feature: ENSMUSG00000049164_1
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:19:33: Collecting insert size metrics with Picard InsertSizeMetrics.
+Picked up _JAVA_OPTIONS: -Djava.io.tmpdir=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/picard_tmp
+[Fri Apr 24 15:19:34 CDT 2020] picard.analysis.CollectInsertSizeMetrics HISTOGRAM_FILE=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/InsertSizeMetrics/Spleen-2_hist.pdf INPUT=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/Spleen-2_Filtered.bam OUTPUT=/panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/InsertSizeMetrics/Spleen-2_metrics.txt    DEVIATIONS=10.0 MINIMUM_PCT=0.05 METRIC_ACCUMULATION_LEVEL=[ALL_READS] INCLUDE_DUPLICATES=false ASSUME_SORTED=true STOP_AFTER=0 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json
+[Fri Apr 24 15:19:34 CDT 2020] Executing as konox006@cn0530 on Linux 3.10.0-1062.18.1.el7.x86_64 amd64; OpenJDK 64-Bit Server VM 11.0.2+9; Picard version: 2.9.0-1-gf5b9f50-SNAPSHOT
+WARNING	2020-04-24 15:19:34	SinglePassSamProgram	File reports sort order 'queryname', assuming it's coordinate sorted anyway.
+INFO	2020-04-24 15:19:42	RExecutor	Executing R script via command: Rscript /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/singlesamples/Spleen-2/picard_tmp/konox006/script3784752467293523108.R /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/InsertSizeMetrics/Spleen-2_metrics.txt /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/InsertSizeMetrics/Spleen-2_hist.pdf Spleen-2_Filtered.bam
+ERROR	2020-04-24 15:19:42	ProcessExecutor	/bin/sh: BASH_XTRACEFD: 5: invalid value for trace file descriptor
+INFO	2020-04-24 15:19:43	ProcessExecutor	null device 
+INFO	2020-04-24 15:19:43	ProcessExecutor	          1 
+ERROR	2020-04-24 15:19:43	ProcessExecutor	sh: BASH_XTRACEFD: 5: invalid value for trace file descriptor
+[Fri Apr 24 15:19:43 CDT 2020] picard.analysis.CollectInsertSizeMetrics done. Elapsed time: 0.16 minutes.
+Runtime.totalMemory()=342884352
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:19:43: Linking Spleen-2 into /panfs/roc/scratch/RIS_RNAseq_Tutorial/Work/allsamples
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:19:43: Linking coordinate-sorted BAMs into /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Coordinate_Sorted_BAMs/
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:19:43: Finished processing Spleen-2.
+# 20722072[6].mesabim1.msi.umn.edu 2020-04-24 15:19:44: Removing HISAT2 bam, markdup/dedup bam, and raw querysort bam to reduce disk usage.

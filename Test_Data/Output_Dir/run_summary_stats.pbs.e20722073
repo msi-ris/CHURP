@@ -1,0 +1,176 @@
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+tput: No value for $TERM and no -T specified
+# 2020-04-24 15:23:05 PBS error file for summary job
+# 2020-04-24 15:23:05: For a human-readable log, see /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Logs/BulkRNASeq_Analysis.log
+# 2020-04-24 15:23:05: For a debugging trace, see /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Logs/BulkRNASeq_Trace.log
+# 2020-04-24 15:23:05: Entering section General
+Currently Loaded Modulefiles:
+zlib/1.2.11_gcc7.2.0
+bzip2/1.0.6-gnu7.2.0_PIC
+gmp/6.1.2_gcc7.2.0
+mpfr/3.1.6_gcc7.2.0
+mpc/1.0.3_gcc7.2.0
+isl/0.18_gcc7.2.0
+gcc/7.2.0
+pcre/8.42_gcc7.2.0
+xz-utils/5.2.3_gcc7.2.0
+curl/7.59.0_gcc7.2.0
+gmp/6.1.2_gcc8.1.0
+mpfr/4.0.1_gcc8.1.0
+mpc/1.1.0_gcc8.1.0
+isl/0.19_gcc8.1.0
+gcc/8.1.0
+libtiff/4.0.8
+R/3.5.0
+python/3.6.3
+# 2020-04-24 15:23:06: Finished section General
+# 2020-04-24 15:23:06: Entering section featureCounts
+
+        ==========     _____ _    _ ____  _____  ______          _____  
+        =====         / ____| |  | |  _ \|  __ \|  ____|   /\   |  __ \ 
+          =====      | (___ | |  | | |_) | |__) | |__     /  \  | |  | |
+            ====      \___ \| |  | |  _ <|  _  /|  __|   / /\ \ | |  | |
+              ====    ____) | |__| | |_) | | \ \| |____ / ____ \| |__| |
+        ==========   |_____/ \____/|____/|_|  \_\______/_/    \_\_____/
+	  v1.6.2
+
+//========================== featureCounts setting ===========================\\
+||                                                                            ||
+||             Input files : 8 BAM files                                      ||
+||                           P BoneMarrow-1                                   ||
+||                           P BoneMarrow-2                                   ||
+||                           P BoneMarrow-3                                   ||
+||                           P BoneMarrow-4                                   ||
+||                           P Spleen-1                                       ||
+||                           P Spleen-2                                       ||
+||                           P Spleen-3                                       ||
+||                           P Spleen-4                                       ||
+||                                                                            ||
+||             Output file : subread_counts.txt                               ||
+||                 Summary : subread_counts.txt.summary                       ||
+||              Annotation : Annotations.gtf.gz (GTF)                         ||
+||      Dir for temp files : ./                                               ||
+||                                                                            ||
+||                 Threads : 8                                                ||
+||                   Level : meta-feature level                               ||
+||              Paired-end : yes                                              ||
+||      Multimapping reads : not counted                                      ||
+|| Multi-overlapping reads : not counted                                      ||
+||   Min overlapping bases : 1                                                ||
+||                                                                            ||
+||          Chimeric reads : counted                                          ||
+||        Both ends mapped : required                                         ||
+||                                                                            ||
+\\===================== http://subread.sourceforge.net/ ======================//
+
+//================================= Running ==================================\\
+||                                                                            ||
+|| Load annotation file Annotations.gtf.gz ...                                ||
+||    Features : 20581                                                        ||
+||    Meta-features : 1100                                                    ||
+||    Chromosomes/contigs : 1                                                 ||
+||                                                                            ||
+|| Process BAM file BoneMarrow-1...                                           ||
+||    Paired-end reads are included.                                          ||
+||    Assign fragments (read pairs) to features...                            ||
+||    Total fragments : 851766                                                ||
+||    Successfully assigned fragments : 731944 (85.9%)                        ||
+||    Running time : 0.02 minutes                                             ||
+||                                                                            ||
+|| Process BAM file BoneMarrow-2...                                           ||
+||    Paired-end reads are included.                                          ||
+||    Assign fragments (read pairs) to features...                            ||
+||    Total fragments : 944107                                                ||
+||    Successfully assigned fragments : 775410 (82.1%)                        ||
+||    Running time : 0.03 minutes                                             ||
+||                                                                            ||
+|| Process BAM file BoneMarrow-3...                                           ||
+||    Paired-end reads are included.                                          ||
+||    Assign fragments (read pairs) to features...                            ||
+||    Total fragments : 688037                                                ||
+||    Successfully assigned fragments : 591842 (86.0%)                        ||
+||    Running time : 0.02 minutes                                             ||
+||                                                                            ||
+|| Process BAM file BoneMarrow-4...                                           ||
+||    Paired-end reads are included.                                          ||
+||    Assign fragments (read pairs) to features...                            ||
+||                                                                            ||
+||    WARNING: reads from the same pair were found not adjacent to each       ||
+||             other in the input (due to read sorting by location or         ||
+||             reporting of multi-mapping read pairs).                        ||
+||                                                                            ||
+||    Pairing up the read pairs.                                              ||
+||                                                                            ||
+||    Total fragments : 862629                                                ||
+||    Successfully assigned fragments : 715001 (82.9%)                        ||
+||    Running time : 0.02 minutes                                             ||
+||                                                                            ||
+|| Process BAM file Spleen-1...                                               ||
+||    Paired-end reads are included.                                          ||
+||    Assign fragments (read pairs) to features...                            ||
+||    Total fragments : 859509                                                ||
+||    Successfully assigned fragments : 709948 (82.6%)                        ||
+||    Running time : 0.02 minutes                                             ||
+||                                                                            ||
+|| Process BAM file Spleen-2...                                               ||
+||    Paired-end reads are included.                                          ||
+||    Assign fragments (read pairs) to features...                            ||
+||    Total fragments : 495631                                                ||
+||    Successfully assigned fragments : 418543 (84.4%)                        ||
+||    Running time : 0.02 minutes                                             ||
+||                                                                            ||
+|| Process BAM file Spleen-3...                                               ||
+||    Paired-end reads are included.                                          ||
+||    Assign fragments (read pairs) to features...                            ||
+||    Total fragments : 835153                                                ||
+||    Successfully assigned fragments : 704223 (84.3%)                        ||
+||    Running time : 0.02 minutes                                             ||
+||                                                                            ||
+|| Process BAM file Spleen-4...                                               ||
+||    Paired-end reads are included.                                          ||
+||    Assign fragments (read pairs) to features...                            ||
+||    Total fragments : 873008                                                ||
+||    Successfully assigned fragments : 729557 (83.6%)                        ||
+||    Running time : 0.03 minutes                                             ||
+||                                                                            ||
+||                         Read assignment finished.                          ||
+||                                                                            ||
+|| Summary of counting results can be found in file "subread_counts.txt.summ  ||
+|| ary"                                                                       ||
+||                                                                            ||
+\\===================== http://subread.sourceforge.net/ ======================//
+
+# 2020-04-24 15:23:17: Finished section featureCounts
+# 2020-04-24 15:23:17: Entering section edgeR
+# 2020-04-24 15:23:22: Finished section edgeR
+# 2020-04-24 15:23:22: Entering section GTF.Summary
+# 2020-04-24 15:23:22: Finished section GTF.Summary
+# 2020-04-24 15:23:22: Entering section Linking
+# 2020-04-24 15:23:22: Finished section Linking
+# 2020-04-24 15:23:25: Finished section Collate.Samples
+# 2020-04-24 15:23:25: Entering section HTML.Report
+
+
+processing file: Report.Rmd
+running: bash  -c 'cat $pipeline'
+running: bash  -c 'cat $samplesheet'
+running: bash  -c "log_name=\"\${outdir}/Logs/\${firstrun}_Analysis.log\"
+log_start=\$((\$(grep -m 1 -n '^#BEGIN_MODULE' \"\${log_name}\" | head -n 1 | cut -f 1 -d ':') + 2))
+log_end=\$((\$(grep -m 1 -n '^#END_MODULES' \"\${log_name}\" | head -n 1 | cut -f 1 -d ':') - 1))
+head -n \"\${log_end}\" \"\${log_name}\" | tail -n \"+\${log_start}\""
+running: bash  -c "log_name=\"\${outdir}/Logs/BulkRNASeq_Analysis.log\"
+log_start=\$((\$(grep -n -m 1 '^#BEGIN_MODULES' \"\${log_name}\" | head -n 1 | cut -f 1 -d ':') + 2))
+log_end=\$((\$(grep -n -m 1 '^#END_MODULES' \"\${log_name}\" | head -n 1 | cut -f 1 -d ':') - 1))
+head -n \"\${log_end}\" \"\${log_name}\" | tail -n \"+\${log_start}\""
+output file: Report.knit.md
+
+
+Output created: /panfs/roc/scratch/RIS_RNAseq_Tutorial/Out/Bulk_RNAseq_Report.html
