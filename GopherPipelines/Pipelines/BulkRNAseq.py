@@ -64,11 +64,11 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         self.single_sample_script = os.path.join(
             os.path.realpath(__file__).rsplit(os.path.sep, 3)[0],
             'PBS',
-            'bulk_rnaseq_single_sample.pbs')
+            'bulk_rnaseq_single_sample.sh')
         self.summary_script = os.path.join(
             os.path.realpath(__file__).rsplit(os.path.sep, 3)[0],
             'PBS',
-            'run_summary_stats.pbs')
+            'run_summary_stats.sh')
         self.de_script = os.path.join(
             os.path.realpath(__file__).rsplit(os.path.sep, 3)[0],
             'R_Scripts',
@@ -302,10 +302,6 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # Write command to figure out email address of submitting user
         handle.write('user_name="$(id -u -n)"\n')
         handle.write('user_email="${user_name}@umn.edu"\n')
-        # This is the command for aligning and cleaning
-        qsub_resources = '"mem=' + str(self.mem) + 'mb'
-        qsub_resources += ',nodes=1:ppn=' + str(self.ppn)
-        qsub_resources += ',walltime=' + str(self.walltime * 3600) + '"'
         # Set the group string here
         if self.group:
             qsub_group = '-A ' + self.group + ' -W "group_list=' + self.group + '"'
@@ -327,17 +323,30 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         handle.write('RRNA_SCREEN=' + '"' + self.rrna_screen + '"\n')
         handle.write('SUBSAMPLE=' + '"' + self.subsample + '"\n')
         handle.write('PIPE_SCRIPT="$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )/$(basename $0)"\n')
+        # These are the variables we want to export into the single sample job
+        # script.
+        single_cmd_vars = ','.join([
+            'SampleSheet="${SAMPLESHEET}"',
+            'PURGE="${PURGE}"',
+            'RRNA_SCREEN="${RRNA_SCREEN}"',
+            'SUBSAMPLE="${SUBSAMPLE}"'
+            ])
         aln_cmd = [
-            'qsub',
-            '-q', self.msi_queue,
-            '-m', 'abe',
-            '-M', '"${user_email}"',
+            'sbatch',
+            '--parsable',
+            '--ignore-pbs',
+            '-p', self.msi_queue,
+            '--mailtype=ALL',
+            '--mail-user="${user_email}"',
             qsub_group,
             '-o', '"${OUTDIR}"',
             '-e', '"${OUTDIR}"',
-            '-l', qsub_resources,
-            '-t', '"${QSUB_ARRAY}"',
-            '-v', '"SampleSheet=${SAMPLESHEET},PURGE=${PURGE},RRNA_SCREEN=${RRNA_SCREEN},SUBSAMPLE=${SUBSAMPLE}"',
+            '-N', '1',
+            '--mem=' + str(self.mem),
+            '-n', str(self.ppn),
+            '--time=' + str(self.walltime * 60),
+            '--array="${QSUB_ARRAY}"',
+            '--export=' + single_cmd_vars,
             self.single_sample_script,
             '||',
             'exit',
@@ -345,25 +354,25 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # Write the first qsub command
         handle.write('single_id=$(' + ' '.join(aln_cmd) + ')\n')
         # This is the command for counting and normalizing reads
-        summary_vars = ''.join([
-            'SampleSheet=${SAMPLESHEET}',
-            ',MINLEN=',
-            self.min_gene_len,
-            ',MINCPM=',
-            self.min_cpm,
-            ',RSUMMARY=${DE_SCRIPT}',
-            ',PIPE_SCRIPT=${PIPE_SCRIPT}',
-            ',BULK_RNASEQ_REPORT=${REPORT_SCRIPT}'])
+        summary_vars = ','.join([
+            'SampleSheet="${SAMPLESHEET}"',
+            'MINLEN="' + self.min_gene_len + '"',
+            'MINCPM="' + self.min_cpm + '"',
+            'RSUMMARY="${DE_SCRIPT}"',
+            'PIPE_SCRIPT="${PIPE_SCRIPT}"',
+            'BULK_RNASEQ_REPORT="${REPORT_SCRIPT}"'])
         summary_cmd = [
-            'qsub',
-            '-q', self.msi_queue,
-            '-m', 'abe',
-            '-M', '"${user_email}"',
+            'sbatch',
+            '--parsable',
+            '--ignore-pbs',
+            '-p', self.msi_queue,
+            '--mailtype=ALL',
+            '--mail-user="${user_email}"',
             qsub_group,
             '-o', '"${OUTDIR}"',
             '-e', '"${OUTDIR}"',
-            '-W', '"depend=afterokarray:${single_id}"',
-            '-v', '"' + summary_vars + '"',
+            '--depend=afterok:${single_id}',
+            '--export=' + summary_vars,
             self.summary_script,
             '||',
             'exit',
@@ -376,15 +385,14 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         handle.write('echo "Qsub array to samplename key: ${KEYFILE}"\n')
         handle.write('echo "Single samples job array ID: ${single_id}"\n')
         handle.write('echo "Summary job ID: ${summary_id}"\n')
-        self.pipe_logger.debug('qsub:\n%s', ' '.join(aln_cmd))
-        self.pipe_logger.debug('qsub:\n%s', ' '.join(summary_cmd))
+        self.pipe_logger.debug('sbatch:\n%s', ' '.join(aln_cmd))
+        self.pipe_logger.debug('sbatch:\n%s', ' '.join(summary_cmd))
         handle.flush()
         handle.close()
         # Check if we want to automatically submit the script
         if self.nosubmit:
             qsub_dat = None
         else:
-            import subprocess
             qsub_cmd = ['bash', pname]
             qsub_proc = subprocess.Popen(
                 qsub_cmd,

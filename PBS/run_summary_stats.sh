@@ -1,5 +1,4 @@
 #!/bin/bash
-#PBS -l nodes=1:ppn=8,mem=16gb,walltime=8:00:00
 
 set -e
 set -u
@@ -8,7 +7,7 @@ set -o pipefail
 # Export the PS4 variable for the trace
 # Taken from https://wiki.bash-hackers.org/scripting/debuggingtips
 LOG_SECTION="General"
-export PS4='+[$(date "+%F %T")] [${PBS_JOBID}] [${LOG_SECTION}]: '
+export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
 
 # Check for PBS/Samplesheet version agreement
 PIPELINE_VERSION="0"
@@ -56,8 +55,8 @@ TRACE_FNAME="${LOGDIR}/BulkRNASeq_Trace.log"
 
 mkdir -p "${LOGDIR}" "${COUNTSDIR}" "${PLOTSDIR}" "${DEGDIR}"
 
-# Write the samplename to the .e PBS file
-echo "# $(date '+%F %T') PBS error file for summary job" >> /dev/stderr
+# Write the samplename to the .e file
+echo "# $(date '+%F %T') Standard error file for summary job" >> /dev/stderr
 echo "# $(date '+%F %T'): For a human-readable log, see ${LOG_FNAME}" >> /dev/stderr
 echo "# $(date '+%F %T'): For a debugging trace, see ${TRACE_FNAME}" >> /dev/stderr
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
@@ -66,14 +65,14 @@ module list -t
 # We don't want to clobber the old files; just append to them
 echo "###############################################################################" >> "${LOG_FNAME}"
 echo "# $(date '+%F %T'): Summary job started" >> "${LOG_FNAME}"
-echo "# $(date '+%F %T'): Job ID: ${PBS_JOBID}" >> "${LOG_FNAME}"
+echo "# $(date '+%F %T'): Job ID: ${SLURM_JOB_ID}" >> "${LOG_FNAME}"
 echo '#BEGIN_MODULES' >> "${LOG_FNAME}"
 module list -t 2>> "${LOG_FNAME}"
 echo '#END_MODULES' >> "${LOG_FNAME}"
 
 # Set up trace logging after loading modules to avoid dumping tons of module-related messages to the log
 exec 5>> "${TRACE_FNAME}"
-echo "##### BEGIN TRACE FOR ${PBS_JOBID} #####" >> "${TRACE_FNAME}"
+echo "##### BEGIN TRACE FOR ${SLURM_JOB_ID} #####" >> "${TRACE_FNAME}"
 export BASH_XTRACEFD=5
 set -x
 
@@ -92,11 +91,11 @@ fi
 
 # Set the R_LIBS_USER variable here. This is where packages will be loaded from
 # within R
-echo "# ${PBS_JOBID} $(date '+%F %T'): Adding /home/msistaff/public/CHURP_Deps/v${PIPELINE_VERSION}/R to R_LIBS_USER" >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Adding /home/msistaff/public/CHURP_Deps/v${PIPELINE_VERSION}/R to R_LIBS_USER" >> "${LOG_FNAME}"
 export R_LIBS_USER="/home/msistaff/public/CHURP_Deps/v${PIPELINE_VERSION}/R"
 
 # Set the path to the featureCounts executable.
-echo "# ${PBS_JOBID} $(date '+%F %T'): Using counting reads with featureCounts v. 1.6.2" >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Using counting reads with featureCounts v. 1.6.2" >> "${LOG_FNAME}"
 FEATURECOUNTS="/home/msistaff/public/CHURP_Deps/v${PIPELINE_VERSION}/Supp/subread-1.6.2-Linux-x86_64/bin/featureCounts"
 mkdir -p "${WORKDIR}/allsamples" && cd "${WORKDIR}/allsamples"
 
@@ -104,14 +103,14 @@ mkdir -p "${WORKDIR}/allsamples" && cd "${WORKDIR}/allsamples"
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="featureCounts"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
-echo "# ${PBS_JOBID} $(date '+%F %T'): Making a counts matrix for all samples." >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Making a counts matrix for all samples." >> "${LOG_FNAME}"
 BAM_LIST=($(find . -type l -exec basename {} \\;| sort -V))
 if [ "${PE}" = "true" ]
 then
-    echo "# ${PBS_JOBID} $(date '+%F %T'): Library is paired-end with strand ${STRAND}." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Library is paired-end with strand ${STRAND}." >> "${LOG_FNAME}"
     "${FEATURECOUNTS}" \
         -a "${GTFFILE}" \
-        -T ${PBS_NUM_PPN} \
+        -T ${SLURM_CPUS_PER_TASK} \
         -B \
         -p \
         -Q 10 \
@@ -119,10 +118,10 @@ then
         -o subread_counts.txt \
         "${BAM_LIST[@]}"
 else
-    echo "# ${PBS_JOBID} $(date '+%F %T'): Library is single-end with strand ${STRAND}" >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Library is single-end with strand ${STRAND}" >> "${LOG_FNAME}"
     "${FEATURECOUNTS}" \
         -a "${GTFFILE}" \
-        -T ${PBS_NUM_PPN} \
+        -T ${SLURM_CPUS_PER_TASK} \
         -Q 10 \
         -s "${STRAND}" \
         -o subread_counts.txt \
@@ -133,7 +132,7 @@ fi
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="edgeR"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
-echo "# ${PBS_JOBID} $(date '+%F %T'): Running edgeR analysis on counts" >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Running edgeR analysis on counts" >> "${LOG_FNAME}"
 Rscript \
     "${RSUMMARY}" \
     "${OUTDIR}" \
@@ -154,18 +153,18 @@ echo "# ----- End output from ${RSUMMARY}" >> "${LOG_FNAME}"
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="GTF.Summary"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
-echo "# ${PBS_JOBID} $(date '+%F %T'): Copying merged counts matrix and summary into ${COUNTSDIR}" >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Copying merged counts matrix and summary into ${COUNTSDIR}" >> "${LOG_FNAME}"
 cp -u subread_counts.txt "${COUNTSDIR}/subread_counts.txt"
 cp -u subread_counts.txt.summary "${COUNTSDIR}/subread_counts.txt.summary"
 
 # We also want to keep the sorted BAM files and the GTF used for counts, in
 # case the user wants to go back to it
-echo "# ${PBS_JOBID} $(date '+%F %T'): Copying GTF into ${OUTDIR}." >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Copying GTF into ${OUTDIR}." >> "${LOG_FNAME}"
 cp -u "${GTFFILE}" "${OUTDIR}"
 
 # AWK command from S. Munro to make a translation table fo Ensembl IDs and
 # gene names
-echo "# ${PBS_JOBID} $(date '+%F %T'): Generating translation table of gene name and Ensembl ID." >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Generating translation table of gene name and Ensembl ID." >> "${LOG_FNAME}"
 # awk -F '\\t' '$3 == "gene" { print $9 }' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") | tr -d ';"' | awk -F ' ' -v OFS='\\t' '{print $2,$6}' > "${OUTDIR}/gene_id_gene_name_map.txt"
 # This is a slower but more general command to get gene_id and gene_name
 awk -F '\\t' '$3 == "gene" {print $9}' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") \
@@ -191,7 +190,7 @@ awk -F '\\t' '$3 == "gene" {print $9}' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE
 
 # Chop up the subread_counts.txt file a little bit to make it easier to import
 # into other tools like CLC Genomics Workbench
-echo "# ${PBS_JOBID} $(date '+%F %T'): Linking gene symbol with Ensembl ID for subread_counts.txt" >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Linking gene symbol with Ensembl ID for subread_counts.txt" >> "${LOG_FNAME}"
 echo -e "GeneName\\t$(head -n 2 ${COUNTSDIR}/subread_counts.txt | tail -n 1 | cut -f 7-)" > "${COUNTSDIR}/subread_counts_gene_symbol.txt"
 join \
     -e "NA" \
@@ -232,7 +231,7 @@ do
         echo "# $(date '+%F %T'): No .done file for ${sample}, skipping." >> "${LOG_FNAME}"
         continue
     fi
-    echo "# ${PBS_JOBID} $(date '+%F %T'): Collecting summaries for ${sample}" >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Collecting summaries for ${sample}" >> "${LOG_FNAME}"
     # Make the read counts files
     RAW_R1=$(find "${WORKDIR}/singlesamples/${sample}" -maxdepth 1 -type f -name '*1.raw_readcount.txt')
     RAW_R2=$(find "${WORKDIR}/singlesamples/${sample}" -maxdepth 1 -type f -name '*2.raw_readcount.txt')
@@ -289,6 +288,6 @@ echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 cp -u "${BULK_RNASEQ_REPORT}" "./Report.Rmd"
 PATH=${PATH}:/panfs/roc/groups/14/msistaff/public/CHURP_Deps/v0/Supp/pandoc-2.3.1/bin Rscript -e "library(rmarkdown); rmarkdown::render('./Report.Rmd', output_file='"${OUTDIR}/Bulk_RNAseq_Report.html"', params=list(outdir='"${OUTDIR}"', workdir='"${WORKDIR}"', pipeline='"${PIPE_SCRIPT}"', samplesheet='"${SampleSheet}"'))"
 
-echo "# ${PBS_JOBID} $(date '+%F %T'): Done summarizing bulk RNAseq run" >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Done summarizing bulk RNAseq run" >> "${LOG_FNAME}"
 # Close the trace file descriptor
 exec 5>&-
