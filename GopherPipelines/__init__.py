@@ -18,4 +18,4 @@ NOW = curr_time.isoformat(sep=' ', timespec='seconds')
 UNAME = getpass.getuser()
 
 # Define the allowable queues
-QUEUES = ['mangi', 'amd_or_intel', 'amdsmall', 'mesabi', 'small']
+QUEUES = ['batch', 'amdbatch']
