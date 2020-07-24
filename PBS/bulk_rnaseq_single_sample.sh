@@ -131,10 +131,10 @@ then
     pipeline_error "${LOG_SECTION}"
 fi
 
-# Parse SampleSheet using $PBS_ARRAYID
+# Parse SampleSheet using $SLURM_ARRAY_TASK_ID
 # Assume there is a header line, so for ID n, the sample is n+1
 # Sample Sheet: SampleNM, R1, R2, Trim (yes or no), TrimmomaticOption, Hisat2Index, Hisat2Option, GTF/GFF
-IN=$(head -n "${PBS_ARRAYID}" "${SampleSheet}" | tail -1)
+IN=$(head -n "${SLURM_ARRAY_TASK_ID}" "${SampleSheet}" | tail -1)
 # handle empty line and comment line. We return a 0 exit status because we do not
 # want a comment/blank line in the samplesheet to hold up the array jobs
 [ -z "${IN// }" ] && echo "You have submitted an empty line from the sample sheet to the job array. This array job will quit without error, but you should determine why this occured." && exit 0
