@@ -162,7 +162,7 @@ mkdir -p "${LOGDIR}"
 TRACE_FNAME="${LOGDIR}/${SAMPLENM}_Trace.log"
 LOG_FNAME="${LOGDIR}/${SAMPLENM}_Analysis.log"
 # Write the samplename to the .e PBS file
-echo "# $(date '+%F %T') PBS error file for ${SAMPLENM}" >> /dev/stderr
+echo "# $(date '+%F %T') Slurm error file for ${SAMPLENM}" >> /dev/stderr
 echo "# $(date '+%F %T'): For a human-readable log, see ${LOG_FNAME}" >> /dev/stderr
 echo "# $(date '+%F %T'): For a debugging trace, see ${TRACE_FNAME}" >> /dev/stderr
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
@@ -273,7 +273,7 @@ if [ ! -f bbduk.done ]; then
             k=25 \
             editdistance=1 \
             prealloc=t \
-            threads="${PBS_NUM_PPN}" \
+            threads="${SLURM_NPROCS}" \
             -Xmx10g \
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     else
@@ -284,7 +284,7 @@ if [ ! -f bbduk.done ]; then
             k=25 \
             editdistance=1 \
             prealloc=t \
-            threads="${PBS_NUM_PPN}" \
+            threads="${SLURM_NPROCS}" \
             -Xmx10g \
              2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     fi
@@ -352,7 +352,7 @@ if [ "${TRIM}" = "yes" ]; then
             echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Running trimmomatic on ${R1FILE} and ${R2FILE}." >> "${LOG_FNAME}"
             java -jar "${TRIMMOMATIC}"/trimmomatic.jar \
                 PE \
-                -threads "${PBS_NUM_PPN}" \
+                -threads "${SLURM_NPROCS}" \
                 "${R1FILE}" "${R2FILE}" \
                 "${SAMPLENM}_1P.fq.gz" "${SAMPLENM}_1U.fq.gz" "${SAMPLENM}_2P.fq.gz" "${SAMPLENM}_2U.fq.gz" \
                 $(echo "${TRIMOPTS}" | envsubst) \
@@ -362,7 +362,7 @@ if [ "${TRIM}" = "yes" ]; then
             echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Running trimmomatic on ${R1FILE}." >> "${LOG_FNAME}"
             java -jar "${TRIMMOMATIC}"/trimmomatic.jar \
                 SE \
-                -threads "${PBS_NUM_PPN}" \
+                -threads "${SLURM_NPROCS}" \
                 "${R1FILE}" \
                 "${SAMPLENM}_trimmed.fq.gz" \
                 $(echo "${TRIMOPTS}" | envsubst) \
@@ -531,7 +531,7 @@ if [ ! -f mapq_flt.done ]; then
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Removing unmapped and MAPQ<60 reads for counting." >> "${LOG_FNAME}"
     samtools view \
         -bhu \
-        -@ "${PBS_NUM_PPN}" \
+        -@ "${SLURM_NPROCS}" \
         -F 4 \
         -q 60 \
         -o "${SAMPLENM}_Filtered.bam" \
@@ -556,7 +556,7 @@ if [ ! -f coord_sort.done ]; then
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Sorting filtered BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
         -O bam \
-        -@ "${PBS_NUM_PPN}" \
+        -@ "${SLURM_NPROCS}" \
         -T temp \
         -o "${SAMPLENM}_Filtered_CoordSort.bam" \
         "${SAMPLENM}_Filtered.bam" \
@@ -564,7 +564,7 @@ if [ ! -f coord_sort.done ]; then
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Sorting raw BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
         -O bam \
-        -@ "${PBS_NUM_PPN}" \
+        -@ "${SLURM_NPROCS}" \
         -T temp \
         -o "${SAMPLENM}_Raw_CoordSort.bam" \
         "${TO_FLT}" \
