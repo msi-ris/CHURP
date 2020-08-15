@@ -324,7 +324,7 @@ fi
 # directory
 for fastqc_out_dir in $(find "${WORKDIR}/singlesamples/${SAMPLENM}" -maxdepth 1 -type d -name '*_fastqc')
 do
-    read_no=$(basename "${fastqc_out_dir}" | sed -nr 's/.*_R?(1|2)_(001_)?fastqc/\\1/p')
+    read_no=$(basename "${fastqc_out_dir}" | sed -nr 's/.*_R?(1|2)_(001_)?fastqc/\1/p')
     if [ -z "${read_no}" ]
     then
         read_no="1"
@@ -399,7 +399,7 @@ fi
 
 for fastqc_out_dir in $(find "${WORKDIR}/singlesamples/${SAMPLENM}" -maxdepth 1 -type d -name '*_fastqc')
 do
-    read_no=$(basename "${fastqc_out_dir}" | sed -nr 's/.*(1|2)P_fastqc/\\1/p')
+    read_no=$(basename "${fastqc_out_dir}" | sed -nr 's/.*(1|2)P_fastqc/\1/p')
     # If the files are single-end, then $read_no is empty
     if [ -z "${read_no}" ]
     then
@@ -551,8 +551,8 @@ if [ ! -f coord_sort.done ]; then
         -mindepth 1 \
         -maxdepth 1 \
         -regextype posix-extended \
-        -regex '.*/temp\\.[0-9]{4}+.bam' \
-        -exec rm {} \\;
+        -regex '.*/temp\.[0-9]{4}+.bam' \
+        -exec rm {} \;
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Sorting filtered BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
         -O bam \
@@ -662,7 +662,7 @@ if [ ! -f is_stats.done ]; then
                 > "${WORKDIR}/singlesamples/${SAMPLENM}/IS_Stats.txt"
         else
             # Echo seven NA into the IS stats file
-            echo -e 'NA\\tNA\\tNA\\tNA\\tNA\\tNA\\tNA' \
+            echo -e 'NA\tNA\tNA\tNA\tNA\tNA\tNA' \
             > "${WORKDIR}/singlesamples/${SAMPLENM}/IS_Stats.txt"
         fi
     else
