@@ -110,7 +110,7 @@ then
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Library is paired-end with strand ${STRAND}." >> "${LOG_FNAME}"
     "${FEATURECOUNTS}" \
         -a "${GTFFILE}" \
-        -T ${SLURM_CPUS_PER_TASK} \
+        -T ${SLURM_NPROCS} \
         -B \
         -p \
         -Q 10 \
@@ -121,7 +121,7 @@ else
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Library is single-end with strand ${STRAND}" >> "${LOG_FNAME}"
     "${FEATURECOUNTS}" \
         -a "${GTFFILE}" \
-        -T ${SLURM_CPUS_PER_TASK} \
+        -T ${SLURM_NPROCS} \
         -Q 10 \
         -s "${STRAND}" \
         -o subread_counts.txt \
