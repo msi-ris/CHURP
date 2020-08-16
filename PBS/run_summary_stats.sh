@@ -104,7 +104,7 @@ echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="featureCounts"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Making a counts matrix for all samples." >> "${LOG_FNAME}"
-BAM_LIST=($(find . -type l -exec basename {} \\;| sort -V))
+BAM_LIST=($(find . -type l -exec basename {} \;| sort -V))
 if [ "${PE}" = "true" ]
 then
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Library is paired-end with strand ${STRAND}." >> "${LOG_FNAME}"
@@ -165,10 +165,10 @@ cp -u "${GTFFILE}" "${OUTDIR}"
 # AWK command from S. Munro to make a translation table fo Ensembl IDs and
 # gene names
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Generating translation table of gene name and Ensembl ID." >> "${LOG_FNAME}"
-# awk -F '\\t' '$3 == "gene" { print $9 }' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") | tr -d ';"' | awk -F ' ' -v OFS='\\t' '{print $2,$6}' > "${OUTDIR}/gene_id_gene_name_map.txt"
+# awk -F '\t' '$3 == "gene" { print $9 }' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") | tr -d ';"' | awk -F ' ' -v OFS='\t' '{print $2,$6}' > "${OUTDIR}/gene_id_gene_name_map.txt"
 # This is a slower but more general command to get gene_id and gene_name
-awk -F '\\t' '$3 == "gene" {print $9}' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") \
-    | awk -F ';' -v OFS='\\t' '{
+awk -F '\t' '$3 == "gene" {print $9}' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") \
+    | awk -F ';' -v OFS='\t' '{
     found_gene="false"
     for(i = 1; i <= NF; i++) {
         if( $i ~ /gene_id/ ) {
@@ -191,14 +191,14 @@ awk -F '\\t' '$3 == "gene" {print $9}' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE
 # Chop up the subread_counts.txt file a little bit to make it easier to import
 # into other tools like CLC Genomics Workbench
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Linking gene symbol with Ensembl ID for subread_counts.txt" >> "${LOG_FNAME}"
-echo -e "GeneName\\t$(head -n 2 ${COUNTSDIR}/subread_counts.txt | tail -n 1 | cut -f 7-)" > "${COUNTSDIR}/subread_counts_gene_symbol.txt"
+echo -e "GeneName\t$(head -n 2 ${COUNTSDIR}/subread_counts.txt | tail -n 1 | cut -f 7-)" > "${COUNTSDIR}/subread_counts_gene_symbol.txt"
 join \
     -e "NA" \
     -a 2 \
     <(sort -k 1,1 "${OUTDIR}/gene_id_gene_name_map.txt") \
     <(tail -n +3 "${COUNTSDIR}/subread_counts.txt" | cut -f 1,7- | sort -k 1,1) \
     | cut -f 2- -d ' ' \
-    | tr ' ' '\\t' \
+    | tr ' ' '\t' \
     >> "${COUNTSDIR}/subread_counts_gene_symbol.txt"
 
 # Link the work directories to the output directory
@@ -256,7 +256,7 @@ do
     else
         TR2_COUNT=$(awk '{print $NF}' "${TRIMMED_R2}")
     fi
-    echo -e "${sample}\\t${R1_COUNT}\\t${R2_COUNT}\\t${TR1_COUNT}\\t${TR2_COUNT}" >> "${WORKDIR}/allsamples/Read_Counts.txt"
+    echo -e "${sample}\t${R1_COUNT}\t${R2_COUNT}\t${TR1_COUNT}\t${TR2_COUNT}" >> "${WORKDIR}/allsamples/Read_Counts.txt"
     cat "${WORKDIR}/singlesamples/${sample}/hisat_map_summary.txt" >> "${WORKDIR}/allsamples/HISAT_Stats.txt"
     # Then, get alignment summary files
     BAMSTAT="${WORKDIR}/singlesamples/${sample}/${sample}_bamstats.txt"
@@ -266,18 +266,18 @@ do
     MAXLEN=$(grep '^SN' "${BAMSTAT}" | grep 'maximum length' | cut -f 3)
     AVGLEN=$(grep '^SN' "${BAMSTAT}" | grep 'average length' | cut -f 3)
     AVGQUAL=$(grep '^SN' "${BAMSTAT}" | grep 'average quality' | cut -f 3)
-    echo -e "${sample}\\t${NMAPPED}\\t${DUPLICATED}\\t${MQ0}\\t${MAXLEN}\\t${AVGLEN}\\t${AVGQUAL}" >> "${WORKDIR}/allsamples/Samtools_Stats.txt"
+    echo -e "${sample}\t${NMAPPED}\t${DUPLICATED}\t${MQ0}\t${MAXLEN}\t${AVGLEN}\t${AVGQUAL}" >> "${WORKDIR}/allsamples/Samtools_Stats.txt"
     # Get the BBDuk rRNA screen stats
-    echo -e "${sample}\\t$(grep '#Matched' ${WORKDIR}/singlesamples/${sample}/BBDuk_rRNA_Stats.txt | cut -f 2-3)" >> "${WORKDIR}/allsamples/rRNA_kmers.txt"
+    echo -e "${sample}\t$(grep '#Matched' ${WORKDIR}/singlesamples/${sample}/BBDuk_rRNA_Stats.txt | cut -f 2-3)" >> "${WORKDIR}/allsamples/rRNA_kmers.txt"
     # Then, get the insert size summaries. These are really simple.
     if [ -f "${WORKDIR}/singlesamples/${sample}/IS_Stats.txt" ]
     then
-        echo -e "${sample}\\t$(cat ${WORKDIR}/singlesamples/${sample}/IS_Stats.txt)" >> "${WORKDIR}/allsamples/IS_Stats.txt"
+        echo -e "${sample}\t$(cat ${WORKDIR}/singlesamples/${sample}/IS_Stats.txt)" >> "${WORKDIR}/allsamples/IS_Stats.txt"
     fi
     # And collect the RNAseq metrics into a single file for summarization
     # Add the || true to the end of the command because these are optional steps
-    sed -e "s/^/${sample}\\t/g" <(tail -n +2 "${WORKDIR}/singlesamples/${sample}/RNASeQC_Out/${sample}.metrics.tsv") >> "${WORKDIR}/allsamples/RNASeq_Metrics.txt" || true
-    sed -e "s/^/${sample}\\t/g" <(tail -n +2 "${WORKDIR}/singlesamples/${sample}/RNASeQC_Out/${sample}_Unstranded.metrics.tsv") >> "${WORKDIR}/allsamples/RNASeq_Metrics_Unstranded.txt" || true
+    sed -e "s/^/${sample}\t/g" <(tail -n +2 "${WORKDIR}/singlesamples/${sample}/RNASeQC_Out/${sample}.metrics.tsv") >> "${WORKDIR}/allsamples/RNASeq_Metrics.txt" || true
+    sed -e "s/^/${sample}\t/g" <(tail -n +2 "${WORKDIR}/singlesamples/${sample}/RNASeQC_Out/${sample}_Unstranded.metrics.tsv") >> "${WORKDIR}/allsamples/RNASeq_Metrics_Unstranded.txt" || true
 done
 
 # We will generate an HTML report
