@@ -19,7 +19,7 @@ slurm_res_report() {
     #   - Used CPUTime
     #   - Used Walltime
     #   - Requested memory
-    STATS=$(sacct -j "${SLURM_JOB_ID}.0" --format=JobName,Account,CPUTime,Elapsed,ReqMem -P -n)
+    STATS=$(sacct -j "${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.batch" --format=JobName,Account,CPUTime,Elapsed,ReqMem -P -n)
     # And print them out:
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Job summary"
     echo "Job ID: ${SLURM_JOB_ID}"
