@@ -48,6 +48,7 @@ pipeline_error() {
         echo "Please check that you have permission and sufficient space to write to the output directory." >> "${LOG_FNAME}"
         slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 114
+        ;;
     "edgeR")
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "The edgeR gene expresssion analysis script encountered an error." >> "${LOG_FNAME}"
@@ -58,6 +59,7 @@ pipeline_error() {
         echo "" >> "${LOG_FNAME}"
         slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 115
+        ;;
     "HTML.Report")
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "CHURP was unable to produce a summary HTML report for your run." >> "${LOG_FNAME}"
