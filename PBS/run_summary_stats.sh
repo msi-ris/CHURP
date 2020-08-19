@@ -12,23 +12,18 @@ export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
 slurm_res_report() {
     # Use sstat to get the max VM size (for memory)
     MEM=$(sstat -j "${SLURM_JOB_ID}.batch" -P -n --format=MaxVMSize)
-    # Use sacct to get the other values:
-    #   - Job name
-    #   - Account
-    #   - Used CPUTime
-    #   - Used Walltime
-    #   - Requested memory
-    STATS=$(sacct -j "${SLURM_JOB_ID}.batch" --format=JobName,Account,CPUTime,Elapsed,ReqMem -P -n)
+    STATS=$(sacct -j "${SLURM_JOB_ID}.batch" --format=Account,CPUTime,Elapsed,ReqMem,MaxDiskRead,MaxDiskWrite -P -n)
     # And print them out:
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Job summary"
     echo "Job ID: ${SLURM_JOB_ID}"
-    echo "Job Name: $(echo ${STATS} | cut -f 1 -d '|')"
-    echo "MSI Group: $(echo ${STATS} | cut -f 2 -d '|')"
+    echo "MSI Group: $(echo ${STATS} | cut -f 1 -d '|')"
     echo "Number of CPUs: ${SLURM_NPROCS}"
-    echo "CPU Time: $(echo ${STATS} | cut -f 3 -d '|')"
-    echo "Walltime: $(echo ${STATS} | cut -f 4 -d '|')"
-    echo "Memory Requested: $(echo ${STATS} | cut -f 5 -d '|')"
+    echo "CPU Time: $(echo ${STATS} | cut -f 2 -d '|')"
+    echo "Walltime: $(echo ${STATS} | cut -f 3 -d '|')"
+    echo "Memory Requested: $(echo ${STATS} | cut -f 4 -d '|')"
     echo "Memory Used: ${MEM}"
+    echo "Data read off disk: $(echo ${STATS} | cut -f 5 -d '|')"
+    echo "Data written to disk: $(echo ${STATS} | cut -f 6 -d '|')"
 }
 
 # Define a function to report errors to the job log and give meawningful exit
