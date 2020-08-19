@@ -12,7 +12,7 @@ export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
 # Define a function to report Slurm performance metrics to the log files.
 slurm_res_report() {
     # Use sstat to get the max VM size (for memory)
-    MEM=$(sstat -j "${SLURM_JOB_ID}" -P -n --format=MaxVMSize)
+    MEM=$(sstat -j "${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.batch" -P -n --format=MaxVMSize)
     # Use sacct to get the other values:
     #   - Job name
     #   - Account
@@ -207,7 +207,7 @@ echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 # We don't want to clobber the old files; just append to them
 echo "###############################################################################" >> "${LOG_FNAME}"
 echo "# $(date '+%F %T'): Analysis started for ${SAMPLENM}" >> "${LOG_FNAME}"
-echo "# $(date '+%F %T'): Job ID: ${SLURM_JOB_ID}" >> "${LOG_FNAME}"
+echo "# $(date '+%F %T'): Job ID: ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}" >> "${LOG_FNAME}"
 # This is annoying to see, so we will exclude it from verbose outout
 # load necessary modules
 module load python3/3.6.3_anaconda5.0.1
@@ -225,11 +225,11 @@ module list -t 2>> "${LOG_FNAME}"
 echo '#END_MODULES' >> "${LOG_FNAME}"
 
 # For future debugging, print which java we are using
-echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Using $(which java)" >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Using $(which java)" >> "${LOG_FNAME}"
 
 # Enable trace debugging here
 exec 5>> "${TRACE_FNAME}"
-echo "##### BEGIN TRACE FOR ${SLURM_JOB_ID} #####" >> "${TRACE_FNAME}"
+echo "##### BEGIN TRACE FOR ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} #####" >> "${TRACE_FNAME}"
 export BASH_XTRACEFD=5
 set -x
 
@@ -247,15 +247,15 @@ RNASEQC="${DEPS_DIR}/Supp/RNASeQC/rnaseqc.v2.3.4.linux"
 if [ -z "${R2FILE}" ]
 then
     PE="false"
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): No R2 file detected; running ${SAMPLENM} as single-end" >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): No R2 file detected; running ${SAMPLENM} as single-end" >> "${LOG_FNAME}"
 else
     PE="true"
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): R2 file detected; running ${SAMPLENM} as paired-end" >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): R2 file detected; running ${SAMPLENM} as paired-end" >> "${LOG_FNAME}"
 fi
 
 # check whether to purge files or not. $PURGE will be parsed by command line
 if [ "${PURGE}" = "true" ]; then
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): PURGE=true; deleting work directory for ${SAMPLENM} and re-running all analyses." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): PURGE=true; deleting work directory for ${SAMPLENM} and re-running all analyses." >> "${LOG_FNAME}"
     rm -rf "${WORKDIR}/singlesamples/${SAMPLENM}"
 fi
 
@@ -286,14 +286,14 @@ LOG_SECTION="rRNA.Subsampling"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f subsamp.done ]; then
     # subsample the FASTQ and assay for rRNA contamination
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Subsampling reads to ${RRNA_SCREEN} fragments." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Subsampling reads to ${RRNA_SCREEN} fragments." >> "${LOG_FNAME}"
     ${SEQTK} sample -s123 -2 "${R1FILE}" "${RRNA_SCREEN}" > "${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R1.fastq" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     if [ "${PE}" = "true" ]; then
         ${SEQTK} sample -s123 -2 "${R2FILE}" "${RRNA_SCREEN}" > "${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R2.fastq" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     fi
     touch subsamp.done
 else
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Found subsampled reads" >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Found subsampled reads" >> "${LOG_FNAME}"
 fi
 
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
@@ -301,7 +301,7 @@ LOG_SECTION="BBDuk"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 # Check if the BBDuk analysis has been finished
 if [ ! -f bbduk.done ]; then
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Using BBDuk to search for rRNA contamination in subsampled reads." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Using BBDuk to search for rRNA contamination in subsampled reads." >> "${LOG_FNAME}"
     if [ "${PE}" = "true" ]; then
         ${BBDUK} \
             in="${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R1.fastq" \
@@ -328,7 +328,7 @@ if [ ! -f bbduk.done ]; then
     fi
     touch bbduk.done
 else
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Found complete BBDuk analysis." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Found complete BBDuk analysis." >> "${LOG_FNAME}"
 fi
 
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
@@ -337,7 +337,7 @@ echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f fastqc.done ]; then
     if [ "${PE}" = "true" ]
     then
-        echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Running fastqc on ${R1FILE} and ${R2FILE}." >> "${LOG_FNAME}"
+        echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Running fastqc on ${R1FILE} and ${R2FILE}." >> "${LOG_FNAME}"
         fastqc \
             -t 2 \
             --extract \
@@ -347,7 +347,7 @@ if [ ! -f fastqc.done ]; then
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}" \
         && touch fastqc.done
     else
-        echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Running fastqc on ${R1FILE}." >> "${LOG_FNAME}"
+        echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Running fastqc on ${R1FILE}." >> "${LOG_FNAME}"
         fastqc \
             --extract \
             --outdir="${WORKDIR}/singlesamples/${SAMPLENM}" \
@@ -387,7 +387,7 @@ if [ "${TRIM}" = "yes" ]; then
     if [ ! -f trimmomatic.done ]; then
         if [ "${PE}" = "true" ]
         then
-            echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Running trimmomatic on ${R1FILE} and ${R2FILE}." >> "${LOG_FNAME}"
+            echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Running trimmomatic on ${R1FILE} and ${R2FILE}." >> "${LOG_FNAME}"
             java -jar "${TRIMMOMATIC}"/trimmomatic.jar \
                 PE \
                 -threads "${SLURM_NPROCS}" \
@@ -397,7 +397,7 @@ if [ "${TRIM}" = "yes" ]; then
                 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}" \
                 && touch trimmomatic.done
         else
-            echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Running trimmomatic on ${R1FILE}." >> "${LOG_FNAME}"
+            echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Running trimmomatic on ${R1FILE}." >> "${LOG_FNAME}"
             java -jar "${TRIMMOMATIC}"/trimmomatic.jar \
                 SE \
                 -threads "${SLURM_NPROCS}" \
@@ -414,7 +414,7 @@ if [ "${TRIM}" = "yes" ]; then
     if [ ! -f fastqc.trim.done ]; then
         if [ "${PE}" = "true" ]
         then
-            echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Running fastqc on trimmed fastq files." >> "${LOG_FNAME}"
+            echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Running fastqc on trimmed fastq files." >> "${LOG_FNAME}"
             fastqc \
                 -t 2 \
                 --extract \
@@ -424,7 +424,7 @@ if [ "${TRIM}" = "yes" ]; then
                 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}" \
                 && touch fastqc.trim.done
         else
-            echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Running fastqc on trimmed fastq file." >> "${LOG_FNAME}"
+            echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Running fastqc on trimmed fastq file." >> "${LOG_FNAME}"
             fastqc \
                 --extract \
                 --outdir="${WORKDIR}/singlesamples/${SAMPLENM}" \
@@ -463,7 +463,7 @@ if [ ! -f hisat2.done ]; then
     if [ "${TRIM}" = "yes" ]; then
         if [ "${PE}" = "true" ]
         then
-            echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Aligning trimmed reads with HISAT2." >> "${LOG_FNAME}"
+            echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Aligning trimmed reads with HISAT2." >> "${LOG_FNAME}"
             # This string is so ugly because we we have to quote the arguments to hisat2 in a weird way to protect them from splitting
             hisat2 \
                 ${HISAT2OPTS} \
@@ -475,7 +475,7 @@ if [ ! -f hisat2.done ]; then
                 && touch hisat2.done \
                 || pipeline_error "${LOG_SECTION}"
         else
-            echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Aligning trimmed reads with HISAT2." >> "${LOG_FNAME}"
+            echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Aligning trimmed reads with HISAT2." >> "${LOG_FNAME}"
             hisat2 \
                 ${HISAT2OPTS} \
                 -x "${HISAT2INDEX}" \
@@ -488,7 +488,7 @@ if [ ! -f hisat2.done ]; then
     else
         if [ "${PE}" = "true" ]
         then
-            echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Aligning reads with HISAT2." >> "${LOG_FNAME}"
+            echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Aligning reads with HISAT2." >> "${LOG_FNAME}"
             hisat2 \
                 ${HISAT2OPTS} \
                 -x "${HISAT2INDEX}" \
@@ -499,7 +499,7 @@ if [ ! -f hisat2.done ]; then
                 && touch hisat2.done \
                 || pipeline_error "${LOG_SECTION}"
         else
-            echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Aligning reads with HISAT2." >> "${LOG_FNAME}"
+            echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Aligning reads with HISAT2." >> "${LOG_FNAME}"
             hisat2 \
                 ${HISAT2OPTS} \
                 -x "${HISAT2INDEX}" \
@@ -519,7 +519,7 @@ echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="MarkDuplicates"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f dup.done ]; then
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Soring raw HISAT2 BAM by query in prep for deduplication." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Soring raw HISAT2 BAM by query in prep for deduplication." >> "${LOG_FNAME}"
     _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
         SortSam \
         I="${SAMPLENM}.bam" \
@@ -527,7 +527,7 @@ if [ ! -f dup.done ]; then
         SORT_ORDER="queryname" \
         2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     if [ "${RMDUP}" = "yes" ]; then 
-        echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Removing duplicate reads with Picard MarkDuplicates." >> "${LOG_FNAME}"
+        echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing duplicate reads with Picard MarkDuplicates." >> "${LOG_FNAME}"
         _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
             MarkDuplicates \
             I="${SAMPLENM}_Raw_QuerySort.bam" \
@@ -539,7 +539,7 @@ if [ ! -f dup.done ]; then
         # Set the name of the bam to filter
         TO_FLT="${SAMPLENM}_DeDup.bam"
     else
-        echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Marking duplicate reads with Picard MarkDuplicates." >> "${LOG_FNAME}"
+        echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Marking duplicate reads with Picard MarkDuplicates." >> "${LOG_FNAME}"
         _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
             MarkDuplicates \
             I="${SAMPLENM}_Raw_QuerySort.bam" \
@@ -552,7 +552,7 @@ if [ ! -f dup.done ]; then
     fi
     touch dup.done
 else
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Found deduplicated/marked BAM files." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Found deduplicated/marked BAM files." >> "${LOG_FNAME}"
     # But, be sure to set the TO_FLT variable:
     if [ "${RMDUP}" = "yes" ]; then
         TO_FLT="${SAMPLENM}_DeDup.bam"
@@ -566,7 +566,7 @@ echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="BAM.Filtering"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f mapq_flt.done ]; then
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Removing unmapped and MAPQ<60 reads for counting." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing unmapped and MAPQ<60 reads for counting." >> "${LOG_FNAME}"
     samtools view \
         -bhu \
         -@ "${SLURM_NPROCS}" \
@@ -576,7 +576,7 @@ if [ ! -f mapq_flt.done ]; then
         "${TO_FLT}"
     touch mapq_flt.done
 else
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Found filtered BAM for counting." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Found filtered BAM for counting." >> "${LOG_FNAME}"
 fi
 
 # Next, sort by coord for IGV purposes
@@ -584,14 +584,14 @@ echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="BAM.Coord.Sort"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f coord_sort.done ]; then
-    echo "$ ${SLURM_JOB_ID} $(date '+%F %T' ): Removing any old SAMtools sort files." >> "${LOG_FNAME}"
+    echo "$ ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T' ): Removing any old SAMtools sort files." >> "${LOG_FNAME}"
     find "${WORKDIR}/singlesamples/${SAMPLENM}" \
         -mindepth 1 \
         -maxdepth 1 \
         -regextype posix-extended \
         -regex '.*/temp\.[0-9]{4}+.bam' \
         -exec rm {} \;
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Sorting filtered BAM file by coordinate." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Sorting filtered BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
         -O bam \
         -@ "${SLURM_NPROCS}" \
@@ -599,7 +599,7 @@ if [ ! -f coord_sort.done ]; then
         -o "${SAMPLENM}_Filtered_CoordSort.bam" \
         "${SAMPLENM}_Filtered.bam" \
         2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Sorting raw BAM file by coordinate." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Sorting raw BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
         -O bam \
         -@ "${SLURM_NPROCS}" \
@@ -607,12 +607,12 @@ if [ ! -f coord_sort.done ]; then
         -o "${SAMPLENM}_Raw_CoordSort.bam" \
         "${TO_FLT}" \
         2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Indexing coordinate-sorted BAM files." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Indexing coordinate-sorted BAM files." >> "${LOG_FNAME}"
     samtools index "${SAMPLENM}_Filtered_CoordSort.bam"
     samtools index "${SAMPLENM}_Raw_CoordSort.bam"
     touch coord_sort.done
 else
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Found sorted and indexed BAM files." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Found sorted and indexed BAM files." >> "${LOG_FNAME}"
 fi
 
 # Set these variables for linking at the end of the script
@@ -627,11 +627,11 @@ echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="BAM.Stats"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f bamstats.done ]; then
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Generating alignment stats based on raw BAM." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Generating alignment stats based on raw BAM." >> "${LOG_FNAME}"
     samtools stats "${RAW_COORD}" > "${SAMPLENM}_bamstats.txt"
     touch bamstats.done
 else
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Found raw BAM stats." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Found raw BAM stats." >> "${LOG_FNAME}"
 fi
 
 # Try the RNASeQC metrics gathering
@@ -640,18 +640,18 @@ LOG_SECTION="RNASeQC"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 echo "# $(date '+%F %T'): Note, this section is OPTIONAL (errors will not kill pipeline jobs)." >> /dev/stderr
 if [ ! -f rnaseqc.done ]; then
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): 'Collapsing' gene models in GTF for use with RNASeQC." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): 'Collapsing' gene models in GTF for use with RNASeQC." >> "${LOG_FNAME}"
     source activate "${CONDA_ENV}" || true
     python "${COLLAPSE_GTF}" <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" || true
     source deactivate || true
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Collecting unstranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Collecting unstranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
     RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM}_Unstranded --legacy"
     "${RNASEQC}" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/${RAW_COORD}" \
         "${WORKDIR}/singlesamples/${SAMPLENM}/RNASeQC_Out" \
         ${RNASEQC_OPTIONS} 2>> "${LOG_FNAME}" || true
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Collecting stranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Collecting stranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
     RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM} --legacy"
     # A bit strange - if the data are single-read data, then the strand has to
     # be flipped. This was confirmed with single-read pico v2 and pico v1 data.
@@ -671,7 +671,7 @@ if [ ! -f rnaseqc.done ]; then
         ${RNASEQC_OPTIONS} 2>> "${LOG_FNAME}" || true
     touch rnaseqc.done
 else
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Found RNAseq metrics checkpoint." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Found RNAseq metrics checkpoint." >> "${LOG_FNAME}"
 fi
 
 # Use picard to collect the insert size metrics, but only if paired end
@@ -680,7 +680,7 @@ LOG_SECTION="InsertSizeMetrics"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f is_stats.done ]; then
     if [ "${PE}" = "true" ]; then
-        echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Collecting insert size metrics with Picard InsertSizeMetrics." >> "${LOG_FNAME}"
+        echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Collecting insert size metrics with Picard InsertSizeMetrics." >> "${LOG_FNAME}"
         mkdir -p "${OUTDIR}/InsertSizeMetrics"
         mkdir -p "${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp"
         _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
@@ -704,10 +704,10 @@ if [ ! -f is_stats.done ]; then
             > "${WORKDIR}/singlesamples/${SAMPLENM}/IS_Stats.txt"
         fi
     else
-        echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Sample is single-read. No insert size metrics possible." >> "${LOG_FNAME}"
+        echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Sample is single-read. No insert size metrics possible." >> "${LOG_FNAME}"
     fi
 else
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Found insert size metrics." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Found insert size metrics." >> "${LOG_FNAME}"
 fi
 
 # Use awk to pick apart the alignment summary
@@ -736,22 +736,22 @@ echo "${SAMPLENM} ${TOTAL_READS} ${UNMAP} ${SINGLE_MAP} ${MULTI_MAP} ${DISCO_MAP
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="Cleanup"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
-echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Linking ${SAMPLENM} into ${WORKDIR}/allsamples" >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Linking ${SAMPLENM} into ${WORKDIR}/allsamples" >> "${LOG_FNAME}"
 mkdir -p "${WORKDIR}/allsamples"
 ln -sf "${WORKDIR}/singlesamples/${SAMPLENM}/${FOR_COUNTS}" "${WORKDIR}/allsamples/${SAMPLENM}"
 
-echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Linking coordinate-sorted BAMs into ${OUTDIR}/Coordinate_Sorted_BAMs/" >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Linking coordinate-sorted BAMs into ${OUTDIR}/Coordinate_Sorted_BAMs/" >> "${LOG_FNAME}"
 mkdir -p "${OUTDIR}/Coordinate_Sorted_BAMs"
 ln -sf "${WORKDIR}/singlesamples/${SAMPLENM}/${RAW_COORD}" "${OUTDIR}/Coordinate_Sorted_BAMs/${RAW_COORD}"
 ln -sf "${WORKDIR}/singlesamples/${SAMPLENM}/${RAW_COORD_IDX}" "${OUTDIR}/Coordinate_Sorted_BAMs/${RAW_COORD_IDX}"
 ln -sf "${WORKDIR}/singlesamples/${SAMPLENM}/${FLT_COORD}" "${OUTDIR}/Coordinate_Sorted_BAMs/${FLT_COORD}"
 ln -sf "${WORKDIR}/singlesamples/${SAMPLENM}/${FLT_COORD_IDX}" "${OUTDIR}/Coordinate_Sorted_BAMs/${FLT_COORD_IDX}"
 
-echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Finished processing ${SAMPLENM}." >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Finished processing ${SAMPLENM}." >> "${LOG_FNAME}"
 touch "${SAMPLENM}.done"
 
 # Finally, let's clean up
-echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Removing HISAT2 bam, markdup/dedup bam, and raw querysort bam to reduce disk usage." >> "${LOG_FNAME}"
+echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing HISAT2 bam, markdup/dedup bam, and raw querysort bam to reduce disk usage." >> "${LOG_FNAME}"
 rm -f "${SAMPLENM}.bam" "${SAMPLENM}_MarkDup.bam" "${SAMPLENM}_DeDup.bam" "${SAMPLENM}_Raw_QuerySort.bam"
 
 # And, run our stats function
