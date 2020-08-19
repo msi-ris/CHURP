@@ -9,6 +9,29 @@ set -o pipefail
 LOG_SECTION="General"
 export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
 
+# Define a function to report Slurm performance metrics to the log files.
+slurm_res_report() {
+    # Use sstat to get the max VM size (for memory)
+    MEM=$(sstat -j "${SLURM_JOB_ID}.0" -P -n --format=MaxVMSize)
+    # Use sacct to get the other values:
+    #   - Job name
+    #   - Account
+    #   - Used CPUTime
+    #   - Used Walltime
+    #   - Requested memory
+    STATS=$(sacct -j "${SLURM_JOB_ID}.0" --format=JobName,Account,AllocCPUS,CPUTime,Elapsed,ReqMem -P -n)
+    # And print them out:
+    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Job summary"
+    echo "Job ID: ${SLURM_JOB_ID}"
+    echo "Job Name: $(echo ${STATS} | cut -f 1 -d '|')"
+    echo "MSI Group: $(echo ${STATS} | cut -f 2 -d '|')"
+    echo "Number of CPUs: ${SLURM_NPROCS}"
+    echo "CPU Time: $(echo ${STATS} | cut -f 3 -d '|')"
+    echo "Walltime: $(echo ${STATS} | cut -f 4 -d '|')"
+    echo "Memory Requested: $(echo ${STATS} | cut -f 5 -d '|')"
+    echo "Memory Used: ${MEM}"
+}
+
 # Define a function to report errors to the job log and give meawningful exit
 # codes. This just wraps a bunch of exit calls into a case block
 pipeline_error() {
@@ -17,6 +40,7 @@ pipeline_error() {
     "General")
         echo "${SampleSheet} is incompatible with this version of CHURP." > /dev/stderr
         echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}." > /dev/stderr
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 100
         ;;
     "Subsampling")
@@ -24,6 +48,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "There was an error during read subsampling!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 101
         ;;
     "rRNA.Subsampling")
@@ -31,6 +56,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "There was an error during read subsampling for rRNA abundance estimation!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 102
         ;;
     "BBDuk")
@@ -38,6 +64,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "BBDuk encountered an error!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 103
         ;;
     "FastQC.Raw")
@@ -45,6 +72,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "FastQC failed on the raw FASTQ files!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 104
         ;;
     "Trimmomatic")
@@ -54,6 +82,7 @@ pipeline_error() {
         echo "Please see the error message above for details." >> "${LOG_FNAME}"
         echo "If you see a message about 'Error: Unable to detect quality encoding' then your FASTQ files do not have a standard quality encoding." >> "${LOG_FNAME}"
         echo "If you see a Java exception and you have specified custom Trimmomatic options, then this suggests a problem with your option string." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 105
         ;;
     "FastQC.Trimmed")
@@ -61,6 +90,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "FastQC failed on the trimmed FASTQ files!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 106
         ;;
     "HISAT2")
@@ -68,6 +98,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "HISAT2 encountered an error!" >> "${LOG_FNAME}"
         echo "If you specified custom options for HISAT2, then this indicates a problem with your options string." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 107
         ;;
     "MarkDuplicates")
@@ -75,6 +106,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "Picard MarkDuplicates encountered an error!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 108
         ;;
     "BAM.Filtering")
@@ -82,6 +114,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "SAMTools encountered an error while filtering the HISAT2 alignment!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 109
         ;;
     "BAM.Coord.Sort")
@@ -89,6 +122,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "SAMTools encountered an error while coordinate-sorting the HISAT2 alignment!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 110
         ;;
     "BAM.Stats")
@@ -96,6 +130,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "SAMTools encountered an error while generating summary statistics for the HISAT2 alignment!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 111
         ;;
     "InsertSizeMetrics")
@@ -103,6 +138,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "Picard InsertSizeMetrics encountered an error!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 112
         ;;
     "Alignment.Summary")
@@ -111,13 +147,15 @@ pipeline_error() {
         echo "CHURP encountered an error while extracting alignment summaries!" >> "${LOG_FNAME}"
         echo "This means the alignment summary output file from HISAT2 has gone missing." >> "${LOG_FNAME}"
         echo "Please re-run CHURP with the --purge option to rerun the pipeline from the beginning." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 113
         ;;
     *)
         echo "" >> "${LOG_FNAME}"
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
-        echo "CHURP encountered an undefined error!" 2>> "${LOG_FNAME}"
+        echo "CHURP encountered an undefined error!" >> "${LOG_FNAME}"
         echo "Please send the CHURP command, version, samplesheet, and pipeline.sh script to help@msi.umn.edu for debugging." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 200
         ;;
     esac
@@ -715,6 +753,9 @@ touch "${SAMPLENM}.done"
 # Finally, let's clean up
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Removing HISAT2 bam, markdup/dedup bam, and raw querysort bam to reduce disk usage." >> "${LOG_FNAME}"
 rm -f "${SAMPLENM}.bam" "${SAMPLENM}_MarkDup.bam" "${SAMPLENM}_DeDup.bam" "${SAMPLENM}_Raw_QuerySort.bam"
+
+# And, run our stats function
+slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
 
 # And close the file descriptor we were using for the trace
 exec 5>&-

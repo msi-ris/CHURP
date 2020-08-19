@@ -9,14 +9,80 @@ set -o pipefail
 LOG_SECTION="General"
 export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
 
+slurm_res_report() {
+    # Use sstat to get the max VM size (for memory)
+    MEM=$(sstat -j "${SLURM_JOB_ID}.0" -P -n --format=MaxVMSize)
+    # Use sacct to get the other values:
+    #   - Job name
+    #   - Account
+    #   - Used CPUTime
+    #   - Used Walltime
+    #   - Requested memory
+    STATS=$(sacct -j "${SLURM_JOB_ID}.0" --format=JobName,Account,AllocCPUS,CPUTime,Elapsed,ReqMem -P -n)
+    # And print them out:
+    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Job summary"
+    echo "Job ID: ${SLURM_JOB_ID}"
+    echo "Job Name: $(echo ${STATS} | cut -f 1 -d '|')"
+    echo "MSI Group: $(echo ${STATS} | cut -f 2 -d '|')"
+    echo "Number of CPUs: ${SLURM_NPROCS}"
+    echo "CPU Time: $(echo ${STATS} | cut -f 3 -d '|')"
+    echo "Walltime: $(echo ${STATS} | cut -f 4 -d '|')"
+    echo "Memory Requested: $(echo ${STATS} | cut -f 5 -d '|')"
+    echo "Memory Used: ${MEM}"
+}
+
+# Define a function to report errors to the job log and give meawningful exit
+# codes. This just wraps a bunch of exit calls into a case block
+pipeline_error() {
+    # Take the pipeline section as a positional argument
+    case "${1}" in
+    "General")
+        echo "${SampleSheet} is incompatible with this version of CHURP." > /dev/stderr
+        echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}." > /dev/stderr
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+        exit 100
+        ;;
+    "featureCounts")
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "The featureCounts program failed to produce a counts matrix for your dataset." >> "${LOG_FNAME}"
+        echo "Please check that you have permission and sufficient space to write to the output directory." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+        exit 114
+    "edgeR")
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "The edgeR gene expresssion analysis script encountered an error." >> "${LOG_FNAME}"
+        echo "Please check that your sample sheet is properly formatted and that your group labels do not contain special characters." >> "${LOG_FNAME}"
+        echo "You may also find additonal R error messages below:" >> "${LOG_FNAME}"
+        echo "" >> "${LOG_FNAME}"
+        cat Rout.txt >> "${LOG_FNAME}"
+        echo "" >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+        exit 115
+    "HTML.Report")
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "CHURP was unable to produce a summary HTML report for your run." >> "${LOG_FNAME}"
+        echo "Your counts files and alignments should still be available." >> "${LOG_FNAME}"
+        echo "Please send your pipeline.sh and samplesheet to help@msi.umn.edu for assistance." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+        exit 119
+        ;;
+    *)
+        echo "" >> "${LOG_FNAME}"
+        echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
+        echo "CHURP encountered an undefined error!" >> "${LOG_FNAME}"
+        echo "Please send the CHURP command, version, samplesheet, and pipeline.sh script to help@msi.umn.edu for debugging." >> "${LOG_FNAME}"
+        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+        exit 200
+        ;;
+    esac
+}
+
 # Check for PBS/Samplesheet version agreement
 PIPELINE_VERSION="0"
 SAMPLESHEET_VERSION=$(tail -n 1 "${SampleSheet}" | sed -E 's/#//g')
 if [ "${SAMPLESHEET_VERSION}" -ne "${PIPELINE_VERSION}" ]
 then
-    echo "${SampleSheet} is incompatible with this version of CHURP."
-    echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}."
-    exit 100
+    pipeline_error "${LOG_SECTION}"
 fi
 
 # Read the first line of the samplesheet to get the working directory and the
@@ -116,7 +182,7 @@ then
         -Q 10 \
         -s "${STRAND}" \
         -o subread_counts.txt \
-        "${BAM_LIST[@]}"
+        "${BAM_LIST[@]}" || pipeline_error "${LOG_SECTION}"
 else
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Library is single-end with strand ${STRAND}" >> "${LOG_FNAME}"
     "${FEATURECOUNTS}" \
@@ -125,7 +191,7 @@ else
         -Q 10 \
         -s "${STRAND}" \
         -o subread_counts.txt \
-        "${BAM_LIST[@]}"
+        "${BAM_LIST[@]}"   || pipeline_error "${LOG_SECTION}"
 fi
 
 # Summarize the merged count data, including descriptive summaries and differential expression tests if >1 group present.
@@ -141,7 +207,7 @@ Rscript \
     "${WORKDIR}/allsamples/subread_counts.txt" \
     "${MINLEN}" \
     "${MINCPM}" \
-    &> Rout.txt
+    &> Rout.txt || pipeline_error "${LOG_SECTION}"
 
 echo "# ----- Output from ${RSUMMARY} below" >> "${LOG_FNAME}"
 cat Rout.txt >> "${LOG_FNAME}"
@@ -286,7 +352,7 @@ echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="HTML.Report"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 cp -u "${BULK_RNASEQ_REPORT}" "./Report.Rmd"
-PATH=${PATH}:/panfs/roc/groups/14/msistaff/public/CHURP_Deps/v0/Supp/pandoc-2.3.1/bin Rscript -e "library(rmarkdown); rmarkdown::render('./Report.Rmd', output_file='"${OUTDIR}/Bulk_RNAseq_Report.html"', params=list(outdir='"${OUTDIR}"', workdir='"${WORKDIR}"', pipeline='"${PIPE_SCRIPT}"', samplesheet='"${SampleSheet}"'))"
+PATH=${PATH}:/panfs/roc/groups/14/msistaff/public/CHURP_Deps/v0/Supp/pandoc-2.3.1/bin Rscript -e "library(rmarkdown); rmarkdown::render('./Report.Rmd', output_file='"${OUTDIR}/Bulk_RNAseq_Report.html"', params=list(outdir='"${OUTDIR}"', workdir='"${WORKDIR}"', pipeline='"${PIPE_SCRIPT}"', samplesheet='"${SampleSheet}"'))" || pipeline_error "${LOG_SECTION}"
 
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Done summarizing bulk RNAseq run" >> "${LOG_FNAME}"
 # Close the trace file descriptor
