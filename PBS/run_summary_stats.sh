@@ -11,14 +11,14 @@ export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
 
 slurm_res_report() {
     # Use sstat to get the max VM size (for memory)
-    MEM=$(sstat -j "${SLURM_JOB_ID}.0" -P -n --format=MaxVMSize)
+    MEM=$(sstat -j "${SLURM_JOB_ID}" -P -n --format=MaxVMSize)
     # Use sacct to get the other values:
     #   - Job name
     #   - Account
     #   - Used CPUTime
     #   - Used Walltime
     #   - Requested memory
-    STATS=$(sacct -j "${SLURM_JOB_ID}.0" --format=JobName,Account,AllocCPUS,CPUTime,Elapsed,ReqMem -P -n)
+    STATS=$(sacct -j "${SLURM_JOB_ID}.0" --format=JobName,Account,CPUTime,Elapsed,ReqMem -P -n)
     # And print them out:
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Job summary"
     echo "Job ID: ${SLURM_JOB_ID}"
