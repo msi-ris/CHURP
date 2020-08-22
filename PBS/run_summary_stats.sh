@@ -21,6 +21,7 @@ slurm_res_report() {
     echo "Approx. Memory Used: $(echo ${STATS} | cut -f 4 -d '|')"
     echo "Approx. Data Read Off Disk: $(echo ${STATS} | cut -f 2 -d '|')"
     echo "Approx. Data Written to Disk: $(echo ${STATS} | cut -f 3 -d '|')"
+}
 
 # Define a function to report errors to the job log and give meawningful exit
 # codes. This just wraps a bunch of exit calls into a case block
