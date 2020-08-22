@@ -255,7 +255,11 @@ fi
 mkdir -p "${WORKDIR}/singlesamples/${SAMPLENM}" && cd "${WORKDIR}/singlesamples/${SAMPLENM}"
 
 # start workflow with check point
-[ -f "${SAMPLENM}.done" ] && echo "found done analysis, exit" && exit $?
+if [ -f "${SAMPLENM}.done" ]; then
+    echo "Found completed analysis, exit" >> "${LOG_FNAME}"
+    slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+    exit 0
+fi
 
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="Subsampling"
