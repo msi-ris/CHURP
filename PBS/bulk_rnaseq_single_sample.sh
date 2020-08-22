@@ -16,7 +16,6 @@ slurm_res_report() {
     # And print them out:
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Job summary"
     echo "Job ID: ${SLURM_JOB_ID}"
-    echo "MSI Group: ${SBATCH_ACCOUNT}"
     echo "Number of CPUs: ${SLURM_NPROCS}"
     echo "Approx. CPU Time: $(echo ${STATS} | cut -f 1 -d '|')"
     echo "Memory Requested: ${SBATCH_MEM_PER_NODE}"
