@@ -11,7 +11,7 @@ export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
 
 slurm_res_report() {
     # Use sstat to get the resource usage info
-    SACCT_STATS=$(sacct -j "${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.batch" -P -n --format=Elapsed,ReqMem)
+    SACCT_STATS=$(sacct -j "${SLURM_JOB_ID}.batch" -P -n --format=Elapsed,ReqMem)
     SSTAT_STATS=$(sstat -j "${SLURM_JOB_ID}" --format=MaxDiskRead,MaxDiskWrite,MaxRSS)
     # Chew up the disk read/write values
     DISK_READ_BYTES=$(echo "${SSTAT_STATS}" | cut -f 1 -d '|')
