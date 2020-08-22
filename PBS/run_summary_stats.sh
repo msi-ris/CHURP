@@ -10,17 +10,19 @@ LOG_SECTION="General"
 export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
 
 slurm_res_report() {
-    # Use sstat to get the resource usage info 
-    STATS=$(sstat -j "${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.batch" -P -n --format=AveCPU,MaxDiskRead,MaxDiskWrite,MaxVMSize)
-    # And print them out:
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Job summary"
-    echo "Job ID: ${SLURM_JOB_ID}"
-    echo "Number of CPUs: ${SLURM_NPROCS}"
-    echo "Approx. CPU Time: $(echo ${STATS} | cut -f 1 -d '|')"
-    echo "Memory Requested: ${SBATCH_MEM_PER_NODE}"
-    echo "Approx. Memory Used: $(echo ${STATS} | cut -f 4 -d '|')"
-    echo "Approx. Data Read Off Disk: $(echo ${STATS} | cut -f 2 -d '|')"
-    echo "Approx. Data Written to Disk: $(echo ${STATS} | cut -f 3 -d '|')"
+    # Use sstat to get the resource usage info
+    sacct -j "${SLURM_JOB_ID}" -l
+    sstat -j "${SLURM_JOB_ID}" --format=AveCPU,MaxDiskRead,MaxDiskWrite,MaxVMSize
+    # STATS=$(sstat -j "${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.batch" -P -n --format=AveCPU,MaxDiskRead,MaxDiskWrite,MaxVMSize)
+    # # And print them out:
+    # echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Job summary"
+    # echo "Job ID: ${SLURM_JOB_ID}"
+    # echo "Number of CPUs: ${SLURM_NPROCS}"
+    # echo "Approx. CPU Time: $(echo ${STATS} | cut -f 1 -d '|')"
+    # echo "Memory Requested: ${SBATCH_MEM_PER_NODE}"
+    # echo "Approx. Memory Used: $(echo ${STATS} | cut -f 4 -d '|')"
+    # echo "Approx. Data Read Off Disk: $(echo ${STATS} | cut -f 2 -d '|')"
+    # echo "Approx. Data Written to Disk: $(echo ${STATS} | cut -f 3 -d '|')"
 }
 
 # Define a function to report errors to the job log and give meawningful exit
