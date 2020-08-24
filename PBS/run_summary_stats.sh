@@ -9,27 +9,27 @@ set -o pipefail
 LOG_SECTION="General"
 export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
 
-slurm_res_report() {
-    # Use sstat to get the resource usage info
-    SACCT_STATS=$(sacct -X -j "${SLURM_JOB_ID}.batch" -P -n --format=Elapsed)
-    SSTAT_STATS=$(sstat -j "${SLURM_JOB_ID}" -P -n --format=MaxDiskRead,MaxDiskWrite,MaxRSS)
-    # Chew up the disk read/write values
-    DISK_READ_BYTES=$(echo "${SSTAT_STATS}" | cut -f 1 -d '|')
-    DISK_WRITE_BYTES=$(echo "${SSTAT_STATS}" | cut -f 2 -d '|')
-    DISK_READ_GB=$(echo "scale=3; ${DISK_READ_BYTES}/1024/1024/1024" | bc -l)
-    DISK_WRITE_GB=$(echo "scale=3; ${DISK_WRITE_BYTES}/1024/1024/1024" | bc -l)
-    # # And print them out:
-    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Job resource summary"
-    echo "Job ID: ${SLURM_JOB_ID}"
-    echo "MSI Group: ${SLURM_JOB_ACCOUNT}"
-    echo "Partition (queue): ${SLURM_JOB_PARTITION}"
-    echo "Number of CPUs: ${SLURM_NPROCS}"
-    echo "Approx. Walltime: $(echo ${SACCT_STATS} | cut -f 1 -d '|')"
-    echo "Memory Requested: ${SLURM_MEM_PER_NODE}"
-    echo "Approx. Memory Used: $(echo ${SSTAT_STATS} | cut -f 3 -d '|')"
-    echo "Approx. Data Read Off Disk: ${DISK_READ_GB}GB"
-    echo "Approx. Data Written to Disk: ${DISK_WRITE_GB}GB"
-}
+# slurm_res_report() {
+#     # Use sstat to get the resource usage info
+#     SACCT_STATS=$(sacct -X -j "${SLURM_JOB_ID}.batch" -P -n --format=Elapsed)
+#     SSTAT_STATS=$(sstat -j "${SLURM_JOB_ID}" -P -n --format=MaxDiskRead,MaxDiskWrite,MaxRSS)
+#     # Chew up the disk read/write values
+#     DISK_READ_BYTES=$(echo "${SSTAT_STATS}" | cut -f 1 -d '|')
+#     DISK_WRITE_BYTES=$(echo "${SSTAT_STATS}" | cut -f 2 -d '|')
+#     DISK_READ_GB=$(echo "scale=3; ${DISK_READ_BYTES}/1024/1024/1024" | bc -l)
+#     DISK_WRITE_GB=$(echo "scale=3; ${DISK_WRITE_BYTES}/1024/1024/1024" | bc -l)
+#     # # And print them out:
+#     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Job resource summary"
+#     echo "Job ID: ${SLURM_JOB_ID}"
+#     echo "MSI Group: ${SLURM_JOB_ACCOUNT}"
+#     echo "Partition (queue): ${SLURM_JOB_PARTITION}"
+#     echo "Number of CPUs: ${SLURM_NPROCS}"
+#     echo "Approx. Walltime: $(echo ${SACCT_STATS} | cut -f 1 -d '|')"
+#     echo "Memory Requested: ${SLURM_MEM_PER_NODE}"
+#     echo "Approx. Memory Used: $(echo ${SSTAT_STATS} | cut -f 3 -d '|')"
+#     echo "Approx. Data Read Off Disk: ${DISK_READ_GB}GB"
+#     echo "Approx. Data Written to Disk: ${DISK_WRITE_GB}GB"
+# }
 
 # Define a function to report errors to the job log and give meawningful exit
 # codes. This just wraps a bunch of exit calls into a case block
@@ -39,14 +39,14 @@ pipeline_error() {
     "General")
         echo "${SampleSheet} is incompatible with this version of CHURP." > /dev/stderr
         echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}." > /dev/stderr
-        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+        # slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 100
         ;;
     "featureCounts")
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "The featureCounts program failed to produce a counts matrix for your dataset." >> "${LOG_FNAME}"
         echo "Please check that you have permission and sufficient space to write to the output directory." >> "${LOG_FNAME}"
-        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+        # slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 114
         ;;
     "edgeR")
@@ -57,7 +57,7 @@ pipeline_error() {
         echo "" >> "${LOG_FNAME}"
         cat Rout.txt >> "${LOG_FNAME}"
         echo "" >> "${LOG_FNAME}"
-        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+        # slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 115
         ;;
     "HTML.Report")
@@ -65,7 +65,7 @@ pipeline_error() {
         echo "CHURP was unable to produce a summary HTML report for your run." >> "${LOG_FNAME}"
         echo "Your counts files and alignments should still be available." >> "${LOG_FNAME}"
         echo "Please send your pipeline.sh and samplesheet to help@msi.umn.edu for assistance." >> "${LOG_FNAME}"
-        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+        # slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 119
         ;;
     *)
@@ -73,7 +73,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "CHURP encountered an undefined error!" >> "${LOG_FNAME}"
         echo "Please send the CHURP command, version, samplesheet, and pipeline.sh script to help@msi.umn.edu for debugging." >> "${LOG_FNAME}"
-        slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+        # slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
         exit 200
         ;;
     esac
@@ -357,7 +357,7 @@ cp -u "${BULK_RNASEQ_REPORT}" "./Report.Rmd"
 PATH=${PATH}:/panfs/roc/groups/14/msistaff/public/CHURP_Deps/v0/Supp/pandoc-2.3.1/bin Rscript -e "library(rmarkdown); rmarkdown::render('./Report.Rmd', output_file='"${OUTDIR}/Bulk_RNAseq_Report.html"', params=list(outdir='"${OUTDIR}"', workdir='"${WORKDIR}"', pipeline='"${PIPE_SCRIPT}"', samplesheet='"${SampleSheet}"'))" || pipeline_error "${LOG_SECTION}"
 
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Done summarizing bulk RNAseq run" >> "${LOG_FNAME}"
-slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
+# slurm_res_report | tee -a "${LOG_FNAME}" /dev/stderr
 
 # Close the trace file descriptor
 exec 5>&-
