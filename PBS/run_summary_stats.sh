@@ -23,7 +23,7 @@ export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
 #     echo "Job ID: ${SLURM_JOB_ID}"
 #     echo "MSI Group: ${SLURM_JOB_ACCOUNT}"
 #     echo "Partition (queue): ${SLURM_JOB_PARTITION}"
-#     echo "Number of CPUs: ${SLURM_NPROCS}"
+#     echo "Number of CPUs: ${SLURM_CPUS_PER_TASK}"
 #     echo "Approx. Walltime: $(echo ${SACCT_STATS} | cut -f 1 -d '|')"
 #     echo "Memory Requested: ${SLURM_MEM_PER_NODE}"
 #     echo "Approx. Memory Used: $(echo ${SSTAT_STATS} | cut -f 3 -d '|')"
@@ -178,7 +178,7 @@ then
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Library is paired-end with strand ${STRAND}." >> "${LOG_FNAME}"
     "${FEATURECOUNTS}" \
         -a "${GTFFILE}" \
-        -T ${SLURM_NPROCS} \
+        -T ${SLURM_CPUS_PER_TASK} \
         -B \
         -p \
         -Q 10 \
@@ -189,7 +189,7 @@ else
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Library is single-end with strand ${STRAND}" >> "${LOG_FNAME}"
     "${FEATURECOUNTS}" \
         -a "${GTFFILE}" \
-        -T ${SLURM_NPROCS} \
+        -T ${SLURM_CPUS_PER_TASK} \
         -Q 10 \
         -s "${STRAND}" \
         -o subread_counts.txt \

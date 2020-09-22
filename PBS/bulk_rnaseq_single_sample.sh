@@ -26,7 +26,7 @@ export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
     # echo "Job ID: ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}"
     # echo "MSI Group: ${SLURM_JOB_ACCOUNT}"
     # echo "Partition (queue): ${SLURM_JOB_PARTITION}"
-    # echo "Number of CPUs: ${SLURM_NPROCS}"
+    # echo "Number of CPUs: ${SLURM_CPUS_PER_TASK}"
     # echo "Approx. Walltime: $(echo ${SACCT_STATS} | cut -f 1 -d '|')"
     # echo "Memory Requested: ${SLURM_MEM_PER_NODE}"
     # echo "Approx. Memory Used: $(echo ${SSTAT_STATS} | cut -f 3 -d '|')"
@@ -317,7 +317,7 @@ if [ ! -f bbduk.done ]; then
             k=25 \
             editdistance=1 \
             prealloc=t \
-            threads="${SLURM_NPROCS}" \
+            threads="${SLURM_CPUS_PER_TASK}" \
             -Xmx10g \
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     else
@@ -328,7 +328,7 @@ if [ ! -f bbduk.done ]; then
             k=25 \
             editdistance=1 \
             prealloc=t \
-            threads="${SLURM_NPROCS}" \
+            threads="${SLURM_CPUS_PER_TASK}" \
             -Xmx10g \
              2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     fi
@@ -396,7 +396,7 @@ if [ "${TRIM}" = "yes" ]; then
             echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Running trimmomatic on ${R1FILE} and ${R2FILE}." >> "${LOG_FNAME}"
             java -jar "${TRIMMOMATIC}"/trimmomatic.jar \
                 PE \
-                -threads "${SLURM_NPROCS}" \
+                -threads "${SLURM_CPUS_PER_TASK}" \
                 "${R1FILE}" "${R2FILE}" \
                 "${SAMPLENM}_1P.fq.gz" "${SAMPLENM}_1U.fq.gz" "${SAMPLENM}_2P.fq.gz" "${SAMPLENM}_2U.fq.gz" \
                 $(echo "${TRIMOPTS}" | envsubst) \
@@ -406,7 +406,7 @@ if [ "${TRIM}" = "yes" ]; then
             echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Running trimmomatic on ${R1FILE}." >> "${LOG_FNAME}"
             java -jar "${TRIMMOMATIC}"/trimmomatic.jar \
                 SE \
-                -threads "${SLURM_NPROCS}" \
+                -threads "${SLURM_CPUS_PER_TASK}" \
                 "${R1FILE}" \
                 "${SAMPLENM}_trimmed.fq.gz" \
                 $(echo "${TRIMOPTS}" | envsubst) \
@@ -575,7 +575,7 @@ if [ ! -f mapq_flt.done ]; then
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing unmapped and MAPQ<60 reads for counting." >> "${LOG_FNAME}"
     samtools view \
         -bhu \
-        -@ "${SLURM_NPROCS}" \
+        -@ "${SLURM_CPUS_PER_TASK}" \
         -F 4 \
         -q 60 \
         -o "${SAMPLENM}_Filtered.bam" \
@@ -600,7 +600,7 @@ if [ ! -f coord_sort.done ]; then
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Sorting filtered BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
         -O bam \
-        -@ "${SLURM_NPROCS}" \
+        -@ "${SLURM_CPUS_PER_TASK}" \
         -T temp \
         -o "${SAMPLENM}_Filtered_CoordSort.bam" \
         "${SAMPLENM}_Filtered.bam" \
@@ -608,7 +608,7 @@ if [ ! -f coord_sort.done ]; then
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Sorting raw BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
         -O bam \
-        -@ "${SLURM_NPROCS}" \
+        -@ "${SLURM_CPUS_PER_TASK}" \
         -T temp \
         -o "${SAMPLENM}_Raw_CoordSort.bam" \
         "${TO_FLT}" \
