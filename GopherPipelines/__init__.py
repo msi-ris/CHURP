@@ -3,8 +3,8 @@
 run analysis on the Minnesota Supercomputing Institute (MSI) cluster."""
 
 # set dunder (double-underscore) variables
-__version__ = '0.2.2'
-__date__ = '2020-04-08'
+__version__ = '0.2.2-slurm'
+__date__ = '2020-10-19'
 
 import datetime
 import getpass
@@ -18,4 +18,4 @@ NOW = curr_time.isoformat(sep=' ', timespec='seconds')
 UNAME = getpass.getuser()
 
 # Define the allowable queues
-QUEUES = ['batch', 'amdbatch']
+QUEUES = ['small', 'ram256g', 'ram1t', 'amdsmall', 'amd2tb']
