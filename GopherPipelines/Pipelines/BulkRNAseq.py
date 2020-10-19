@@ -304,7 +304,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         handle.write('user_email="${user_name}@umn.edu"\n')
         # Set the group string here
         if self.group:
-            qsub_group = '-A ' + self.group + ' -W "group_list=' + self.group + '"'
+            qsub_group = '-A ' + self.group
         else:
             qsub_group = ''
         qsub_array = '1'
