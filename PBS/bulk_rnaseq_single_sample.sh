@@ -533,7 +533,7 @@ echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f mapq_flt.done ]; then
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing unmapped and MAPQ<60 reads for counting." >> "${LOG_FNAME}"
     samtools view \
-        -bhu \
+        -bh \
         -@ "${SLURM_CPUS_PER_TASK}" \
         -F 4 \
         -q 60 \
