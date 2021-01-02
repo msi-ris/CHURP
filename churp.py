@@ -17,7 +17,7 @@ try:
     assert sys.version_info[0] == 3
 except AssertionError:
     sys.stderr.write('Error - this pipeline requires Python 3!\n')
-    exit(2)
+    sys.exit(2)
 
 
 # Import standard library modules here
@@ -26,11 +26,12 @@ import os
 import argparse
 # Import the package here
 try:
+    import CHURPipelines
     from CHURPipelines.ArgHandling import args
     from CHURPipelines import DieGracefully
 except ImportError:
     sys.stderr.write('Error - CHURPipelines package cannot be not found!\n')
-    exit(1)
+    sys.exit(1)
 
 
 def sp_dbs(args):
@@ -100,7 +101,7 @@ def main():
     do all the actual work."""
     if not sys.argv[1:]:
         args.usage()
-        exit(3)
+        sys.exit(3)
     else:
         pipe_args = args.pipeline_args()
         cmd = {

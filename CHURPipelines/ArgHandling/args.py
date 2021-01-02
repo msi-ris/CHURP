@@ -4,10 +4,10 @@ a huge function, so we will isolate it into this script for ease of development
 and maintenance."""
 
 import argparse
-import GopherPipelines
-from GopherPipelines.ArgHandling import group_template_args
-from GopherPipelines.ArgHandling import bulk_rnaseq_args
-from GopherPipelines import DieGracefully
+import CHURPipelines
+from CHURPipelines.ArgHandling import group_template_args
+from CHURPipelines.ArgHandling import bulk_rnaseq_args
+from CHURPipelines import DieGracefully
 
 
 # Longer help messages as constants
@@ -43,8 +43,8 @@ Version: {version}
 {date}"""
     print(
         msg.format(
-            version=GopherPipelines.__version__,
-            date=GopherPipelines.__date__))
+            version=CHURPipelines.__version__,
+            date=CHURPipelines.__date__))
     return
 
 
