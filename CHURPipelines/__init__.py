@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""GopherPipelines package for building samplesheets and qsub commands to
+"""CHURP package for building samplesheets and qsub commands to
 run analysis on the Minnesota Supercomputing Institute (MSI) cluster."""
 
 # set dunder (double-underscore) variables

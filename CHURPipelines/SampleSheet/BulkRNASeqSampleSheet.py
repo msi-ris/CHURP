@@ -6,9 +6,9 @@ import os
 import re
 import pprint
 
-from GopherPipelines import DieGracefully
-from GopherPipelines.SampleSheet import SampleSheet
-from GopherPipelines.ArgHandling import set_verbosity
+from CHURPipelines import DieGracefully
+from CHURPipelines.SampleSheet import SampleSheet
+from CHURPipelines.ArgHandling import set_verbosity
 
 
 class BulkRNASeqSampleSheet(SampleSheet.Samplesheet):

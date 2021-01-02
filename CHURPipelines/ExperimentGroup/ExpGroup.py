@@ -8,9 +8,9 @@ import re
 import os
 import pprint
 
-from GopherPipelines import DieGracefully
-from GopherPipelines.ArgHandling import set_verbosity
-from GopherPipelines.FileOps import dir_funcs
+from CHURPipelines import DieGracefully
+from CHURPipelines.ArgHandling import set_verbosity
+from CHURPipelines.FileOps import dir_funcs
 
 
 class ExpGroup(object):

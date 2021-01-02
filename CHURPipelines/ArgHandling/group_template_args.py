@@ -3,8 +3,8 @@
 
 import argparse
 
-from GopherPipelines.FileOps import default_dirs
-from GopherPipelines.FileOps import default_files
+from CHURPipelines.FileOps import default_dirs
+from CHURPipelines.FileOps import default_files
 
 
 def add_args(ap):

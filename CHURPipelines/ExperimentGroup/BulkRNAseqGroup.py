@@ -4,10 +4,10 @@
 import pprint
 import os
 
-import GopherPipelines
-from GopherPipelines import DieGracefully
-from GopherPipelines.ExperimentGroup import ExpGroup
-from GopherPipelines.ArgHandling import set_verbosity
+import CHURPipelines
+from CHURPipelines import DieGracefully
+from CHURPipelines.ExperimentGroup import ExpGroup
+from CHURPipelines.ArgHandling import set_verbosity
 
 
 class BulkRNAseqGroup(ExpGroup.ExpGroup):

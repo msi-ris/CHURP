@@ -6,10 +6,10 @@ programs exist and checking sample lists."""
 
 import pprint
 
-import GopherPipelines
-from GopherPipelines.ArgHandling import set_verbosity
-from GopherPipelines.FileOps import dir_funcs
-from GopherPipelines import DieGracefully
+import CHURPipelines
+from CHURPipelines.ArgHandling import set_verbosity
+from CHURPipelines.FileOps import dir_funcs
+from CHURPipelines import DieGracefully
 
 
 class Pipeline(object):
@@ -76,7 +76,7 @@ class Pipeline(object):
                 self.walltime)
             DieGracefully.die_gracefully(DieGracefully.BAD_RESOURCES)
         try:
-            assert self.msi_queue in GopherPipelines.QUEUES
+            assert self.msi_queue in CHURPipelines.QUEUES
         except AssertionError as e:
             self.logger.error(
                 'Queue %s is not in the allowed list of queues.',

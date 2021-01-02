@@ -3,7 +3,7 @@
 date."""
 
 import pathlib
-import GopherPipelines
+import CHURPipelines
 
 # Set the scratch directory as a constant
 SCRATCH = pathlib.Path('/panfs/roc/scratch')
@@ -14,16 +14,16 @@ def default_workdir(pipeline):
     This will be in global scratch at
     $SCRATCH/username/YYYY-MM-DD.pipeline_id.work"""
     # Make the basename of the directory from YMD, time, and pipeline name
-    wk_base = GopherPipelines.TODAY + GopherPipelines.TIMESTAMP + '.' + pipeline + '.work'
+    wk_base = CHURPipelines.TODAY + CHURPipelines.TIMESTAMP + '.' + pipeline + '.work'
     # '/' operator joins pathlib.Path objects
-    d = SCRATCH / GopherPipelines.UNAME / wk_base
+    d = SCRATCH / CHURPipelines.UNAME / wk_base
     return d
 
 
 def default_output(pipeline):
     """Return a pathlib.Path to a default output scratch directory. This will be
     $SCRATCH/username/YYYY-MM-DD.pipeline_id."""
-    outbase = GopherPipelines.TODAY + GopherPipelines.TIMESTAMP + '.' + pipeline
+    outbase = CHURPipelines.TODAY + CHURPipelines.TIMESTAMP + '.' + pipeline
     # Path objects are joined with the / operator
-    d = SCRATCH / GopherPipelines.UNAME / outbase
+    d = SCRATCH / CHURPipelines.UNAME / outbase
     return d

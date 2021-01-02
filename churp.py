@@ -26,10 +26,10 @@ import os
 import argparse
 # Import the package here
 try:
-    from GopherPipelines.ArgHandling import args
-    from GopherPipelines import DieGracefully
+    from CHURPipelines.ArgHandling import args
+    from CHURPipelines import DieGracefully
 except ImportError:
-    sys.stderr.write('Error - GopherPipelines package cannot be not found!\n')
+    sys.stderr.write('Error - CHURPipelines package cannot be not found!\n')
     exit(1)
 
 
@@ -45,7 +45,7 @@ def expr_group(args):
 
     def brnaseq_group(a):
         """Sub-function for calling the bulk RNAseq group template."""
-        from GopherPipelines.ExperimentGroup import BulkRNAseqGroup
+        from CHURPipelines.ExperimentGroup import BulkRNAseqGroup
         eg = BulkRNAseqGroup.BulkRNAseqGroup(args)
         eg.setup(args)
         eg.write_sheet()
@@ -61,7 +61,7 @@ def expr_group(args):
         grp_cmd[args['pipe_group']](args)
     except KeyError:
         # If we get here, then we should get trapped by the no-args help func
-        from GopherPipelines.ExperimentGroup import ExpGroup
+        from CHURPipelines.ExperimentGroup import ExpGroup
         e = ExpGroup.ExpGroup(args)
     return
 
@@ -69,7 +69,7 @@ def expr_group(args):
 def brnaseq(args):
     """This function loads the bulk RNAseq pipeline module, and runs through
     the steps for bulk RNAseq analysis."""
-    from GopherPipelines.Pipelines import BulkRNAseq
+    from CHURPipelines.Pipelines import BulkRNAseq
     p = BulkRNAseq.BulkRNAseqPipeline(args)
     p.setup(args)
     pipeline_fname, samplesheet_fname, key_name, qsub_dat = p.qsub()

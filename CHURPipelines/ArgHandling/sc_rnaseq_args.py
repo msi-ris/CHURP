@@ -2,7 +2,7 @@
 """Add arguments for the single cell RNAseq pipeline."""
 
 import argparse
-from GopherPipelines.FileOps import default_dirs
+from CHURPipelines.FileOps import default_dirs
 
 # Long help messages as constants
 EXTRA_OPT_HELP = """Must be passed as a quoted string with = after the option.

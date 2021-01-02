@@ -2,7 +2,7 @@
 """Add arguments for the bulk RNAseq pipeline."""
 
 import argparse
-from GopherPipelines.FileOps import default_dirs
+from CHURPipelines.FileOps import default_dirs
 
 # Long help messages as constants
 EXTRA_TRIM_HELP = """Must be passed as a quoted string with = after the option.

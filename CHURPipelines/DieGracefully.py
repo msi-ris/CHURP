@@ -4,9 +4,8 @@ an error is encountered. This will hopefully be more helpful to users than a
 Python exception or the debug console messages."""
 
 import sys
-import os
 
-import GopherPipelines
+import CHURPipelines
 
 # The error codes are constants
 BAD_OUTDIR = 10
@@ -381,7 +380,7 @@ You specified an invalid value for the {opt} option.\n"""
 
 def bad_queue():
     """Call this function when the user requests a queue that is not in the
-    list of allowed queues, which is defined in GopherPipelines/__init__.py"""
+    list of allowed queues, which is defined in CHURPipelines/__init__.py"""
     msg = CREDITS + """----------
 ERROR
 
@@ -389,7 +388,7 @@ You specified a queue that is not in the list of allowed queues. Please choose
 one of the following:
 
 {q}\n"""
-    sys.stderr.write(msg.format(q='\n'.join(GopherPipelines.QUEUES)))
+    sys.stderr.write(msg.format(q='\n'.join(CHURPipelines.QUEUES)))
     return
 
 
