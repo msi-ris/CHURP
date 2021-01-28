@@ -265,14 +265,14 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         keyname = os.path.join(self.real_out, keyname)
         if os.path.isfile(keyname):
             self.pipe_logger.warning(
-                'Qsub key file %s exists. Overwriting!', keyname)
+                'Sbatch key file %s exists. Overwriting!', keyname)
         try:
             handle = open(keyname, 'w')
         except OSError:
             DieGracefully.die_gracefully(DieGracefully.BAD_OUTDIR)
         # The sheet is sorted in this way before it is written to disk, so it
         # should be safe to sort it this way
-        handle.write('Qsub.Index\tSampleName\n')
+        handle.write('Sbatch.Index\tSampleName\n')
         for index, samplename in enumerate(sorted(self.sheet.final_sheet)):
             handle.write(str(index+1) + '\t' + samplename + '\n')
         handle.flush()
@@ -390,7 +390,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # Write some echo statements for users' information
         handle.write('echo "Output and logs will be written to ${OUTDIR}"\n')
         handle.write('echo "Emails will be sent to ${user_email}"\n')
-        handle.write('echo "Qsub array to samplename key: ${KEYFILE}"\n')
+        handle.write('echo "Sbatch array to samplename key: ${KEYFILE}"\n')
         handle.write('echo "Single samples job array ID: ${single_id}"\n')
         handle.write('echo "Summary job ID: ${summary_id}"\n')
         self.pipe_logger.debug('sbatch:\n%s', ' '.join(aln_cmd))
