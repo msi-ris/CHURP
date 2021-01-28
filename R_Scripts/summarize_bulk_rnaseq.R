@@ -164,14 +164,22 @@ if(length(samp_ids) == 1) {
     dev.off()
 } else {
     gene_var <- apply(cpm_counts, 1, var)
-    select_var <- names(sort(gene_var, decreasing=TRUE))[1:n_genes]
-    high_var <- cpm_counts[select_var,]
-
-    # Set the heatmap pdf and plot the normalized counts heatmap
-    pdf(hmap)
-    heatmap.2(high_var,trace="none", main = paste("Top ", n_genes, " variance genes", sep=""), cexCol = 0.75, dendrogram = "column", labRow = "", ColSideColors = col_vec, srtCol = 45, margins = c(8,8))
-    legend('left', title = 'Group', legend = uniq_groups, fill = unique(col_vec), cex = 0.8, box.lty = 0 )
-    dev.off()
+    # Need to run a check here to see that they are not all 0 variance
+    if(all(gene_var == 0)) {
+        write("All genes have 0 variance, so we will not try to generate a clustering heatmap. This is not an error.", stderr())
+        pdf(hmap)
+        plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+        text(x=0.5, y=0.5, "All genes have 0 variance in expression;\nClustering heatmap not possible", cex=1, col="black")
+        dev.off()
+    } else {
+        select_var <- names(sort(gene_var, decreasing=TRUE))[1:n_genes]
+        high_var <- cpm_counts[select_var,]
+        # Set the heatmap pdf and plot the normalized counts heatmap
+        pdf(hmap)
+        heatmap.2(high_var,trace="none", main = paste("Top ", n_genes, " variance genes", sep=""), cexCol = 0.75, dendrogram = "column", labRow = "", ColSideColors = col_vec, srtCol = 45, margins = c(8,8))
+        legend('left', title = 'Group', legend = uniq_groups, fill = unique(col_vec), cex = 0.8, box.lty = 0 )
+        dev.off()
+    }
 }
 ############################
 # Differential expression testing and summaries
