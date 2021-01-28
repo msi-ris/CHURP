@@ -18,4 +18,4 @@ NOW = curr_time.isoformat(sep=' ', timespec='seconds')
 UNAME = getpass.getuser()
 
 # Define the allowable queues
-QUEUES = ['small', 'ram256g', 'ram1t', 'amdsmall', 'amd2tb']
+QUEUES = ['small', 'amdsmall']

@@ -319,12 +319,12 @@ samplesheet are given at the paths below:
 
 Pipeline script: {pn}
 Samplesheet: {ss}
-Qsub array key: {kn}
+Sbatch array key: {kn}
 
-Below is the output from qsub.
-Qsub stdout:\n"""
+Below is the output from sbatch.
+Sbatch stdout:\n"""
     msg += qsub_msg[0].decode('utf-8')
-    msg += '\nQsub stderr:\n'
+    msg += '\nSbatch stderr:\n'
     msg += qsub_msg[1].decode('utf-8') + '\n'
     sys.stderr.write(
         msg.format(
@@ -337,7 +337,7 @@ Qsub stdout:\n"""
 
 
 def brnaseq_auto_submit_fail(qsub_msg):
-    """Call this function when auto-submitting and qsub returns an exit status
+    """Call this function when auto-submitting and sbatch returns an exit status
     that is not 0."""
     msg = CREDITS + """----------
 ERROR
@@ -346,7 +346,7 @@ Auto-submission of your pipeline jobs failed! There may be an error with the
 scheduler. Check the MSI status page to be sure that the queues are online. If
 the problem persists, please contact the MSI help desk at help@msi.umn.edu.
 
-The output from qsub is shown below:\n"""
+The output from sbatch is shown below:\n"""
     msg += qsub_msg[1].decode('utf-8')
     msg += '\n'
     sys.stderr.write(msg)

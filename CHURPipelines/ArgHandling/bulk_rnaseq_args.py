@@ -219,7 +219,9 @@ def add_args(ap):
         '-q',
         metavar='<Queue>',
         dest='msi_queue',
-        help='Job queue to send the scheduler requests. Defaults to "small"',
+        help=('Job queue to send the scheduler requests. Defaults to "small". '
+              'Note that this is called "queue" for historical reasons - the '
+              'equivalent term for Slurm is "partition."'),
         type=str,
         default='small')
     ap_sched.add_argument(
