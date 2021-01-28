@@ -80,7 +80,16 @@ hmap <- paste(out_dir, "Plots/high_variance_heatmap.pdf", sep = "/")
 # Filter the featureCounts matrix (read in above) on variance and feature length.
 # But, we can only apply the variance filter if there is more than one sample.
 if(length(samp_ids) > 1) {
-    raw_mat <- raw_mat[-which(apply(raw_mat[,seq(-1,-6)],1,var) < 1),]
+    # Define a vector to tag which rows to drop from the gene expression matrix
+    # on the basis of variance filtering
+    varflt <- apply(raw_mat[,seq(-1,-6)],1,var) < 1
+    # If all of these are TRUE (drop them all), then we write a message and
+    # continue
+    if(all(varflt)) {
+        write("All genes appear to be invariant. Skipping the variance filtering step. This is not an error.", stderr())
+    } else {
+        raw_mat <- raw_mat[-which(varflt),]
+    }
 } else {
     write("There is only one sample, so we do not apply variance filtering to the raw counts. This is not an error.", stderr())
 }
