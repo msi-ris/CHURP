@@ -30,6 +30,14 @@ read_summary[is.na(read_summary)] <- 0
 sheet <- read.table(as.character(params["samplesheet"]), sep="|", header=FALSE, comment.char="#", stringsAsFactors=FALSE)
 # Subset the sheet for those that were run - these are the rows in the read count summary
 sheet <- sheet[sheet$V1 %in% read_summary$V1,]
+
+# We are making a bold assumption here that the first sample is run against the
+# same genome as all the others. This is generally true, but if the user set
+# up multiple genomes, then then shouild hopefully know that and be able to
+# see that from the samplesheet. The genome is the 10th field, and the GTF is the 13th.
+genome <- as.character(sheet[1, 10])
+annot <- as.character(sheet[1, 13])
+
 samplenames <- sheet$V1
 # Export the first sample in the read summary
 firstrun <- samplenames[1]
@@ -90,9 +98,14 @@ MSI with funding provided by the University of Minnesota Informatics Institute
 
 # Key Figures and Summaries
 ## Experiment Summary
-The location of the FASTQ files for this run is ``r fastq_dir``
+The location of the FASTQ files for this run is ``r fastq_dir``. This run
+consists of ``r nsamp`` samples. The path to the reference genome is
 
-This run consists of ``r nsamp`` samples.
+``r genome``
+
+and the path to the GTF annotation is
+
+``r annot``
 
 A tabular summary of the samples and reads that were analyzed is shown below:
 
