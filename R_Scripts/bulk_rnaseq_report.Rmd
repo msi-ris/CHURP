@@ -1031,6 +1031,56 @@ if(rnaseqc_do) {
 }
 ```
 
+### Estimated Library Complexity
+This plot shows the estimated number of unique cDNA fragments that are present
+in each library. This is determined using the same method as the one used by
+[Picard EstimateLibraryComplexity](https://broadinstitute.github.io/picard/command-line-overview.html#EstimateLibraryComplexity).
+
+```{r est_lib_complex, echo=FALSE, message=FALSE, fig.width=8, fig.height=4, results="asis"}
+par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
+if(rnaseqc_do) {
+    elc_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Estimated Library Complexity"])
+    lim <- max(elc_dat) * 1.1
+    if(large_dataset) {
+        cat("#### Plots {.tabset}\n")
+        for(i in unique(chunks)) {
+            idx <- which(chunks == i)
+            subdat <- elc_dat[idx]
+            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            at <- barplot(
+                subdat,
+                axes=FALSE,
+                horiz=TRUE,
+                xlim=c(0, lim),
+                xlab="Estimated Number of Unique Fragments",
+                main="Estimated Library Complexity",
+                ylab="",
+                col="#1f78b4")
+            axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName))[idx], las=2, cex.axis=0.6, lty=0)
+            axis(side=1)
+            axis(side=3)
+            cat("\n\n")
+        }
+    } else {
+        at <- barplot(
+            elc_dat,
+            axes=FALSE,
+            horiz=TRUE,
+            xlim=c(0, lim),
+            xlab="Estimated Number of Unique Fragments",
+            main="Estimated Library Complexity",
+            ylab="",
+            col="#1f78b4")
+        axis(side=2, at=at, labels=as.character(unique(rnaseqc_summary$SampleName)), las=2, cex.axis=0.6, lty=0)
+        axis(side=1)
+        axis(side=3)
+    } 
+} else {
+    plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+    text(x=0.5, y=0.5, "No RNASeQC Metrics", cex=1, col="black")
+}
+```
+
 ### Duplication
 This plot shows the proportion of alignments that are positional duplicates in
 each sample, as determined in the default algorithm of the
