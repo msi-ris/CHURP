@@ -2169,7 +2169,8 @@ if(!dir.exists(degdir)) {
         for(i in 1:length(deg_files)) {
             curr_f <- deg_files[i]
             fname <- basename(curr_f)
-            gps <- unlist(strsplit(fname, "_"))[2]
+            gps <- gsub("^DE_", "", curr_f, perl=TRUE)
+            gps <- gsub("_list.txt$", "", curr_f, perl=TRUE)
             d <- read.table(curr_f, header=TRUE)
             d_g <- merge(d, gene_names, by.x="genes", by.y="EnsemblID")
             d_g <- d_g[order(d_g$FDR),]
