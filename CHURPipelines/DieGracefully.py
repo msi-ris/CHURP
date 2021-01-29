@@ -112,7 +112,7 @@ below:
 
 Pipeline script: {pn}
 Samplesheet: {ss}
-Qsub array key: {kn}
+Sbatch array key: {kn}
 
 Verify the information in the samplesheet, and run the pipeline script with
 bash while logged into Mesabi. You will recieve email notifications of job
