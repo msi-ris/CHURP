@@ -229,6 +229,34 @@ awk -F '\t' '$3 == "gene" {print $9}' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}
     | sed -e 's/"//g' \
     > "${OUTDIR}/gene_id_gene_name_map.txt"
 
+# This is a bit of a dumb hack, but if the resulting file is size 0, then we
+# have to take an alternate strategy. We will isolate the transcripts and do the
+# same type of printing
+if [ ! -s "${OUTDIR}/gene_id_gene_name_map.txt" ]
+then
+    echo "# ${PBS_JOBID} $(date '+%F %T'): gene_id_gene_name_map.txt file is empty when searching for genes. Searching for 'transcript' features instead." >> "${LOG_FNAME}"
+    awk -F '\\t' '$3 == "transcript" {print $9}' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") \
+    | awk -F ';' -v OFS='\\t' '{
+        found_gene="false"
+        for(i = 1; i <= NF; i++) {
+            if( $i ~ /gene_id/ ) {
+                split($i,GI," ")
+            }
+            if( $i ~ /gene_name/ ) {
+                split($i,GN," ")
+                found_gene="true"
+            }
+        }
+        if(found_gene=="true") {
+            print GI[2],GN[2]
+        } else {
+            print GI[2],GI[2]
+        }
+    }' \
+        | sed -e 's/"//g' \
+        > "${OUTDIR}/gene_id_gene_name_map.txt"
+fi
+
 # Chop up the subread_counts.txt file a little bit to make it easier to import
 # into other tools like CLC Genomics Workbench
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Linking gene symbol with Ensembl ID for subread_counts.txt" >> "${LOG_FNAME}"
