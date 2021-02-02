@@ -718,8 +718,5 @@ touch "${SAMPLENM}.done"
 # Finally, let's clean up
 echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing HISAT2 bam, markdup/dedup bam, and raw querysort bam to reduce disk usage." >> "${LOG_FNAME}"
 rm -f "${SAMPLENM}.bam" "${SAMPLENM}_Raw_MarkDup.bam" "${SAMPLENM}_Raw_DeDup.bam" "${SAMPLENM}_Raw_QuerySort.bam"
-
-# And, run our stats function
-
 # And close the file descriptor we were using for the trace
 exec 5>&-
