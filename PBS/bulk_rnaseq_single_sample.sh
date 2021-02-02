@@ -496,33 +496,33 @@ if [ ! -f dup.done ]; then
         _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
             MarkDuplicates \
             I="${SAMPLENM}_Raw_QuerySort.bam" \
-            O="${SAMPLENM}_DeDup.bam" \
+            O="${SAMPLENM}_Raw_DeDup.bam" \
             REMOVE_DUPLICATES="true" \
             ASSUME_SORT_ORDER="queryname" \
             M="${SAMPLENM}_MarkDup_Metrics.txt" \
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
         # Set the name of the bam to filter
-        TO_FLT="${SAMPLENM}_DeDup.bam"
+        TO_FLT="${SAMPLENM}_Raw_DeDup.bam"
     else
         echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Marking duplicate reads with Picard MarkDuplicates." >> "${LOG_FNAME}"
         _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
             MarkDuplicates \
             I="${SAMPLENM}_Raw_QuerySort.bam" \
-            O="${SAMPLENM}_MarkDup.bam" \
+            O="${SAMPLENM}_Raw_MarkDup.bam" \
             REMOVE_DUPLICATES="false" \
             ASSUME_SORT_ORDER="queryname" \
             M="${SAMPLENM}_MarkDup_Metrics.txt" \
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
-        TO_FLT="${SAMPLENM}_MarkDup.bam"
+        TO_FLT="${SAMPLENM}_Raw_MarkDup.bam"
     fi
     touch dup.done
 else
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Found deduplicated/marked BAM files." >> "${LOG_FNAME}"
     # But, be sure to set the TO_FLT variable:
     if [ "${RMDUP}" = "yes" ]; then
-        TO_FLT="${SAMPLENM}_DeDup.bam"
+        TO_FLT="${SAMPLENM}_Raw_DeDup.bam"
     else
-        TO_FLT="${SAMPLENM}_MarkDup.bam"
+        TO_FLT="${SAMPLENM}_Raw_MarkDup.bam"
     fi
 fi
 
@@ -537,7 +537,7 @@ if [ ! -f mapq_flt.done ]; then
         -@ "${SLURM_CPUS_PER_TASK}" \
         -F 4 \
         -q 60 \
-        -o "${SAMPLENM}_Filtered.bam" \
+        -o "${SAMPLENM}_MAPQFiltered.bam" \
         "${TO_FLT}"
     touch mapq_flt.done
 else
@@ -561,8 +561,8 @@ if [ ! -f coord_sort.done ]; then
         -O bam \
         -@ "${SLURM_CPUS_PER_TASK}" \
         -T temp \
-        -o "${SAMPLENM}_Filtered_CoordSort.bam" \
-        "${SAMPLENM}_Filtered.bam" \
+        -o "${SAMPLENM}_MAPQFiltered_CoordSort.bam" \
+        "${SAMPLENM}_MAPQFiltered.bam" \
         2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Sorting raw BAM file by coordinate." >> "${LOG_FNAME}"
     samtools sort \
@@ -573,7 +573,7 @@ if [ ! -f coord_sort.done ]; then
         "${TO_FLT}" \
         2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Indexing coordinate-sorted BAM files." >> "${LOG_FNAME}"
-    samtools index "${SAMPLENM}_Filtered_CoordSort.bam"
+    samtools index "${SAMPLENM}_MAPQFiltered_CoordSort.bam"
     samtools index "${SAMPLENM}_Raw_CoordSort.bam"
     touch coord_sort.done
 else
@@ -581,11 +581,11 @@ else
 fi
 
 # Set these variables for linking at the end of the script
-FOR_COUNTS="${SAMPLENM}_Filtered.bam"
+FOR_COUNTS="${SAMPLENM}_MAPQFiltered.bam"
 RAW_COORD="${SAMPLENM}_Raw_CoordSort.bam"
 RAW_COORD_IDX="${SAMPLENM}_Raw_CoordSort.bam.bai"
-FLT_COORD="${SAMPLENM}_Filtered_CoordSort.bam"
-FLT_COORD_IDX="${SAMPLENM}_Filtered_CoordSort.bam.bai"
+FLT_COORD="${SAMPLENM}_MAPQFiltered_CoordSort.bam"
+FLT_COORD_IDX="${SAMPLENM}_MAPQFiltered_CoordSort.bam.bai"
 
 # Generate some stats on the raw BAM for the report
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
@@ -717,7 +717,7 @@ touch "${SAMPLENM}.done"
 
 # Finally, let's clean up
 echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing HISAT2 bam, markdup/dedup bam, and raw querysort bam to reduce disk usage." >> "${LOG_FNAME}"
-rm -f "${SAMPLENM}.bam" "${SAMPLENM}_MarkDup.bam" "${SAMPLENM}_DeDup.bam" "${SAMPLENM}_Raw_QuerySort.bam"
+rm -f "${SAMPLENM}.bam" "${SAMPLENM}_Raw_MarkDup.bam" "${SAMPLENM}_Raw_DeDup.bam" "${SAMPLENM}_Raw_QuerySort.bam"
 
 # And, run our stats function
 
