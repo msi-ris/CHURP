@@ -898,6 +898,7 @@ We additionally use these pieces of software that are not available in MSI
 software modules:
 
 ```
+subread-1.6.2
 pandoc-2.3.1
 ```
 
