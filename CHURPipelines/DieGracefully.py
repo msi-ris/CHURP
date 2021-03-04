@@ -174,7 +174,7 @@ ERROR
 
 The FASTQ directory that you have supplied either does not exist or cannot be
 read. If you have verified that you can read the directory contents, please
-contact the help desk (help@msi.umn.edu) with tihs error message and the
+contact the help desk (help@msi.umn.edu) with this error message and the
 debugging output.\n"""
     sys.stderr.write(msg)
     return
