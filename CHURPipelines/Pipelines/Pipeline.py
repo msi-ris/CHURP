@@ -57,6 +57,8 @@ class Pipeline(object):
     def _check_log(self):
         """Check that the command log file can be written to."""
         self.logger.info('Checking command log')
+        if not self.cmd_log:
+            return
         self.logger.debug('Checking command log %s', self.cmd_log)
         cl_fp = os.path.abspath(os.path.expanduser(self.cmd_log))
         cl_dn = os.path.dirname(cl_fp)
