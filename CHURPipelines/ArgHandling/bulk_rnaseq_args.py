@@ -71,6 +71,13 @@ def add_args(ap):
         help='Show this help message and exit.',
         action='help')
     ap_opt.add_argument(
+        '--command-log',
+        dest='cmd_log',
+        help=('Save the command that was run into this file. This file will be'
+              ' appended to, rather than overwritten, so you can save multiple'
+              ' CHURP runs into this file.'),
+        default=None)
+    ap_opt.add_argument(
         '--expr-groups',
         '-e',
         help=('CSV from the "group_template" subcommand that lists '

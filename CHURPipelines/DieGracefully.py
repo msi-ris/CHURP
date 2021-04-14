@@ -8,6 +8,7 @@ import sys
 import CHURPipelines
 
 # The error codes are constants
+BAD_LOGDIR = 9
 BAD_OUTDIR = 10
 BAD_WORKDIR = 11
 BAD_RESOURCES = 12
@@ -56,6 +57,19 @@ ERROR
 gopher-pipelines has caught an unidentified error. Please send this error
 message, the command you typed, and debugging output to the MSI help desk
 (help@msi.umn.edu).\n"""
+    sys.stderr.write(msg)
+    return
+
+
+def bad_logdir():
+    """Call this function when the user supplies a bad command log file
+    path."""
+    msg = CREDITS + """----------
+ERROR
+
+The command log location you have supplied is not suitable. Either you do not
+have permissions to write to the location specified, or the disk is full.
+Please choose another location and try again.\n"""
     sys.stderr.write(msg)
     return
 
@@ -420,6 +434,7 @@ The paired-end sample are:
 def die_gracefully(e, *args):
     """Print user-friendly error messages and exit."""
     err_dict = {
+        BAD_LOGDIR: bad_logdir,
         BAD_OUTDIR: bad_outdir,
         BAD_WORKDIR: bad_workdir,
         BAD_RESOURCES: bad_resources,

@@ -74,6 +74,7 @@ def brnaseq(args):
     p = BulkRNAseq.BulkRNAseqPipeline(args)
     p.setup(args)
     pipeline_fname, samplesheet_fname, key_name, qsub_dat = p.qsub()
+    p.write_cmd_log()
     if not qsub_dat:
         DieGracefully.die_gracefully(
             DieGracefully.BRNASEQ_SUCCESS,
