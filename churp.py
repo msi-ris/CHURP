@@ -7,8 +7,8 @@ supported:
     - group_template
     - bulk_rnaseq
 Questions should be directed to help@msi.umn.edu.
-Version: 0.2.0
-2019-04-24
+Version: 0.2.2
+2021-02-03
 """
 
 # Check the Python version
@@ -74,6 +74,7 @@ def brnaseq(args):
     p = BulkRNAseq.BulkRNAseqPipeline(args)
     p.setup(args)
     pipeline_fname, samplesheet_fname, key_name, qsub_dat = p.qsub()
+    p.write_cmd_log()
     if not qsub_dat:
         DieGracefully.die_gracefully(
             DieGracefully.BRNASEQ_SUCCESS,

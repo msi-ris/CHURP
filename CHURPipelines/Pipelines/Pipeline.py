@@ -5,6 +5,8 @@ analysis pipelines that we will build: setting dependencies, checking that
 programs exist and checking sample lists."""
 
 import pprint
+import os
+import sys
 
 import CHURPipelines
 from CHURPipelines.ArgHandling import set_verbosity
@@ -28,6 +30,8 @@ class Pipeline(object):
         self.logger.debug('Passed args:\n%s', pprint.pformat(args))
         self.outdir = args['outdir']
         self.workdir = args['workdir']
+        # Set the command log file
+        self.cmd_log = args['cmd_log']
         # These are empty, and will get populated by the sub-class.
         self.single_sample_script = ''
         # Set the scheduler resources and PBS options here
@@ -47,11 +51,37 @@ class Pipeline(object):
         This happens after initialization of sub-classes from the pipeline."""
         self._check_scheduler()
         self._check_dirs()
+        self._check_log()
+        return
+
+    def _check_log(self):
+        """Check that the command log file can be written to."""
+        self.logger.info('Checking command log')
+        if not self.cmd_log:
+            return
+        self.logger.debug('Checking command log %s', self.cmd_log)
+        cl_fp = os.path.abspath(os.path.expanduser(self.cmd_log))
+        cl_dn = os.path.dirname(cl_fp)
+        self.logger.debug('Checking %s', cl_dn)
+        # First, check that it exists
+        if dir_funcs.dir_exists(cl_dn, self.logger):
+            # Then, is it writeable?
+            if dir_funcs.dir_writeable(cl_dn, self.logger):
+                # All good!
+                self.logger.debug('Command log dir %s is valid', cl_dn)
+            else:
+                self.logger.error(
+                    'Command log dir %s cannot be written to!', cl_dn)
+                DieGracefully.die_gracefully(DieGracefully.BAD_LOGDIR)
+        else:
+            self.logger.error(
+                'Command log dir %s cannot be written to!', cl_dn)
+            DieGracefully.die_gracefully(DieGracefully.BAD_LOGDIR)
         return
 
     def _check_scheduler(self):
         """Check that the scheduler resource requests make sense. ppn should be
-        between 1 and 24; mem should be between 2000 and 62000; walltime should
+        between 1 and 24; mem should be between 2000 and 60000; walltime should
         be between 2h and 96h; and the queues should be one of the valid queues
         on Mesabi or Mangi."""
         try:
@@ -62,10 +92,10 @@ class Pipeline(object):
                 self.ppn)
             DieGracefully.die_gracefully(DieGracefully.BAD_RESOURCES)
         try:
-            assert self.mem >= 1 and self.mem <= 62000
+            assert self.mem >= 1 and self.mem <= 60000
         except AssertionError as e:
             self.logger.error(
-                'Mem value of %i is invalid! Specify between 1 and 62000.',
+                'Mem value of %i is invalid! Specify between 1 and 60000.',
                 self.mem)
             DieGracefully.die_gracefully(DieGracefully.BAD_RESOURCES)
         try:
@@ -139,4 +169,26 @@ class Pipeline(object):
             s = dir_funcs.make_dir(self.workdir, self.logger)
             if not s:
                 DieGracefully.die_gracefully(DieGracefully.BAD_WORKDIR)
+        return
+
+    def write_cmd_log(self):
+        """Write the log of the command that was used to invoke the run of
+        CHURP. This is separate from the pipeline.sh and samplesheet.txt files
+        that get written."""
+        if not self.cmd_log:
+            return
+        cl_fh = open(self.cmd_log, 'at')
+        comments = '# CHURP run on {day} {time}\n'
+        comments += '# CHURP version: {version}\n'
+        comments += '# CWD: {wd}\n'
+        cl_fh.write(
+            comments.format(
+                day=CHURPipelines.TODAY,
+                time=CHURPipelines.HUM_TIMESTAMP,
+                version=CHURPipelines.__version__,
+                wd=os.getcwd())
+            )
+        cl_fh.write(' '.join(sys.argv) + '\n')
+        cl_fh.flush()
+        cl_fh.close()
         return

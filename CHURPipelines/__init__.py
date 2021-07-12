@@ -3,8 +3,8 @@
 run analysis on the Minnesota Supercomputing Institute (MSI) cluster."""
 
 # set dunder (double-underscore) variables
-__version__ = '0.2.2-slurm'
-__date__ = '2020-10-19'
+__version__ = '0.2.2-dev'
+__date__ = '2021-02-02'
 
 import datetime
 import getpass
@@ -14,6 +14,7 @@ curr_time = datetime.datetime.now()
 TODAY = datetime.date.isoformat(datetime.datetime.today())
 # A time stamp to append to the date stamp, in ISO format
 TIMESTAMP = 'T{t.hour:02}{t.minute:02}{t.second:02}'.format(t=curr_time)
+HUM_TIMESTAMP = '{t.hour:02}:{t.minute:02}:{t.second:02}'.format(t=curr_time)
 NOW = curr_time.isoformat(sep=' ', timespec='seconds')
 UNAME = getpass.getuser()
 
