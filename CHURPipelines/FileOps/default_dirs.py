@@ -6,7 +6,7 @@ import pathlib
 import CHURPipelines
 
 # Set the scratch directory as a constant
-SCRATCH = pathlib.Path('/panfs/roc/scratch')
+SCRATCH = pathlib.Path('/scratch.global')
 
 
 def default_workdir(pipeline):
