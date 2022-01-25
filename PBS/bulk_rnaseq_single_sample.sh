@@ -4,6 +4,10 @@ set -e
 set -u
 set -o pipefail
 
+# Reset the PATH variable to a "stock" state so that personal libraries do not
+# interfere.
+export PATH="/opt/msi/bin:/usr/share/Modules/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin"
+
 # Export the PS4 variable for the trace
 # Taken from https://wiki.bash-hackers.org/scripting/debuggingtips
 LOG_SECTION="General"
