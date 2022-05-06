@@ -19,7 +19,7 @@ The following pipelines have been implemented:
 - Bulk RNAseq
 
 ## Current Version
-The current version is `0.2.2`, released on 2020-04-08.
+The current version is `0.2.3`, released on 2022-05-06.
 
 ## Development Version
 To gain access to the development version, with experimental new features and bug fixes, please clone this repository and run `git checkout dev` from within the cloned repository.
