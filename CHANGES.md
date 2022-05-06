@@ -31,7 +31,7 @@ Patch-level update for PURR, the CHURP bulk RNAseq workflow.
 - `-q` flag for specifying which queue to submit jobs. CHURP can now send tasks to the [Mangi](https://www.msi.umn.edu/queues) queues.
 - "Large dataset" support; the HTML report now breaks large data sets into
   chunks for display.
-- Custom exit codes for each step for easier identification of where PURR fails. See the[documentation](https://github.umn.edu/MSI-RIS/CHURP/wiki/PURR-Manual-Page#exit-codes) for a description of each code.
+- Custom exit codes for each step for easier identification of where PURR fails. See the [documentation](https://github.umn.edu/MSI-RIS/CHURP/wiki/PURR-Manual-Page#exit-codes) for a description of each code.
 
 ### Modified
 - Strand-specificity and gDNA metrics for single-read data have been fixed.
