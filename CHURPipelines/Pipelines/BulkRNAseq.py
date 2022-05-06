@@ -29,7 +29,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         """Initialize the pipeline object. We will call the general
         Pipeline.__init__() here, as well as set some specific pipeline
         attributes."""
-        Pipeline.Pipeline.__init__(args)
+        Pipeline.Pipeline.__init__(self, args)
         # Set up the verbosity and logging
         self.pipe_logger = set_verbosity.verb(args['verbosity'], __name__)
         # First validate the arguments. We do this in the subclass because the
