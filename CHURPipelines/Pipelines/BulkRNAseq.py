@@ -6,8 +6,6 @@ import os
 import glob
 import subprocess
 import re
-import datetime
-import getpass
 
 import CHURPipelines
 from CHURPipelines import DieGracefully
@@ -163,7 +161,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         self.pipe_logger.debug('Strandness: %s', a['strand'])
         # Check that the adapters and GTF file exist
         try:
-            handle = open(a['gtf'], 'r')
+            handle = open(a['gtf'], 'rt')
             handle.close()
         except OSError:
             DieGracefully.die_gracefully(DieGracefully.BAD_GTF)
@@ -173,13 +171,13 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             try:
                 a['adapters'] = os.path.realpath(
                     os.path.expanduser(str(a['adapters'])))
-                handle = open(a['adapters'], 'r')
+                handle = open(a['adapters'], 'rt')
                 handle.close()
             except OSError:
                 DieGracefully.die_gracefully(DieGracefully.BAD_ADAPT)
         if a['expr_groups']:
             try:
-                handle = open(a['expr_groups'], 'r')
+                handle = open(a['expr_groups'], 'rt')
                 handle.close()
             except OSError:
                 DieGracefully.die_gracefully(DieGracefully.BRNASEQ_BAD_GPS)
@@ -278,7 +276,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             self.pipe_logger.warning(
                 'Sbatch key file %s exists. Overwriting!', keyname)
         try:
-            handle = open(keyname, 'w')
+            handle = open(keyname, 'wt')
         except OSError:
             DieGracefully.die_gracefully(DieGracefully.BAD_OUTDIR)
         # The sheet is sorted in this way before it is written to disk, so it
@@ -295,7 +293,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             self.pipe_logger.warning(
                 'Submission script %s already exists. Overwriting!', pname)
         try:
-            handle = open(pname, 'w')
+            handle = open(pname, 'wt')
         except OSError:
             DieGracefully.die_gracefully(DieGracefully.BAD_OUTDIR)
         # Write the header of the script
@@ -333,7 +331,8 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         handle.write('PURGE=' + '"' + self.purge + '"\n')
         handle.write('RRNA_SCREEN=' + '"' + self.rrna_screen + '"\n')
         handle.write('SUBSAMPLE=' + '"' + self.subsample + '"\n')
-        handle.write('PIPE_SCRIPT="$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )/$(basename $0)"\n')
+        handle.write('PIPE_SCRIPT="$(cd "$( dirname "${BASH_SOURCE[0]}" )" '
+                     '>/dev/null && pwd )/$(basename $0)"\n')
         # These are the variables we want to export into the single sample job
         # script.
         single_cmd_vars = ','.join([
