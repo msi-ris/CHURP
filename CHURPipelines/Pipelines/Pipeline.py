@@ -39,6 +39,7 @@ class Pipeline(object):
         self.ppn = args['ppn']
         self.mem = args['mem']
         self.walltime = args['walltime']
+        self.tmp_space = args['tmp_space']
         # Set the purge flag
         if args['purge']:
             self.purge = 'true'

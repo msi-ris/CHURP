@@ -25,7 +25,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
     # Define the pipeline name here
     pipe_name = 'bulk_rnaseq'
 
-    def setup(self, args):
+    def __init__(self, args):
         """Initialize the pipeline object. We will call the general
         Pipeline.__init__() here, as well as set some specific pipeline
         attributes."""
@@ -112,6 +112,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
                 a['expr_groups'])))
         try:
             assert a['headcrop'] >= 0
+            assert isinstance(a['headcrop'], int)
         except AssertionError:
             DieGracefully.die_gracefully(
                 DieGracefully.BAD_NUMBER, '--headcrop')
@@ -122,6 +123,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
                 DieGracefully.BAD_NUMBER, '--min-cpm')
         try:
             assert a['rrna_screen'] >= 0
+            assert isinstance(a['rrna_screen'], int)
         except AssertionError:
             DieGracefully.die_gracefully(
                 DieGracefully.BAD_NUMBER, '--rrna_screen')
@@ -134,11 +136,19 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
                 DieGracefully.BAD_NUMBER, '--subsample')
         try:
             assert a['mem'] >= 12000
+            assert isinstance(a['mem'], int)
         except AssertionError:
             DieGracefully.die_gracefully(
                 DieGracefully.BAD_NUMBER, '--mem')
         try:
+            assert a['tmp_space'] >= 0
+            assert isinstance(a['tmp_space'], int)
+        except AssertionError:
+            DieGracefully.die_gracefully(
+                DieGracefully.BAD_NUMBER, '--tmp')
+        try:
             assert a['walltime'] >= 2
+            assert isinstance(a['walltime'], int)
         except AssertionError:
             DieGracefully.die_gracefully(
                 DieGracefully.BAD_NUMBER, '--walltime')
@@ -336,14 +346,14 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             '--parsable',
             '--ignore-pbs',
             '-p', self.msi_queue,
-            '--mail-type=ALL',
+            '--mail-type=BEGIN,END,FAIL',
             '--mail-user="${user_email}"',
             qsub_group,
             '-o', '"${OUTDIR}/bulk_rnaseq_single_sample-%A.%a.out"',
             '-e', '"${OUTDIR}/bulk_rnaseq_single_sample-%A.%a.err"',
             '-N', '1',
             '--mem=' + str(self.mem) + 'mb',
-            '--tmp=12gb',
+            '--tmp=' + str(self.tmp_space) + 'mb',
             '-n', '1',
             '-c', str(self.ppn),
             '--time=' + str(self.walltime * 60),
@@ -368,17 +378,17 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             '--parsable',
             '--ignore-pbs',
             '-p', self.msi_queue,
-            '--mail-type=ALL',
+            '--mail-type=BEGIN,END,FAIL',
             '--mail-user="${user_email}"',
             qsub_group,
             '-o', '"${OUTDIR}/run_summary_stats-%j.out"',
             '-e', '"${OUTDIR}/run_summary_stats-%j.err"',
             '-N', '1',
             '--mem=' + str(self.mem) + 'mb',
-            '--tmp=12gb',
+            '--tmp=' + str(self.tmp_space) + 'mb',
             '-n', '1',
             '-c', str(self.ppn),
-            '--time=720',
+            '--time=' + str(self.walltime * 60),
             '--depend=afterok:${single_id}',
             '--export=' + summary_vars,
             self.summary_script,

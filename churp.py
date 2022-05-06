@@ -48,7 +48,7 @@ def expr_group(args):
         """Sub-function for calling the bulk RNAseq group template."""
         from CHURPipelines.ExperimentGroup import BulkRNAseqGroup
         eg = BulkRNAseqGroup.BulkRNAseqGroup(args)
-        eg.setup(args)
+        # eg.setup(args)
         eg.write_sheet()
         DieGracefully.die_gracefully(
             DieGracefully.BRNASEQ_GROUP_SUCCESS,
