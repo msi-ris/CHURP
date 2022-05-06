@@ -50,6 +50,7 @@ def expr_group(args):
         eg = BulkRNAseqGroup.BulkRNAseqGroup(args)
         # eg.setup(args)
         eg.write_sheet()
+        eg.write_cmd_log()
         DieGracefully.die_gracefully(
             DieGracefully.BRNASEQ_GROUP_SUCCESS,
             eg.dest)
