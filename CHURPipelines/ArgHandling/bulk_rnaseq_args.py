@@ -244,16 +244,26 @@ def add_args(ap):
         '-p',
         metavar='<procs per node>',
         dest='ppn',
-        help='Processors to allocate for each task. Defaults to 6.',
+        help='Processors to allocate for each job. Defaults to 6.',
         type=int,
         default=6)
     ap_sched.add_argument(
         '--mem',
         '-m',
-        metavar='<mem per job (Mb)>',
+        metavar='<mem per job (MB)>',
         dest='mem',
-        help=('Memory, in megabytes, to allocate to each task. Must be at '
+        help=('Memory, in megabytes, to allocate to each job. Must be at '
               'least 12000 (12GB). Default: 12000'),
+        type=int,
+        default=12000)
+    ap_sched.add_argument(
+        '--tmp',
+        metavar='<job temp space (MB)>',
+        dest='tmp_space',
+        help=('Temporary space, in megabytes, to allocate for each job. '
+              'Defaults to 12000 (12GB). This is synonymous with "local '
+              'scratch" on each node. See the "partitions" page on the MSI '
+              'website for partition-specific limits.'),
         type=int,
         default=12000)
     ap_sched.add_argument(
@@ -261,7 +271,7 @@ def add_args(ap):
         '-w',
         metavar='<wall clock time (hours)>',
         dest='walltime',
-        help=('Walltime, in hours, to allocate to each task. Must be at least '
+        help=('Walltime, in hours, to allocate to each job. Must be at least '
               '2 hours. Defaults to 12 hours.'),
         type=int,
         default=12)
