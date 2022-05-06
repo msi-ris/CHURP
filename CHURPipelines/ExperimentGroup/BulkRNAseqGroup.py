@@ -14,12 +14,12 @@ class BulkRNAseqGroup(ExpGroup.ExpGroup):
     """Inherits from the ExpGroup object. Some of these functions will be very
     similar to those that are written for the bulk RNAseq samplesheet object.
     This is unavoidable, unfortunately."""
-    pass
 
-    def setup(self, args):
+    def __init__(self, args):
         """Do a detailed check of the arguments passed to this function. We
         want to validate the output directory, working directory, FASTQ
         directory, and the columns that were passed."""
+        ExpGroup.ExpGroup.__init__(self, args)
         valid_args = self._validate(args)
         # Append the extra columns to the default ones
         self.columns.extend(valid_args['extra_column'])
