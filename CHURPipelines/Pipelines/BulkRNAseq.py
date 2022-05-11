@@ -6,8 +6,6 @@ import os
 import glob
 import subprocess
 import re
-import datetime
-import getpass
 
 import CHURPipelines
 from CHURPipelines import DieGracefully
@@ -25,10 +23,11 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
     # Define the pipeline name here
     pipe_name = 'bulk_rnaseq'
 
-    def setup(self, args):
+    def __init__(self, args):
         """Initialize the pipeline object. We will call the general
         Pipeline.__init__() here, as well as set some specific pipeline
         attributes."""
+        Pipeline.Pipeline.__init__(self, args)
         # Set up the verbosity and logging
         self.pipe_logger = set_verbosity.verb(args['verbosity'], __name__)
         # First validate the arguments. We do this in the subclass because the
@@ -112,6 +111,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
                 a['expr_groups'])))
         try:
             assert a['headcrop'] >= 0
+            assert isinstance(a['headcrop'], int)
         except AssertionError:
             DieGracefully.die_gracefully(
                 DieGracefully.BAD_NUMBER, '--headcrop')
@@ -122,6 +122,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
                 DieGracefully.BAD_NUMBER, '--min-cpm')
         try:
             assert a['rrna_screen'] >= 0
+            assert isinstance(a['rrna_screen'], int)
         except AssertionError:
             DieGracefully.die_gracefully(
                 DieGracefully.BAD_NUMBER, '--rrna_screen')
@@ -134,11 +135,19 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
                 DieGracefully.BAD_NUMBER, '--subsample')
         try:
             assert a['mem'] >= 12000
+            assert isinstance(a['mem'], int)
         except AssertionError:
             DieGracefully.die_gracefully(
                 DieGracefully.BAD_NUMBER, '--mem')
         try:
+            assert a['tmp_space'] >= 0
+            assert isinstance(a['tmp_space'], int)
+        except AssertionError:
+            DieGracefully.die_gracefully(
+                DieGracefully.BAD_NUMBER, '--tmp')
+        try:
             assert a['walltime'] >= 2
+            assert isinstance(a['walltime'], int)
         except AssertionError:
             DieGracefully.die_gracefully(
                 DieGracefully.BAD_NUMBER, '--walltime')
@@ -152,7 +161,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         self.pipe_logger.debug('Strandness: %s', a['strand'])
         # Check that the adapters and GTF file exist
         try:
-            handle = open(a['gtf'], 'r')
+            handle = open(a['gtf'], 'rt')
             handle.close()
         except OSError:
             DieGracefully.die_gracefully(DieGracefully.BAD_GTF)
@@ -162,13 +171,13 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             try:
                 a['adapters'] = os.path.realpath(
                     os.path.expanduser(str(a['adapters'])))
-                handle = open(a['adapters'], 'r')
+                handle = open(a['adapters'], 'rt')
                 handle.close()
             except OSError:
                 DieGracefully.die_gracefully(DieGracefully.BAD_ADAPT)
         if a['expr_groups']:
             try:
-                handle = open(a['expr_groups'], 'r')
+                handle = open(a['expr_groups'], 'rt')
                 handle.close()
             except OSError:
                 DieGracefully.die_gracefully(DieGracefully.BRNASEQ_BAD_GPS)
@@ -267,7 +276,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             self.pipe_logger.warning(
                 'Sbatch key file %s exists. Overwriting!', keyname)
         try:
-            handle = open(keyname, 'w')
+            handle = open(keyname, 'wt')
         except OSError:
             DieGracefully.die_gracefully(DieGracefully.BAD_OUTDIR)
         # The sheet is sorted in this way before it is written to disk, so it
@@ -284,7 +293,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             self.pipe_logger.warning(
                 'Submission script %s already exists. Overwriting!', pname)
         try:
-            handle = open(pname, 'w')
+            handle = open(pname, 'wt')
         except OSError:
             DieGracefully.die_gracefully(DieGracefully.BAD_OUTDIR)
         # Write the header of the script
@@ -322,7 +331,8 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         handle.write('PURGE=' + '"' + self.purge + '"\n')
         handle.write('RRNA_SCREEN=' + '"' + self.rrna_screen + '"\n')
         handle.write('SUBSAMPLE=' + '"' + self.subsample + '"\n')
-        handle.write('PIPE_SCRIPT="$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )/$(basename $0)"\n')
+        handle.write('PIPE_SCRIPT="$(cd "$( dirname "${BASH_SOURCE[0]}" )" '
+                     '>/dev/null && pwd )/$(basename $0)"\n')
         # These are the variables we want to export into the single sample job
         # script.
         single_cmd_vars = ','.join([
@@ -336,14 +346,14 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             '--parsable',
             '--ignore-pbs',
             '-p', self.msi_queue,
-            '--mail-type=ALL',
+            '--mail-type=BEGIN,END,FAIL',
             '--mail-user="${user_email}"',
             qsub_group,
             '-o', '"${OUTDIR}/bulk_rnaseq_single_sample-%A.%a.out"',
             '-e', '"${OUTDIR}/bulk_rnaseq_single_sample-%A.%a.err"',
             '-N', '1',
             '--mem=' + str(self.mem) + 'mb',
-            '--tmp=12gb',
+            '--tmp=' + str(self.tmp_space) + 'mb',
             '-n', '1',
             '-c', str(self.ppn),
             '--time=' + str(self.walltime * 60),
@@ -368,17 +378,17 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             '--parsable',
             '--ignore-pbs',
             '-p', self.msi_queue,
-            '--mail-type=ALL',
+            '--mail-type=BEGIN,END,FAIL',
             '--mail-user="${user_email}"',
             qsub_group,
             '-o', '"${OUTDIR}/run_summary_stats-%j.out"',
             '-e', '"${OUTDIR}/run_summary_stats-%j.err"',
             '-N', '1',
             '--mem=' + str(self.mem) + 'mb',
-            '--tmp=12gb',
+            '--tmp=' + str(self.tmp_space) + 'mb',
             '-n', '1',
             '-c', str(self.ppn),
-            '--time=720',
+            '--time=' + str(self.walltime * 60),
             '--depend=afterok:${single_id}',
             '--export=' + summary_vars,
             self.summary_script,

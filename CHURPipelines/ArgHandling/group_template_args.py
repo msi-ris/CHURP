@@ -69,4 +69,11 @@ def add_args(ap):
               'edgeR or DESeq2 analysis to properly handle the experimental '
               'conditions in your metadata CSV. The "SampleName" and "Group" '
               'columns are present by default.'))
+    brnaseq_group_opt.add_argument(
+        '--command-log',
+        dest='cmd_log',
+        help=('Save the command that was run into this file. This file will be'
+              ' appended to, rather than overwritten, so you can save multiple'
+              ' CHURP runs into this file.'),
+        default=None)
     return

@@ -48,8 +48,8 @@ def expr_group(args):
         """Sub-function for calling the bulk RNAseq group template."""
         from CHURPipelines.ExperimentGroup import BulkRNAseqGroup
         eg = BulkRNAseqGroup.BulkRNAseqGroup(args)
-        eg.setup(args)
         eg.write_sheet()
+        eg.write_cmd_log()
         DieGracefully.die_gracefully(
             DieGracefully.BRNASEQ_GROUP_SUCCESS,
             eg.dest)
@@ -72,7 +72,6 @@ def brnaseq(args):
     the steps for bulk RNAseq analysis."""
     from CHURPipelines.Pipelines import BulkRNAseq
     p = BulkRNAseq.BulkRNAseqPipeline(args)
-    p.setup(args)
     pipeline_fname, samplesheet_fname, key_name, qsub_dat = p.qsub()
     p.write_cmd_log()
     if not qsub_dat:

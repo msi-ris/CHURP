@@ -4,10 +4,12 @@ This may seem like overkill for now, but eventually we may want to generate
 complicated metadata sheets or do some more involved statistical analyses on
 groups of samples."""
 
+import sys
 import re
 import os
 import pprint
 
+import CHURPipelines
 from CHURPipelines import DieGracefully
 from CHURPipelines.ArgHandling import set_verbosity
 from CHURPipelines.FileOps import dir_funcs
@@ -21,11 +23,37 @@ class ExpGroup(object):
         """Initialize the object."""
         # Validate the arguments
         self._group_help(args)
+        self.cmd_log = args['cmd_log']
         self.group_logger = set_verbosity.verb(args['verbosity'], __name__)
         self.samples = {}
         self.columns = ['SampleName', 'Group']
         self.dest = os.path.realpath(os.path.expanduser(args['outfile']))
         self._prepare_output()
+        return
+
+    def _check_log(self):
+        """Check that the command log file can be written to."""
+        self.group_logger.info('Checking command log')
+        if not self.cmd_log:
+            return
+        self.group_logger.debug('Checking command log %s', self.cmd_log)
+        cl_fp = os.path.abspath(os.path.expanduser(self.cmd_log))
+        cl_dn = os.path.dirname(cl_fp)
+        self.group_logger.debug('Checking %s', cl_dn)
+        # First, check that it exists
+        if dir_funcs.dir_exists(cl_dn, self.group_logger):
+            # Then, is it writeable?
+            if dir_funcs.dir_writeable(cl_dn, self.group_logger):
+                # All good!
+                self.group_logger.debug('Command log dir %s is valid', cl_dn)
+            else:
+                self.group_logger.error(
+                    'Command log dir %s cannot be written to!', cl_dn)
+                DieGracefully.die_gracefully(DieGracefully.BAD_LOGDIR)
+        else:
+            self.group_logger.error(
+                'Command log dir %s cannot be written to!', cl_dn)
+            DieGracefully.die_gracefully(DieGracefully.BAD_LOGDIR)
         return
 
     def _group_help(self, args):
@@ -52,7 +80,6 @@ class ExpGroup(object):
                 # All good!
                 self.group_logger.debug(
                     'Output dir %s is valid', par)
-                pass
             else:
                 self.group_logger.error(
                     'Output dir %s cannot be written to!', par)
@@ -63,7 +90,7 @@ class ExpGroup(object):
             s = dir_funcs.make_dir(par, self.group_logger)
             if not s:
                 DieGracefully.die_gracefully(DieGracefully.BAD_OUTDIR)
-        pass
+        return
 
     def _validate_fastq_folder(self, d):
         """Raise an error if the FASTQ directory does not exist or does not
@@ -81,8 +108,7 @@ class ExpGroup(object):
                 break
         if has_fastq:
             return
-        else:
-            DieGracefully.die_gracefully(DieGracefully.EMPTY_FASTQ)
+        DieGracefully.die_gracefully(DieGracefully.EMPTY_FASTQ)
         return
 
     def _get_sample_names(self, d):
@@ -134,7 +160,7 @@ class ExpGroup(object):
         if os.path.isfile(self.dest):
             self.group_logger.warning(
                 'Groups file %s exists! Overwriting!', self.dest)
-        fh = open(self.dest, 'w')
+        fh = open(self.dest, 'wt')
         fh.write(','.join(self.columns) + '\n')
         for sn in sorted(self.samples):
             towrite = ','.join(
@@ -142,4 +168,26 @@ class ExpGroup(object):
             fh.write(towrite)
         fh.flush()
         fh.close()
+        return
+
+    def write_cmd_log(self):
+        """Write the log of the command that was used to invoke the run of
+        CHURP. This is separate from the pipeline.sh and samplesheet.txt files
+        that get written."""
+        if not self.cmd_log:
+            return
+        cl_fh = open(self.cmd_log, 'at')
+        comments = '# CHURP run on {day} {time}\n'
+        comments += '# CHURP version: {version}\n'
+        comments += '# CWD: {wd}\n'
+        cl_fh.write(
+            comments.format(
+                day=CHURPipelines.TODAY,
+                time=CHURPipelines.HUM_TIMESTAMP,
+                version=CHURPipelines.__version__,
+                wd=os.getcwd())
+            )
+        cl_fh.write(' '.join(sys.argv) + '\n')
+        cl_fh.flush()
+        cl_fh.close()
         return
