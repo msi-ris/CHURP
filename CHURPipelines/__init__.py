@@ -3,7 +3,7 @@
 run analysis on the Minnesota Supercomputing Institute (MSI) cluster."""
 
 # set dunder (double-underscore) variables
-__version__ = '0.2.3-dev'
+__version__ = '0.2.3'
 __date__ = '2022-05-06'
 
 import datetime
