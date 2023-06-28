@@ -95,6 +95,15 @@ if(length(samp_ids) > 1) {
 }
 raw_mat <- raw_mat[which(raw_mat$Length >= min_len),]
 
+# Check for any library sizes of zero and exit with 1 if found
+lib_sizes = colSums(raw_mat[,seq(-1,-6)])
+if (any(lib_sizes == 0)){
+  write(paste0("The following samples had zero counts, exiting early: ", 
+               paste(samp_ids[lib_sizes == 0], collapse = ",")),
+        stderr())
+  quit(status = 1, save = "no")
+}
+
 # Convert the raw matrix into a DGE object. Column 1 is Geneid, columns 7+ are the sample counts. The groups list  is generated above. 
 edge_mat <- DGEList(counts = raw_mat[,seq(-1,-6)], genes = raw_mat[,1], group = groups)
 
