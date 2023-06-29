@@ -96,10 +96,12 @@ if(length(samp_ids) > 1) {
 raw_mat <- raw_mat[which(raw_mat$Length >= min_len),]
 
 # Check for any library sizes of zero and exit with 1 if found
-lib_sizes = colSums(raw_mat[,seq(-1,-6)])
+lib_sizes <- colSums(raw_mat[,seq(-1,-6)])
 if (any(lib_sizes == 0)){
-  write(paste0("The following samples had zero counts, exiting early: ", 
-               paste(samp_ids[lib_sizes == 0], collapse = ",")),
+  write(paste0("summarize_bulk_rnaseq.R: ERROR\n",
+  "The following samples had zero counts after removing genes shorter than min_len or with zero variance, exiting early:\n", 
+               paste(samp_ids[lib_sizes == 0], collapse = ","),
+               "\nPerhaps your GTF doesn't match your species?"),
         stderr())
   quit(status = 1, save = "no")
 }
