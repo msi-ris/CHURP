@@ -234,5 +234,5 @@ for (row in 1:nrow(combos)){
 	qlf <- glmQLFTest(fit, contrast  = comp_var)
 	tags = topTags(qlf, n = nrow(qlf$genes))
 	de_file <- paste(out_dir, "/DEGs/DE_", comp, "_list.txt", sep = "") 
-	write.table(tags$table[which(tags$table$FDR < 0.05),], file = de_file, sep = '\t', quote = FALSE, row.names = FALSE)
+	write.table(tags$table, file = de_file, sep = '\t', quote = FALSE, row.names = FALSE)
 }
