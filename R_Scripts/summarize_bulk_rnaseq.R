@@ -218,6 +218,8 @@ quit(status = 0, save = "no")
 # Subset the data object to get rid of samples with a 'NULL' group
 edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
 
+
+
 # Filter out lowly expressed features. To do so we define what the minimum CPM would be for our minimum count cut-off in the smallest library. We keep only those features that have at least as many samples with the minimum CPM as there are samples in the smallest group.
 min_cpm <- log2((1 + as.numeric(min_cts)) / min(edge_mat$samples$lib.size) * 1e6)
 keep <- rowSums(cpm(edge_mat, log = T, prior.count = 1)) >= min(table(true_groups))
@@ -229,7 +231,9 @@ uniq_groups <- as.vector(unique(edge_mat$samples$group))
 
 # Generate the design matrix for GLM fitting and estimate common and tag-wise dispersion in one go.
 design <- model.matrix(~0+group, data = edge_mat$samples)
-colnames(design) <- uniq_groups
+#colnames(design) <- uniq_groups
+# Let's grab the new group labels from the design matrix for making our group combos
+uniq_groups <- colnames(design)
 edge_mat <- estimateDisp(edge_mat, design = design)
 
 # Fit the per-feature negative binomial GLM.
@@ -244,6 +248,8 @@ for (row in 1:nrow(combos)){
 	comp_var <- makeContrasts(comp, levels = design)
 	qlf <- glmQLFTest(fit, contrast  = comp_var)
 	tags = topTags(qlf, n = nrow(qlf$genes))
+	# update the comparison label to remove the word "group"
+	comp <- gsub("group","",comp)
 	de_file <- paste(out_dir, "/DEGs/DE_", comp, "_list.txt", sep = "") 
 	write.table(tags$table, file = de_file, sep = '\t', quote = FALSE, row.names = FALSE)
 }
