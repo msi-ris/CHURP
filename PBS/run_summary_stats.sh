@@ -186,6 +186,7 @@ Rscript \
     "${WORKDIR}/allsamples/subread_counts.txt" \
     "${MINLEN}" \
     "${MINCPM}" \
+    "${GroupSheet}" \
     &> Rout.txt || pipeline_error "${LOG_SECTION}"
 
 echo "# ----- Output from ${RSUMMARY} below" >> "${LOG_FNAME}"
