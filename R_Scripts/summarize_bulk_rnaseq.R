@@ -232,12 +232,29 @@ if(length(samp_ids) == 1) {
         high_var <- cpm_counts[select_var,]
         # Set the heatmap pdf and plot the normalized counts heatmap
         pdf(hmap)
-        heatmap.2(high_var,trace="none", 
-            main = paste("Top ", n_genes, " variance genes", sep=""), 
-            cexCol = 0.75, dendrogram = "column", labRow = "", 
-            ColSideColors = col_vec, 
-            srtCol = 45, margins = c(8,8))
-        legend('left', title = 'Group', legend = uniq_groups, fill = unique(col_vec), cex = 0.8, box.lty = 0 )
+        # different cases for when there are group variables or not
+        if (n_true_groups > 0){
+            # pheatmap uses a dataframe for variable annotation where the rownames match the matrix samplenames
+            annotation <- group_sheet
+            row.names(annotation) <- make.names(group_sheet[,1])
+            annotation[,1] <- NULL
+            # to specify annotation colors for pheatmap, use a named list with named color vector
+            colors <- col_vec
+            names(colors) <- annotation[,1]
+            colors <- unique(colors)
+            names(colors) <- unique(annotation[,1])
+            color_list <- list()
+            color_list[[colnames(annotation)[1]]] <- colors
+            pheatmap::pheatmap(high_var,
+               treeheight_row = 0,
+               show_rownames = FALSE,
+               annotation_col = annotation,
+               annotation_colors = color_list)            
+        }else{
+            pheatmap::pheatmap(high_var,
+               treeheight_row = 0,
+               show_rownames = FALSE)
+        }
         dev.off()
     }
 }
