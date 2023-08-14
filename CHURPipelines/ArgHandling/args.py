@@ -81,7 +81,7 @@ def pipeline_args():
 
     # Species list parser
     list_parser = pipe_parser.add_parser(
-        'list_species',
+        'show_faves',
         help=LIST_HELP,
         add_help=False)
     # Group template parser
