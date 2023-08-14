@@ -21,7 +21,8 @@ library('gplots')
 library('gtools')
 library('grid')
 
-#grab the working and output directories, as well as the sample sheet, and merged raw counts matrix
+#grab the working and output directories, as well as the sample sheet,
+# and merged raw counts matrix, and the groupsheet
 args <- commandArgs(trailingOnly = T)
 out_dir <- args[1]
 work_dir <- args[2]
@@ -29,6 +30,7 @@ samp_sheet <- args[3]
 fc_mat <- args[4]
 min_len <- as.numeric(args[5])
 min_cts <- as.numeric(args[6])
+group_sheet_loc <- args[7]
 
 setwd(work_dir)
 # Boolean to check if we will attempt DEG testing
@@ -41,24 +43,41 @@ do_deg <- TRUE
 # Get the sample sheet to grab group membership downstream 
 sheet <- read.table(samp_sheet, sep = "|", header = F, comment.char = "#")
 
+# Get the group sheet for group and batch membership
+group_sheet <- read.csv(group_sheet_loc, header = TRUE)
 # Because there may be cases where a subset of individuals in the samplesheet are run. We'll pull in the featureCounts matrix early and grab the relevant IDs
 raw_mat <- read.table(fc_mat, header = T, sep = '\t', comment.char = '#')
 samp_ids <- names(raw_mat)[-(1:6)]
 sheet <- sheet[which(make.names(sheet$V1) %in% samp_ids),]
-
+group_sheet <- group_sheet[which(make.names(group_sheet[,1]) %in% samp_ids),]
+group_sheet <- group_sheet[match(samp_ids, make.names(group_sheet[,1])),]
 # Now we can proceed with group determinations. We have to call make.names()
 # for the groups because level names must be valid R object names.
 # The call to make.names() converts the 'NULL' group designation to 'NULL.', which 
 # we have to account for in our true_groups assignments.
 
-groups <- make.names(as.vector(sheet$V2))
+groups <- make.names(as.vector(group_sheet[,2]))
 uniq_groups <- unique(groups)
 true_groups <- groups[which(groups != 'NULL.')]
 n_true_groups <- length(uniq_groups[which(uniq_groups != 'NULL.')])
 
+# We optionally allow the user to add a third column to their group sheet, which
+# is assumed to be a batch variable. Here, we check for the third column, and 
+# whether it is categorical-like. We do a simple check to ensure there are fewer
+# batch categories than their are total samples
+has_batch_variable <- FALSE
+if (ncol(group_sheet) > 2){
+    batch_name <- colnames(group_sheet)[3]
+    batches <- make.names(as.vector(group_sheet[,3]))
+    uniq_batches <- unique(batches)
+    if (length(uniq_batches) < nrow(group_sheet)){
+        has_batch_variable <- TRUE
+    }
+}
+
 # Check if the number of groups meets our analysis criteria
 if (n_true_groups >= 5){
-write("Maximum number of groups exceeded: This experimental design appears to be too complex for this pipeline. If you'd like analysis help, please e-mail help@msi.umn.edu.", stderr())
+write("Maximum number of groups exceeded: This experimental design appears to be too complex for this pipeline. If you'd like analysis help, please e-mail ribhelp@msi.umn.edu.", stderr())
 # quit(status = 0, save = "no")
 do_deg <- FALSE
 }
@@ -139,6 +158,20 @@ pdf(mds_plot)
 if(length(samp_ids) < 3) {
     plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
     text(x=0.5, y=0.5, "Less than 3 samples;\nMDS not possible", cex=1, col="black")
+} else if (has_batch_variable){
+    pchs <- 21:(20+length(uniq_batches))
+    pch_vec <- pchs[match(batches, uniq_batches)]
+
+    opar <- par(no.readonly = TRUE)
+    par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
+    plotMDS(edge_mat, cex = 0.75, col = col_vec, bg= col_vec, pch = pch_vec)
+    # we do this to get the x,y locs, because we can't plot labels and points in a single plotMDS call
+    xy <- as.data.frame(plotMDS(edge_mat, cex = 0.75, plot = FALSE))
+    text(xy$x, xy$y, label = row.names(xy), pos = 1, cex = 0.5)
+    legend(par("usr")[2], mean(par("usr")[3:4])+.25, legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
+    legend(par("usr")[2], mean(par("usr")[3:4])-.25, legend = c(batch_name, uniq_batches), pch = c(26, unique(pch_vec)), bty = "n")
+
+    par(opar)    
 } else {
     opar <- par(no.readonly = TRUE)
     par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
@@ -164,7 +197,10 @@ tidy_cdf$group <- factor(rep(uniq_groups[match(groups,uniq_groups)], each = nrow
 
 # Set the counts plot pdf and write the violin plot of normalized counts per sample
 pdf(counts_plot)
-p <- ggplot(tidy_cdf, aes(x = sample_id, y = per_feature_count, fill = group)) + geom_violin(trim = F) + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size = 7)) + scale_fill_manual("Group", values = pal)
+p <- ggplot(tidy_cdf, aes(x = sample_id, y = per_feature_count, fill = group)) + 
+         geom_violin(trim = F) + 
+         theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size = 7)) + 
+         scale_fill_manual("Group", values = pal)
 p + labs(x = "Sample ID", y = "Feature count -- log(1+cpm)", fill = "Group")
 dev.off()
 
@@ -196,8 +232,29 @@ if(length(samp_ids) == 1) {
         high_var <- cpm_counts[select_var,]
         # Set the heatmap pdf and plot the normalized counts heatmap
         pdf(hmap)
-        heatmap.2(high_var,trace="none", main = paste("Top ", n_genes, " variance genes", sep=""), cexCol = 0.75, dendrogram = "column", labRow = "", ColSideColors = col_vec, srtCol = 45, margins = c(8,8))
-        legend('left', title = 'Group', legend = uniq_groups, fill = unique(col_vec), cex = 0.8, box.lty = 0 )
+        # different cases for when there are group variables or not
+        if (n_true_groups > 0){
+            # pheatmap uses a dataframe for variable annotation where the rownames match the matrix samplenames
+            annotation <- group_sheet
+            row.names(annotation) <- make.names(group_sheet[,1])
+            annotation[,1] <- NULL
+            # to specify annotation colors for pheatmap, use a named list with named color vector
+            colors <- col_vec
+            names(colors) <- annotation[,1]
+            colors <- unique(colors)
+            names(colors) <- unique(annotation[,1])
+            color_list <- list()
+            color_list[[colnames(annotation)[1]]] <- colors
+            pheatmap::pheatmap(high_var,
+               treeheight_row = 0,
+               show_rownames = FALSE,
+               annotation_col = annotation,
+               annotation_colors = color_list)            
+        }else{
+            pheatmap::pheatmap(high_var,
+               treeheight_row = 0,
+               show_rownames = FALSE)
+        }
         dev.off()
     }
 }

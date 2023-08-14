@@ -33,6 +33,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # First validate the arguments. We do this in the subclass because the
         # dependencies of the arguments are pipeline-specific.
         valid_args = self._validate_args(args)
+        self.valid_args = valid_args
         self.pipe_logger.debug('New BulkRNAseqPipeline instance.')
         self.pipe_logger.debug(
             'Validated args:\n%s', pprint.pformat(valid_args))
@@ -261,6 +262,25 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             DieGracefully.die_gracefully(DieGracefully.PE_SE_MIX, pe, se)
         ss_path = self.sheet.write_sheet(self.real_out, self.pipe_name, '|')
         return ss_path
+        
+    def _prepare_groupsheet(self):
+        """Checks if a groupsheet has been made. If none have been made,
+        create a stub groupsheet in the outdir so that the downstream 
+        R script has something to read. Return the path. """
+        if self.valid_args["expr_groups"] is None:
+            expr_group_path = f"{self.real_out}/experimental_groups.csv"
+            # if the outdir hasn't been made, make it
+            if not os.path.isdir(self.real_out):
+                os.makedirs(self.real_out)
+            samples = self.sheet.samples
+            header = "SampleName,Group\n"
+            with open(expr_group_path, "w") as file:
+                file.write(header)
+                for sample in samples:
+                    file.write(f"{sample},NULL\n")
+            self.valid_args["expr_groups"] = os.path.realpath(expr_group_path)
+
+        return(self.valid_args["expr_groups"])
 
     def qsub(self):
         """Write the qsub command. We will need the path to the samplesheet,
@@ -268,6 +288,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         that were passed as arguments. This is defined in the subclass rather
         than in the main Pipeline class because the exact form of the qsub
         command depends on which pipeline we are running."""
+        gs = self._prepare_groupsheet()
         ss = self._prepare_samplesheet()
         # Make the qsub array key
         keyname = default_files.default_array_key(self.pipe_name)
@@ -327,6 +348,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         handle.write('WORKDIR=' + '"' + str(self.real_work) + '"\n')
         handle.write('DE_SCRIPT=' + '"' + self.de_script + '"\n')
         handle.write('REPORT_SCRIPT=' + '"' + self.report_script + '"\n')
+        handle.write('GROUPSHEET=' + '"' + gs + '"\n')
         handle.write('SAMPLESHEET=' + '"' + ss + '"\n')
         handle.write('PURGE=' + '"' + self.purge + '"\n')
         handle.write('RRNA_SCREEN=' + '"' + self.rrna_screen + '"\n')
@@ -368,6 +390,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # This is the command for counting and normalizing reads
         summary_vars = ','.join([
             'SampleSheet="${SAMPLESHEET}"',
+            'GroupSheet="${GROUPSHEET}"',
             'MINLEN="' + self.min_gene_len + '"',
             'MINCPM="' + self.min_cpm + '"',
             'RSUMMARY="${DE_SCRIPT}"',
