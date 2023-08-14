@@ -101,8 +101,9 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             DieGracefully.die_gracefully(DieGracefully.BRNASEQ_CONFLICT)
         # Set the hisat index and gtf if the 'organism' option was supplied
         if a['organism']:
-            a['hisat2_idx'] = FavoriteSpecies.FAVORITE_SPECIES['hisat2']
-            a['gtf'] = FavoriteSpecies.FAVORITE_SPECIES['gtf']
+            org = a['organism']
+            a['hisat2_idx'] = FavoriteSpecies.FAVORITE_SPECIES[org]['hisat2']
+            a['gtf'] = FavoriteSpecies.FAVORITE_SPECIES[org]['gtf']
         # Convert all of the paths into absolute paths
         a['fq_folder'] = os.path.realpath(
             os.path.expanduser(str(a['fq_folder'])))
