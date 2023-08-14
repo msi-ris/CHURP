@@ -97,7 +97,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             DieGracefully.die_gracefully(DieGracefully.BRNASEQ_INC_ARGS)
         elif not ((a['hisat2_idx'] and a['gtf']) or a['organism']):
             DieGracefully.die_gracefully(DieGracefully.BRNASEQ_INC_ARGS)
-        elif (a['hisat2_idx'] and a['gtf']) and a['organism']:
+        elif (a['hisat2_idx'] or a['gtf']) and a['organism']:
             DieGracefully.die_gracefully(DieGracefully.BRNASEQ_CONFLICT)
         # Set the hisat index and gtf if the 'organism' option was supplied
         if a['organism']:
