@@ -44,7 +44,7 @@ def sp_dbs(args):
 The species listed in the table below are common genomics models for which we
 have provided convenient shortcuts in CHURP. Use the value in the "Alias" column
 to automatically set the relevant genome indices and annotation files in other
-CHURP pipelines.\n\n"""
+CHURP pipelines. These names are *case sensitive.*\n\n"""
     sys.stderr.write(msg)
     # Print a header for the table
     hdr = [
