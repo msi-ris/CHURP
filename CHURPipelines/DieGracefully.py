@@ -54,9 +54,9 @@ def general_error():
     msg = CREDITS + """----------
 ERROR
 
-gopher-pipelines has caught an unidentified error. Please send this error
-message, the command you typed, and debugging output to the MSI help desk
-(help@msi.umn.edu).\n"""
+CHURP has caught an unidentified error. Please send this error message, the
+command you typed, and debugging output to the MSI help desk
+(ribhelp@msi.umn.edu).\n"""
     sys.stderr.write(msg)
     return
 
@@ -145,10 +145,10 @@ ERROR
 
 
 You did not specify sufficient options to run the bulk_rnaseq subcommand of
-gopher-pipelines. You must specify a FASTQ directory (-f). Additionally, you
-must either specify a path to a HISAT2 index (-x) and GTF (-g), or an organism
-name (-r). If you are building a group template file, you need only specify a
-FASTQ directory. Please fix your command line and re-run.\n"""
+CHURP. You must specify a FASTQ directory (-f). Additionally, you must either
+specify a path to a HISAT2 index (-x) and GTF (-g), or an organism name (-r).
+If you are building a group template file, you need only specify a FASTQ
+directory. Please fix your command line and re-run.\n"""
     sys.stderr.write(msg)
     return
 
@@ -264,9 +264,9 @@ ERROR
 The groups CSV file that you supplied does not contain any information about
 the samples that were found in the FASTQ directory. Check that you supplied the
 correct directory with -f, and that your sample names match exactly between the
-CSV and the FASTQ directory. Use the template from --make-groups-template to
-see the exact sample names that gopher-pipelines is using to match samples to
-groups.\n"""
+CSV and the FASTQ directory. Use the template from the "group_template"
+subcommand to see the exact sample names that CHURP is using to match samples
+to groups.\n"""
     sys.stderr.write(msg)
     return
 
@@ -275,7 +275,7 @@ def group_no_pipe():
     """Call this function when a user runs the group_template pipeline, but
     does not supply a pipeline for which to build a group template."""
     msg = CREDITS + """----------
-Usage: gopher-pipelines.py group_template <pipeline> <options>
+Usage: churp.py group_template <pipeline> <options>
 
 This subcommand allows you to build templates for experimental metadata files.
 These files specify experimental conditions or treatment groups for comparisons

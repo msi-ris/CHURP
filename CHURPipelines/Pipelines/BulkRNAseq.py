@@ -60,7 +60,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # relative path. __file__ is the currently running script,
         # os.path.realpath() gives the full path, with symlinks resolved. We
         # then rsplit() the string returned by realpath() to get the base dir
-        # of the gopher-pipelines scipt. Woof.
+        # of the CHURP scipt. Woof.
         self.single_sample_script = os.path.join(
             os.path.realpath(__file__).rsplit(os.path.sep, 3)[0],
             'PBS',
