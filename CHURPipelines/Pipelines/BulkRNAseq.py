@@ -101,7 +101,11 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             DieGracefully.die_gracefully(DieGracefully.BRNASEQ_CONFLICT)
         # Set the hisat index and gtf if the 'organism' option was supplied
         if a['organism']:
-            org = a['organism']
+            try:
+                org = a['organism']
+            except KeyError:
+                DieGracefully.die_gravefully(
+                    DieGracefully.BAD_ORG, a['organism'])
             a['hisat2_idx'] = FavoriteSpecies.FAVORITE_SPECIES[org]['hisat2']
             a['gtf'] = FavoriteSpecies.FAVORITE_SPECIES[org]['gtf']
         # Convert all of the paths into absolute paths

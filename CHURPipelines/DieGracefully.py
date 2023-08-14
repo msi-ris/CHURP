@@ -30,6 +30,7 @@ PE_SE_MIX = 30
 GROUP_NO_PIPE = 50
 GROUP_BAD_COL = 51
 BRNASEQ_GROUP_SUCCESS = 52
+BAD_ORG = 31
 NEFARIOUS_CHAR = 99
 
 # We will prepend a little message to the end that says the pipelines were
@@ -431,6 +432,19 @@ The paired-end sample are:
     return
 
 
+def bad_organism(u_org):
+    """Call this function if the user has supplied an organism that is not on
+    the list of aliased organisms."""
+    msg = CREDITS + """----------
+ERROR
+
+The organism you supplied is not supported by the organism alias option. To see
+the list of available organism aliases, run the "show_faves" subcommand of
+CHURP."""
+    sys.stderr.write(msg.format(org=u_org))
+    return
+
+
 def die_gracefully(e, *args):
     """Print user-friendly error messages and exit."""
     err_dict = {
@@ -456,7 +470,8 @@ def die_gracefully(e, *args):
         BRNASEQ_SUBMIT_OK: brnaseq_auto_submit_ok,
         BRNASEQ_SUBMIT_FAIL: brnaseq_auto_submit_fail,
         NEFARIOUS_CHAR: nefarious_cmd,
-        PE_SE_MIX: pe_se_mix
+        PE_SE_MIX: pe_se_mix,
+        BAD_ORG: bad_organism
         }
     try:
         err_dict[e](*args)
