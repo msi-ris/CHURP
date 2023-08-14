@@ -9,10 +9,10 @@ import re
 
 import CHURPipelines
 from CHURPipelines import DieGracefully
+from CHURPipelines import FavoriteSpecies
 from CHURPipelines.Pipelines import Pipeline
 from CHURPipelines.SampleSheet import BulkRNASeqSampleSheet
 from CHURPipelines.ArgHandling import set_verbosity
-from CHURPipelines.FileOps import species_list
 from CHURPipelines.FileOps import default_files
 from CHURPipelines.FileOps import dir_funcs
 
@@ -99,6 +99,10 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             DieGracefully.die_gracefully(DieGracefully.BRNASEQ_INC_ARGS)
         elif (a['hisat2_idx'] and a['gtf']) and a['organism']:
             DieGracefully.die_gracefully(DieGracefully.BRNASEQ_CONFLICT)
+        # Set the hisat index and gtf if the 'organism' option was supplied
+        if a['organism']:
+            a['hisat2_idx'] = FavoriteSpecies.FAVORITE_SPECIES['hisat2']
+            a['gtf'] = FavoriteSpecies.FAVORITE_SPECIES['gtf']
         # Convert all of the paths into absolute paths
         a['fq_folder'] = os.path.realpath(
             os.path.expanduser(str(a['fq_folder'])))
