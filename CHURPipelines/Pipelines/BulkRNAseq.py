@@ -104,7 +104,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             try:
                 org = a['organism']
             except KeyError:
-                DieGracefully.die_gravefully(
+                DieGracefully.die_gracefully(
                     DieGracefully.BAD_ORG, a['organism'])
             a['hisat2_idx'] = FavoriteSpecies.FAVORITE_SPECIES[org]['hisat2']
             a['gtf'] = FavoriteSpecies.FAVORITE_SPECIES[org]['gtf']
