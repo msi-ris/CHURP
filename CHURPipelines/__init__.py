@@ -20,3 +20,6 @@ UNAME = getpass.getuser()
 
 # Define the allowable queues
 QUEUES = ['small', 'amdsmall', 'amd512', 'agsmall']
+
+# Define a base path to bioref genome resources
+BIOREF_BASE = '/common/bioref/ensembl'
