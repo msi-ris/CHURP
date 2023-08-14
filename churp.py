@@ -34,17 +34,21 @@ except ImportError:
     sys.exit(1)
 
 
-def sp_dbs(args):
+def org_aliases(args):
     """This function will read and display a list of available species
     databases that can be used as targets for various pipelines."""
     from CHURPipelines import FavoriteSpecies
     # Print a nice message to describe the table we are showing
-    msg = """Favorite Species
+    msg = """Genome Aliases
 
 The species listed in the table below are common genomics models for which we
 have provided convenient shortcuts in CHURP. Use the value in the "Alias" column
 to automatically set the relevant genome indices and annotation files in other
-CHURP pipelines. These names are *case sensitive.*\n\n"""
+CHURP pipelines. These names are *case sensitive.* To read more about MSI's
+collection of genomics reference data, include the update schedule, please see
+the following page:
+
+https://www.msi.umn.edu/content/bioref\n\n"""
     sys.stderr.write(msg)
     # Print a header for the table
     hdr = [
@@ -136,7 +140,7 @@ def main():
         cmd = {
             'bulk_rnaseq': brnaseq,
             'group_template': expr_group,
-            'show_faves': sp_dbs
+            'genome_aliases': org_aliases
             }
         cmd[pipe_args['pipeline']](pipe_args)
     return

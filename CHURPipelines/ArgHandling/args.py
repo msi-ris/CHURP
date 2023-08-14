@@ -12,7 +12,7 @@ from CHURPipelines import DieGracefully
 
 # Longer help messages as constants
 PIPE_HELP = 'CHURP pipelines for high-throughput sequencing data analysis.'
-LIST_HELP = ('List species shorthands for automatically setting alignment '
+ALIAS_HELP = ('List species shorthands for automatically setting alignment '
              'targets and annotation databases.')
 GROUP_HELP = ('Make sample metadata CSV templates for statistical tests. These'
               ' templates can be used to make files that designate groups for '
@@ -80,9 +80,9 @@ def pipeline_args():
         help='Available pipelines')
 
     # Species list parser
-    list_parser = pipe_parser.add_parser(
-        'show_faves',
-        help=LIST_HELP,
+    alias_parser = pipe_parser.add_parser(
+        'genome_aliases',
+        help=ALIAS_HELP,
         add_help=False)
     # Group template parser
     group_parser = pipe_parser.add_parser(
