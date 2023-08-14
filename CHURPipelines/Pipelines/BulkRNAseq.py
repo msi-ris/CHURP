@@ -103,11 +103,13 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         if a['organism']:
             try:
                 org = a['organism']
+                org_hisat = FavoriteSpecies.FAVORITE_SPECIES[org]['hisat2']
+                org_gtf = FavoriteSpecies.FAVORITE_SPECIES[org]['gtf']
             except KeyError:
                 DieGracefully.die_gracefully(
                     DieGracefully.BAD_ORG, a['organism'])
-            a['hisat2_idx'] = FavoriteSpecies.FAVORITE_SPECIES[org]['hisat2']
-            a['gtf'] = FavoriteSpecies.FAVORITE_SPECIES[org]['gtf']
+            a['hisat2_idx'] = org_hisat
+            a['gtf'] = org_gtf
         # Convert all of the paths into absolute paths
         a['fq_folder'] = os.path.realpath(
             os.path.expanduser(str(a['fq_folder'])))
