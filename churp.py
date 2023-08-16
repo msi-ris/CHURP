@@ -45,8 +45,8 @@ The species listed in the table below are common genomics models for which we
 have provided convenient shortcuts in CHURP. Use the value in the "Alias" column
 to automatically set the relevant genome indices and annotation files in other
 CHURP pipelines. These names are *case sensitive.* To read more about MSI's
-collection of genomics reference data, include the update schedule, please see
-the following page:
+collection of genomics reference data, including the update schedule, please
+see the following page:
 
 https://www.msi.umn.edu/content/bioref\n\n"""
     sys.stderr.write(msg)
