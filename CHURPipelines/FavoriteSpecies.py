@@ -35,7 +35,7 @@ FAVE_ASM = {
     'barley': ('plants', 'Hordeum_vulgare',
         'MorexV3_pseudomolecules_assembly'),
     'wheat': ('plants', 'Triticum_aestivum', 'IWGSC'),
-    'arabiopsis': ('plants', 'Arabidopsis_thaliana', 'TAIR10'),
+    'arabidopsis': ('plants', 'Arabidopsis_thaliana', 'TAIR10'),
     'chlamydomonas': ('plants', 'Chlamydomonas_reinhardtii',
         'Chlamydomonas_reinhardtii_v5.5'),
     'slime_mold': ('protists', 'Dictyostelium_discoideum', 'dicty_2.7')
