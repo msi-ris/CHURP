@@ -441,7 +441,7 @@ ERROR
 The organism you supplied is not supported by the organism alias option. To see
 the list of available organism aliases, run the "show_genome_aliases"
 subcommand of CHURP. The names are *case sensitive.*\n"""
-    sys.stderr.write(msg.format(org=u_org))
+    sys.stderr.write(msg)
     return
 
 
