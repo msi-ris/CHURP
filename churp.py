@@ -6,9 +6,10 @@ University of Minnesota Genomics Centre. The following analysis pipelines are
 supported:
     - group_template
     - bulk_rnaseq
+    - genome_aliases
 Questions should be directed to help@msi.umn.edu.
-Version: 0.2.2
-2021-02-03
+Version: 0.3.0-dev
+2023-08-17
 """
 
 # Check the Python version
