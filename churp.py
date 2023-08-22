@@ -6,9 +6,10 @@ University of Minnesota Genomics Centre. The following analysis pipelines are
 supported:
     - group_template
     - bulk_rnaseq
+    - genome_aliases
 Questions should be directed to help@msi.umn.edu.
-Version: 0.2.2
-2021-02-03
+Version: 0.3.0-dev
+2023-08-17
 """
 
 # Check the Python version
@@ -34,10 +35,43 @@ except ImportError:
     sys.exit(1)
 
 
-def sp_dbs(args):
+def org_aliases(args):
     """This function will read and display a list of available species
     databases that can be used as targets for various pipelines."""
-    pass
+    from CHURPipelines import FavoriteSpecies
+    # Print a nice message to describe the table we are showing
+    msg = """Genome Aliases
+
+The species listed in the table below are common genomics models for which we
+have provided convenient shortcuts in CHURP. Use the value in the "Alias" column
+to automatically set the relevant genome indices and annotation files in other
+CHURP pipelines. These names are *case sensitive.* To read more about MSI's
+collection of genomics reference data, including the update schedule, please
+see the following page:
+
+https://www.msi.umn.edu/content/bioref\n\n"""
+    sys.stderr.write(msg)
+    # Print a header for the table
+    hdr = [
+        'Alias '.rjust(15),
+        ' Binomial Name'.ljust(28),
+        ' Assembly/Annotation'.ljust(33)
+        ]
+    sys.stderr.write('|' + '|'.join(hdr) + '|\n')
+    sys.stderr.write('|' + '-'*15 + '|' + '-'*28 + '|' + '-'*33 + '|\n')
+    # Iterate through the FAVE_ASM dict to print a nice table that
+    # gives the information for the "favorite species"
+    for f_sp, sp_dat in sorted(FavoriteSpecies.FAVE_ASM.items()):
+        common_name = f_sp
+        sci_name = sp_dat[1]
+        anno_ver = sp_dat[2]
+        to_print = [
+            common_name.rjust(14) + ' ',
+            ' ' + sci_name.replace('_', ' ').ljust(27),
+            ' ' + anno_ver.ljust(32)
+            ]
+        sys.stderr.write('|' + '|'.join(to_print) + '|\n')
+    return
 
 
 def expr_group(args):
@@ -107,7 +141,7 @@ def main():
         cmd = {
             'bulk_rnaseq': brnaseq,
             'group_template': expr_group,
-            'list_species': sp_dbs
+            'genome_aliases': org_aliases
             }
         cmd[pipe_args['pipeline']](pipe_args)
     return

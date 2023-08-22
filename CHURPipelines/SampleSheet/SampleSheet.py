@@ -13,7 +13,6 @@ from CHURPipelines.FileOps import default_files
 from CHURPipelines.FileOps import default_dirs
 from CHURPipelines.FileOps import dir_funcs
 from CHURPipelines.ArgHandling import bulk_rnaseq_args
-from CHURPipelines.ArgHandling import sc_rnaseq_args
 
 
 class Samplesheet(object):

@@ -9,10 +9,10 @@ import re
 
 import CHURPipelines
 from CHURPipelines import DieGracefully
+from CHURPipelines import FavoriteSpecies
 from CHURPipelines.Pipelines import Pipeline
 from CHURPipelines.SampleSheet import BulkRNASeqSampleSheet
 from CHURPipelines.ArgHandling import set_verbosity
-from CHURPipelines.FileOps import species_list
 from CHURPipelines.FileOps import default_files
 from CHURPipelines.FileOps import dir_funcs
 
@@ -60,7 +60,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # relative path. __file__ is the currently running script,
         # os.path.realpath() gives the full path, with symlinks resolved. We
         # then rsplit() the string returned by realpath() to get the base dir
-        # of the gopher-pipelines scipt. Woof.
+        # of the CHURP scipt. Woof.
         self.single_sample_script = os.path.join(
             os.path.realpath(__file__).rsplit(os.path.sep, 3)[0],
             'PBS',
@@ -97,8 +97,19 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             DieGracefully.die_gracefully(DieGracefully.BRNASEQ_INC_ARGS)
         elif not ((a['hisat2_idx'] and a['gtf']) or a['organism']):
             DieGracefully.die_gracefully(DieGracefully.BRNASEQ_INC_ARGS)
-        elif (a['hisat2_idx'] and a['gtf']) and a['organism']:
+        elif (a['hisat2_idx'] or a['gtf']) and a['organism']:
             DieGracefully.die_gracefully(DieGracefully.BRNASEQ_CONFLICT)
+        # Set the hisat index and gtf if the 'organism' option was supplied
+        if a['organism']:
+            try:
+                org = a['organism']
+                org_hisat = FavoriteSpecies.FAVORITE_SPECIES[org]['hisat2']
+                org_gtf = FavoriteSpecies.FAVORITE_SPECIES[org]['gtf']
+            except KeyError:
+                DieGracefully.die_gracefully(
+                    DieGracefully.BAD_ORG, a['organism'])
+            a['hisat2_idx'] = org_hisat
+            a['gtf'] = org_gtf
         # Convert all of the paths into absolute paths
         a['fq_folder'] = os.path.realpath(
             os.path.expanduser(str(a['fq_folder'])))
