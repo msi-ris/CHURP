@@ -379,7 +379,7 @@ plotqual_first <- function(sn, draw_ax, rt) {
     }
     mtext(side=2, font=2, cex=0.7, las=2, sn)
     qr2_file <- paste(params["workdir"], "singlesamples", sn, 
-                      paste0(sn, "_2.",rt,"_quals.txt", sep=""), sep="/")
+                      paste0(sn, "_2.",rt,"_quals.txt"), sep="/")
     if(!file.exists(qr2_file)) {
         plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
         text(x=0.5, y=0.5, "No R2", cex=1, col="black")
@@ -441,7 +441,7 @@ plotqual_last <- function(sn,rt) {
     mtext(side=2, font=2, cex=0.7, las=2, sn)
     axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(T, F, F,F,F)], labels=as.character(dat$Base)[c(T, F,F,F,F)], las=2, cex.axis=0.9, tck=-0.05)
     qr2_file <- paste(params["workdir"], "singlesamples", sn, 
-                      paste0(sn, "_2.",rt,"_quals.txt", sep=""), sep="/")
+                      paste0(sn, "_2.",rt,"_quals.txt"), sep="/")
     if(!file.exists(qr2_file)) {
         plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
         text(x=0.5, y=0.5, "No R2", cex=1, col="black")
@@ -489,7 +489,7 @@ if(large_dataset) {
         }
         if(nsubsamp > 1) {
             par(mar=c(0, 5,2.5, 0.1), mgp=c(0.5, 0.15, 0.1))
-            dummy <- plotqual_last(subsamp[nsubsamp])
+            dummy <- plotqual_last(subsamp[nsubsamp],rt=read_type)
         }
         cat("\n\n")
     }
@@ -544,7 +544,7 @@ if(length(trim_samp) > 0) {
             }
             if(nsubsamp > 1) {
                 par(mar=c(0, 5,2.5, 0.1), mgp=c(0.5, 0.15, 0.1))
-                dummy <- plotqual_last(subsamp[nsubsamp])
+                dummy <- plotqual_last(subsamp[nsubsamp],rt=read_type)
             }
             cat("\n\n")
         }
@@ -1034,7 +1034,7 @@ library(knitr)
 count_dat <- as.matrix(hisat_summary[,c("UniqueMapped", "MultiMapped", "DiscoMapped", "Unmapped")])
 max_reads <- max(hisat_summary$Total)/1000000
 if(large_dataset) {
-    cat("#### {.tabset}\n")
+    cat("#### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
@@ -1076,6 +1076,7 @@ if(large_dataset) {
             cex=0.7)
 }
 
+cat("#### Table")
 hisat_tab <- hisat_summary
 names(hisat_tab) <- c("Sample Name", "Total Fragments", "Unmapped", "Uniquely Mapped", "Multiply Mapped", "Discordantly Mapped")
 kable(hisat_tab, caption="Summary of alignment from HISAT2 based on fragment counts. Note that if the samples are paired-end, then each fragment is represented by 2 reads. If the samples are single-end, then each fragment is represented by 1 read.")
@@ -1089,7 +1090,7 @@ library(knitr)
 # Then make a proportion plot
 prop_dat <- count_dat / as.numeric(hisat_summary$Total)
 if(large_dataset) {
-    cat("#### {.tabset}\n")
+    cat("#### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
@@ -1131,6 +1132,7 @@ if(large_dataset) {
             cex=0.7)
 }
 
+cat("#### Table")
 hisat_prop <- data.frame(
     SN=as.character(hisat_summary$SampleName),
     TO=rep("100%", nrow(hisat_summary)),
