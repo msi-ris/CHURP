@@ -375,9 +375,9 @@ plotqual_first <- function(sn, draw_ax, rt) {
         axes=FALSE,
         main="Mean R1 Quality")
     if(draw_ax) {
-        axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, F,F,F,F)], labels=as.character(dat$Base)[c(TRUE, FALSE,F,F,F)], las=1, cex.axis=0.5, tck=-0.05)
+        axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, F,F,F,F)], labels=as.character(dat$Base)[c(TRUE, FALSE,F,F,F)], las=1, cex.axis=0.75, tck=-0.05)
     }
-    mtext(side=2, font=2, cex=0.7, las=2, sn)
+    mtext(side=2, font=2, cex=0.75, las=2, sn)
     qr2_file <- paste(params["workdir"], "singlesamples", sn, 
                       paste0(sn, "_2.",rt,"_quals.txt"), sep="/")
     if(!file.exists(qr2_file)) {
@@ -394,7 +394,7 @@ plotqual_first <- function(sn, draw_ax, rt) {
             main="Mean R2 Quality")
         if(draw_ax) {
             axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(T,F,F,F,F)],
-                 labels=as.character(dat$Base)[c(T,F,F,F,F)], las=1, cex.axis=0.5, tck=-0.05)
+                 labels=as.character(dat$Base)[c(T,F,F,F,F)], las=1, cex.axis=0.75, tck=-0.05)
     }
     }
 }
@@ -410,7 +410,7 @@ plotqual <- function(sn,rt) {
         breaks=c(0, 10, 20, 25, 30, 40, 45),
         col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
         axes=FALSE)
-    mtext(side=2, font=2, cex=0.7, las=2, sn)
+    mtext(side=2, font=2, cex=0.75, las=2, sn)
     qr2_file <- paste(params["workdir"], "singlesamples", sn, 
                       paste0(sn, "_2.",rt,"_quals.txt"), sep="/")
     if(!file.exists(qr2_file)) {
@@ -438,8 +438,8 @@ plotqual_last <- function(sn,rt) {
         breaks=c(0, 10, 20, 25, 30, 40, 45),
         col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
         axes=FALSE)
-    mtext(side=2, font=2, cex=0.7, las=2, sn)
-    axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(T, F, F,F,F)], labels=as.character(dat$Base)[c(T, F,F,F,F)], las=2, cex.axis=0.9, tck=-0.05)
+    mtext(side=2, font=2, cex=0.75, las=2, sn)
+    axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(T, F, F,F,F)], labels=as.character(dat$Base)[c(T, F,F,F,F)], las=2, cex.axis=0.75, tck=-0.05)
     qr2_file <- paste(params["workdir"], "singlesamples", sn, 
                       paste0(sn, "_2.",rt,"_quals.txt"), sep="/")
     if(!file.exists(qr2_file)) {
@@ -454,7 +454,7 @@ plotqual_last <- function(sn,rt) {
             breaks=c(0, 10, 20, 25, 30, 40, 45),
             col=c("darkred", "indianred", "yellow", "gold", "darkgreen", "green"),
             axes=FALSE)
-        axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE,F,F,F)], labels=as.character(dat$Base)[c(TRUE, FALSE,F,F,F)], las=2, cex.axis=0.9, tck=-0.05)
+        axis(side=1, at=seq(0, 1, length.out=nrow(dat))[c(TRUE, FALSE,F,F,F)], labels=as.character(dat$Base)[c(TRUE, FALSE,F,F,F)], las=2, cex.axis=0.75, tck=-0.05)
     }
 }
 
@@ -483,7 +483,7 @@ if(large_dataset) {
         dummy <- plotqual_first(subsamp[1], one_samp, rt = read_type)
         if(nsubsamp > 2) {
             par(mar=c(0, 5, 2.5, 0.1))
-            for(sample_x in samplenames[3:nsamp-1]){
+            for(sample_x in subsamp[3:nsubsamp-1]){
                 dummy <- plotqual(sample_x,rt=read_type)
             }
         }
@@ -500,7 +500,7 @@ if(large_dataset) {
     dummy <- plotqual_first(samplenames[1], one_samp, read_type)
     if(nsamp > 2) {
         par(mar=c(0, 5, 2.5, 0.1))
-        for(sample_x in samplenames[3:nsamp-1]){
+        for(sample_x in samplenames[2:nsamp-1]){
             dummy <- plotqual(sample_x,rt=read_type)
         }
     }
@@ -538,7 +538,7 @@ if(length(trim_samp) > 0) {
             dummy <- plotqual_first(subsamp[1], one_samp, rt = read_type)
             if(nsubsamp > 2) {
                 par(mar=c(0, 5, 2.5, 0.1))
-                for(sample_x in samplenames[3:nsamp-1]){
+                for(sample_x in subsamp[3:nsubsamp-1]){
                     dummy <- plotqual(sample_x,rt=read_type)
                 }
             }
