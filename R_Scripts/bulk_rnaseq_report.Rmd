@@ -248,12 +248,13 @@ if(!file.exists(insertsize_file)) {
 }
 ```
 
-## Estimated Contamination {.tabset}
-These counts were based on searching a subset of the raw reads against a
-reference database of ribosomal K-mers from various organisms. Click on the 
-table headers to show the summaries of rRNA contamination.
 
-```{r bbduk_plot, echo=FALSE, message=FALSE, results="asis"}
+```{r bbduk_plot,eval=F, echo=FALSE, message=FALSE, results="asis"}
+## Estimated Contamination {.tabset}
+#These counts were based on searching a subset of the raw reads against a
+#reference database of ribosomal K-mers from various organisms. Click on the 
+#table headers to show the summaries of rRNA contamination.
+
 plt_dat <- as.numeric(gsub("%", "", as.character(bbduk_summary$rRNA_Pct))) / 100
 if(large_dataset) {
     cat("### Plots {.tabset}\n")
@@ -340,8 +341,9 @@ if(large_dataset) {
 }
 ```
 
+
+```{r bbduk_table,eval=F, echo=FALSE, message=FALSE}
 ### Table
-```{r bbduk_table, echo=FALSE, message=FALSE}
 library(knitr)
 kable(bbduk_summary, caption="Number of read pairs (from subsample) and percentage of library that is estimated to be derived from ribosomal RNA.")
 ```
