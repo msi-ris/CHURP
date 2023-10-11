@@ -955,11 +955,11 @@ if(rnaseqc_do) {
 }
 ```
 
+```{r rrna_map_plot, eval=F, echo=FALSE, message=FALSE, fig.width=8, fig.height=4, results="asis"}
 ### rRNA
-This plot shows the proportion of alignments that are in annotated rRNA features
-in the reference genome.
+#This plot shows the proportion of alignments that are in annotated rRNA features
+#in the reference genome.
 
-```{r rrna_map_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=4, results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
 if(rnaseqc_do) {
     rrna_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "rRNA Rate"])
