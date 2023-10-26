@@ -1496,14 +1496,15 @@ knitr::kable(hisat_prop,
 
 
 ## Feature Counts
-### Download Counts Matrices
-Use the link below to download the counts matrix to your computer:
+### Download Expression Matrices
+Use the link below to download the raw counts matrix and normalized CPM matrix
+to your computer:
 
 ```{r counts_download, echo=FALSE}
 xfun::embed_file(
     path=paste(params["outdir"], "Counts.zip", sep="/"),
-    name="Raw_Read_Counts.zip",
-    text="Download counts matrices")
+    name="Relative_Expression.zip",
+    text="Download expression matrices")
 ```
 
 ### Subread Assignment Summary {.tabset}
