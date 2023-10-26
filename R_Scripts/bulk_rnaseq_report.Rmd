@@ -827,8 +827,8 @@ if(length(trim_samp) > 0) {
         axis(side=2)
         axis(
             side=1,
-            at=dat$X[fqc_plot_skip],
-            labels=dat$Base[fqc_plot_skip],
+            at=dat$X[fqc_axis_skip],
+            labels=dat$Base[fqc_axis_skip],
             las=2,
             cex.axis=0.75)
         title(paste(sn, "R1", sep=" "))
@@ -867,8 +867,8 @@ if(length(trim_samp) > 0) {
             axis(side=2)
             axis(
                 side=1,
-                at=dat$X[fqc_plot_skip],
-                labels=dat$Base[fqc_plot_skip],
+                at=dat$X[fqc_axis_skip],
+                labels=dat$Base[fqc_axis_skip],
                 las=2,
                 cex.axis=0.75)
             title(paste(sn, "R2", sep=" "))
