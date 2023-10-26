@@ -1495,7 +1495,14 @@ knitr::kable(hisat_prop,
 
 
 
-## Feature Counts 
+## Feature Counts
+### Download Counts Matrices
+Use the link below to download the counts matrix to your computer:
+
+```{r counts_download, echo=FALSE}
+xfun::embed_file(paste(outdir, "Counts.zip", sep="/"))
+```
+
 ### Subread Assignment Summary {.tabset}
 These plots will show the breakdown of read assignment by `featureCounts`.
 
