@@ -24,41 +24,66 @@ for(key in names(params)) {
 }
 
 # Read in the data sets here so that we don't have to keep doing it later
-read_summary <- read.table(paste(params["workdir"], "allsamples", "Read_Counts.txt", sep="/"), header=F)
+read_summary <- read.table(
+    paste(params["workdir"], "allsamples", "Read_Counts.txt", sep="/"),
+    header=F)
 # Set NAs in read summary to 0
 read_summary[is.na(read_summary)] <- 0
-sheet <- read.table(as.character(params["samplesheet"]), sep="|", header=FALSE, comment.char="#", stringsAsFactors=FALSE)
-# Subset the sheet for those that were run - these are the rows in the read count summary
+sheet <- read.table(
+    as.character(params["samplesheet"]),
+    sep="|",
+    header=FALSE,
+    comment.char="#",
+    stringsAsFactors=FALSE)
+# Subset the sheet for those that were run - these are the rows in the read
+# count summary
 sheet <- sheet[sheet$V1 %in% read_summary$V1,]
 
 # We are making a bold assumption here that the first sample is run against the
 # same genome as all the others. This is generally true, but if the user set
 # up multiple genomes, then then shouild hopefully know that and be able to
-# see that from the samplesheet. The genome is the 10th field, and the GTF is the 13th.
+# see that from the samplesheet. The genome is the 10th field, and the GTF is
+# the 13th.
 genome <- as.character(sheet[1, 10])
 annot <- as.character(sheet[1, 13])
+# Push the annotation filename into the environment variables list so that we
+# can access it via bash for an md5sum
+Sys.setenv(_GTF=annot)
 
+# Unpack the samplesheet for sample names and the number of samples run
 samplenames <- sheet$V1
-# Export the first sample in the read summary
-firstrun <- samplenames[1]
-Sys.setenv(firstrun=firstrun)
 nsamp <- length(samplenames)
-hisat_summary <- read.table(paste(params["workdir"], "allsamples", "HISAT_Stats.txt", sep="/"), header=F)
-names(hisat_summary) <- c("SampleName", "Total", "Unmapped", "UniqueMapped", "MultiMapped", "DiscoMapped")
-bbduk_summary <- read.table(paste(params["workdir"], "allsamples", "rRNA_kmers.txt", sep="/"), header=F)
+
+# Read in HISAT2 summary, BBDuk summary, and RNASeQC summary
+hisat_summary <- read.table(
+    paste(params["workdir"], "allsamples", "HISAT_Stats.txt", sep="/"),
+    header=F)
+names(hisat_summary) <- c(
+    "SampleName", "Total", "Unmapped", "UniqueMapped", "MultiMapped",
+    "DiscoMapped")
+bbduk_summary <- read.table(
+    paste(params["workdir"], "allsamples", "rRNA_kmers.txt", sep="/"),
+    header=F)
 names(bbduk_summary) <- c("SampleName", "rRNA_Fragments", "rRNA_Pct")
 # If the RNASeQC run failed, then we will not have this file
-rnaseqc_fname <- paste(params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/")
+rnaseqc_fname <- paste(
+    params["workdir"], "allsamples", "RNASeq_Metrics.txt", sep="/")
 if(!file.exists(rnaseqc_fname) | file.info(rnaseqc_fname)$size == 0) {
     rnaseqc_do <- FALSE
 } else {
     rnaseqc_do <- TRUE
     rnaseqc_summary <- read.table(rnaseqc_fname, header=F, sep="\t", quote=NULL)
     names(rnaseqc_summary) <- c("SampleName", "Statistic", "Value")
-    rnaseqc_summary_uns <- read.table(paste(params["workdir"], "allsamples", "RNASeq_Metrics_Unstranded.txt", sep="/"), header=F, sep="\t", quote=NULL)
+    rnaseqc_summary_uns <- read.table(
+        paste(params["workdir"], "allsamples", "RNASeq_Metrics_Unstranded.txt", sep="/"),
+        header=F,
+        sep="\t",
+        quote=NULL)
     names(rnaseqc_summary_uns) <- c("SampleName", "Statistic", "Value")
 }
-# Assume that the first sample is part of the same dataset as the others
+
+# Assume that the first sample is part of the same dataset as the others. Use
+# the path to the FASTQ files of the first sample to report the FASTQ directory.
 first_read <- as.character(sheet$V3[1])
 fastq_dir <- dirname(first_read)
 
@@ -78,7 +103,10 @@ if(nsamp == 1) {
 
 # Generate the chunk offsets that we will use in the case of large datasets
 if(large_dataset) {
-    chunks <- cut(1:nsamp, breaks=unique(c(seq(0, nsamp, by=lg_cutoff), nsamp)), include.lowest=TRUE)
+    chunks <- cut(
+        1:nsamp,
+        breaks=unique(c(seq(0, nsamp, by=lg_cutoff), nsamp)),
+        include.lowest=TRUE)
 }
 ```
 
@@ -104,9 +132,18 @@ This run consists of ``r nsamp`` samples. The path to the reference genome is
 
 ``r genome``
 
-and the path to the GTF annotation is
+The path to the GTF annotation is
 
 ``r annot``
+
+The MD5sum of the GTF is
+
+```{bash gtf_md5, echo=FALSE}
+md5sum ${_GTF}
+```
+
+This is mostly useful for keeping track of the exact version of the GTF that
+was used for this analysis.
 
 A tabular summary of the samples analyzed is shown below:
 
@@ -140,7 +177,6 @@ sumsheet[,1:4]            #Show only the name, group and file name
 ```
 
 # Quality Metrics
-
 ## Read Counts {.tabset}
 
 ```{r counts_sum, echo=FALSE, results='asis'}
@@ -248,10 +284,10 @@ if(!file.exists(insertsize_file)) {
 }
 ```
 
-## Estimated Contamination {.tabset}
+## Estimated rRNA Content {.tabset}
 These counts were based on searching a subset of the raw reads against a
 reference database of ribosomal K-mers from various organisms. Click on the 
-table headers to show the summaries of rRNA contamination.
+table headers to show the summaries of rRNA content.
 
 ```{r bbduk_plot, echo=FALSE, message=FALSE, results="asis"}
 plt_dat <- as.numeric(gsub("%", "", as.character(bbduk_summary$rRNA_Pct))) / 100
@@ -267,7 +303,7 @@ if(large_dataset) {
             ylim=c(0, 0.75),
             xlab="",
             ylab="Proportion rRNA",
-            main="K-mer Based rRNA Contamination",
+            main="K-mer Based rRNA Content",
             axes=FALSE)
         axis(side=1, at=at, labels=as.character(bbduk_summary$SampleName)[idx], las=2, cex.axis=0.75)
         axis(side=2, at=seq(0, 0.6, by=0.05), labels=seq(0, 0.6, by=0.05))
@@ -294,7 +330,7 @@ if(large_dataset) {
             ylim=c(0, 0.75),
             xlab="",
             ylab="Proportion rRNA",
-            main="K-mer Based rRNA Contamination",
+            main="K-mer Based rRNA Content",
             axes=FALSE,
             add=TRUE)
         cat("\n\n")
@@ -334,7 +370,7 @@ if(large_dataset) {
         ylim=c(0, 0.75),
         xlab="",
         ylab="Proportion rRNA",
-        main="K-mer Based rRNA Contamination",
+        main="K-mer Based rRNA Content",
         axes=FALSE,
         add=TRUE)
 }
@@ -500,7 +536,7 @@ if(large_dataset) {
     dummy <- plotqual_first(samplenames[1], one_samp, read_type)
     if(nsamp > 2) {
         par(mar=c(0, 5, 2.5, 0.1))
-        for(sample_x in samplenames[2:nsamp-1]){
+        for(sample_x in samplenames[3:nsamp-1]){
             dummy <- plotqual(sample_x,rt=read_type)
         }
     }
