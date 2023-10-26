@@ -376,14 +376,17 @@ if(large_dataset) {
     }
 } else {
     cat("### Plot\n")
+    # A bit silly, but make an empty plot first so that we can overlay the bars
+    # on top of the shaded background.
     at <- barplot(
         plt_dat,
-        col="#e41a1c",
+        col=NULL,
+        border=NA,
         ylim=c(0, 0.75),
         xlab="",
-        ylab="Proportion rRNA",
-        main="K-mer Based rRNA Contamination",
-    axes=FALSE)
+        ylab="",
+        main="",
+        axes=FALSE)
     axis(
         side=1,
         at=at,
@@ -391,6 +394,7 @@ if(large_dataset) {
         las=2,
         cex.axis=0.75)
     axis(side=2, at=seq(0, 0.6, by=0.05), labels=seq(0, 0.6, by=0.05))
+    # Add the background rectangles
     rect(
         xleft=par("usr")[1],
         xright=par("usr")[2],
@@ -407,7 +411,7 @@ if(large_dataset) {
         col=rgb(228/255, 26/255, 28/255, 0.25),
         border=NA
         )
-    # Dumb, but re-plot it to put it on the top
+    # Plot the bars on top of the shaded background
     barplot(
         plt_dat,
         col="#e41a1c",
