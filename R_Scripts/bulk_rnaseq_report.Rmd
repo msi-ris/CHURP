@@ -1919,82 +1919,44 @@ following:
     and the alignment summaries that are found in its work directory.
 
 ## Pipeline Script
-The path to the pipeline script is ``r params["pipeline"]``
+The path to the pipeline script on MSI systerms is ``r params["pipeline"]``
 
-The pipeline script is printed below. You may copy and paste the following
-script into a new plain text document to recreate the analyses run here. Be sure
-to save it with UNIX line endings (`LF` rather than `CR` [Mac] or `CRLF`
-[Windows] line endings), or else it will cause errors on Mesabi. Also be sure to
-turn off "smart quotes" and "smart dashes" on any text editors that you use to
-paste the following script. Smart quotes and smart dashes are not interpreted
-correctly by the shell on Mesabi and will also cause errors.
+We have bundled a version of the pipeline script below. Click the following
+link to download the script to your computer:
 
-<details><summary>
-
-**Click to show pipeline script**
-
-</summary>
-```{bash pipeline_script, echo=FALSE, comment=NA}
-cat $pipeline
+```{r pipeline_download, echo=FALSE}
+xfun::embed_file(
+    path=params["pipeline"],
+    name=basename(params["pipeline"]),
+    text="Download PURR pipeline script")
 ```
-</details>
+
+To use this script to rerun your pipeline, be sure that the FASTQ directory,
+output directory, work directory, experimental groups CSV, and samplesheet are
+properly specified. Then, upload the script to MSI systems. Use the following
+command to rerun the pipeline:
+
+```{r pipeline_exec, echo=FALSE, results="asis"}
+cat("`echo ", basename(params["pipeline"]), "`\n")
+```
 
 ## Samplesheet
 The path to the samplesheet is ``r params["samplesheet"]``
 
-The samplesheet is printed below, verbatim. It is cumbersome to read, but you
-may copy and paste it into a plain text document to recreate the analyses run
-here. Like the pipeline script, be sure to save it with UNIX line endings
-(`LF` rather than `CR` [Mac] or `CRLF` [Windows]). Be sure to disable "smart
-quotes" and "smart dashes" on the text editor.
+We have bundled a version of the samplesheet below. Click the following link
+to download the script to your computer:
 
-<details><summary>
-
-**Click to show samplesheet**
-
-</summary>
-
-```{bash samplesheet, echo=FALSE, comment=NA}
-cat $samplesheet
+```{r samplesheet_download, echo=FALSE}
+xfun::embed_file(
+    path=params["samplesheet"],
+    name=basename(params["samplesheet"]),
+    text="Download PURR samplesheet")
 ```
 
-</details>
-
-The raw samplesheet is difficult to read, so we will print out a readable
-summary below:
-
-```{r samplesheet_readable, echo=FALSE, message=FALSE}
-# Define an NA-robust function here
-base_na <- function(x) {
-    if(is.na(x)) {
-        return("NA")
-    } else {
-        return(basename(x))
-    }
-}
-# Change the full R1/R2 paths into basenames
-sheet$V3 <- as.character(sapply(sheet$V3, base_na))
-sheet$V4 <- as.character(sapply(sheet$V4, base_na))
-# And the reference, too
-sheet$V10 <- as.character(sapply(sheet$V10, base_na))
-sheet$V13 <- as.character(sapply(sheet$V13, base_na))
-# Drop the output and work directories, columns 5 and 6
-sheet <- sheet[,-c(5, 6)]
-# Make the names nice
-names(sheet) <- c(
-    "Sample Name",
-    "Group",
-    "R1",
-    "R2",
-    "Trim?",
-    "Remove Dups?",
-    "Trimmomatic Options",
-    "Reference Genome",
-    "HISAT2 Options",
-    "Strand",
-    "GTF Name")
-sheet
-```
+To reuse this samplesheet to rerun the pipeline, first upload the file to MSI
+systems. Then, upload the accompanying pipeline control script (see above). Be
+sure that the paths to the FASTQ folder and the reference genome are correctly
+specified.
 
 ## Software Environment {.tabset}
 ### Single Sample Job Software
