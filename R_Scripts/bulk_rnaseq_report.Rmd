@@ -1500,7 +1500,10 @@ knitr::kable(hisat_prop,
 Use the link below to download the counts matrix to your computer:
 
 ```{r counts_download, echo=FALSE}
-xfun::embed_file(paste(outdir, "Counts.zip", sep="/"))
+xfun::embed_file(
+    path=paste(params["outdir"], "Counts.zip", sep="/"),
+    name="Raw_Read_Counts.zip",
+    text="Download counts matrices")
 ```
 
 ### Subread Assignment Summary {.tabset}
