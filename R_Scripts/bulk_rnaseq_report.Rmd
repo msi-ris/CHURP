@@ -243,7 +243,7 @@ names(read_summary) <- c(
     "Raw R2 Count",
     "Trimmed R1 Count",
     "Trimmed R2 Count")
-kable(read_summary)
+knitr::kable(read_summary)
 ```
 
 ## Insert Size Metrics
@@ -314,7 +314,7 @@ if(!file.exists(insertsize_file)) {
         "Width of 30% Bin",
         "Width of 70% Bin",
         "Width of 90% Bin")
-    kable(is_summary)
+    knitr::kable(is_summary)
 }
 ```
 
