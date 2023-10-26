@@ -41,7 +41,7 @@ sheet <- sheet[sheet$V1 %in% read_summary$V1,]
 
 # We are making a bold assumption here that the first sample is run against the
 # same genome as all the others. This is generally true, but if the user set
-# up multiple genomes, then then shouild hopefully know that and be able to
+# up multiple genomes, then they should hopefully know that and be able to
 # see that from the samplesheet. The genome is the 10th field, and the GTF is
 # the 13th.
 genome <- as.character(sheet[1, 10])
@@ -1301,7 +1301,7 @@ if(rnaseqc_do) {
 }
 ```
 
-# Alignmet to Reference Genome
+# Alignment to Reference Genome
 ## Mapping Statistics
 The following table summarizes alignment characteristics with the output from
 `samtools stats`. Note that this counts reads and not fragments.
@@ -1810,10 +1810,10 @@ Trimmed reads (or raw reads, if `--no-trim` was specified) were aligned to the
 reference genome with HISAT2. Duplicate reads based on alignment position were
 marked with SAMTools. If `--rmdup` was specified, then the positional duplicates
 were removed instead of marked. Alignments with duplicates marked were
-summarized with RNASeQC to quantify the proportion of positional duplicates,
-identify risosomal alignments, and quantify the proportion of "on-target"
-reads. Processed alignments were filtered of reads that have a mapping quality
-of less than 60, and sorted by query name rather than position.
+summarized with RNASeQC to quantify the proportion of positional duplicates
+and quantify the proportion of "on-target" reads. Processed alignments were
+filtered of reads that have a mapping quality of less than 60, and sorted by
+query name rather than position.
 
 ### Counts and Differential Expression testing
 Cleaned and name-sorted alignments were processed with the featureCounts tool
@@ -1822,11 +1822,11 @@ unless the `--strand U` option was passed for a library that was prepared in
 a strand-unspecific way. Both mates of a read pair were required to map to a
 feature to be counted, if the data were paired-end.
 
-Raw counts were imported into the `edgeR` package in R. Gnees that are shorter
+Raw counts were imported into the `edgeR` package in R. Genes that are shorter
 than the specified minimum length (`--min-len` argument, default 200bp) were
 pruned from the counts matrix before differential expression testing. If
 experimental groups were specified (`-e` argument), then the differential
-expression testing was peformed with a quasi-likelihood test in `edgeR` between
+expression testing was performed with a quasi-likelihood test in `edgeR` between
 all pairwise combinations of groups. A 0.05 false discovery rate correction
 was applied to the tests.
 
@@ -1919,15 +1919,15 @@ following:
     and the alignment summaries that are found in its work directory.
 
 ## Pipeline Script
-The path to the pipeline script on MSI systerms is ``r params["pipeline"]``
+The path to the pipeline script on MSI systems is ``r params["pipeline"]``
 
 We have bundled a version of the pipeline script below. Click the following
 link to download the script to your computer:
 
 ```{r pipeline_download, echo=FALSE}
 xfun::embed_file(
-    path=params["pipeline"],
-    name=basename(params["pipeline"]),
+    path=as.character(params["pipeline"]),
+    name=basename(as.character(params["pipeline"])),
     text="Download PURR pipeline script")
 ```
 
@@ -1937,7 +1937,7 @@ properly specified. Then, upload the script to MSI systems. Use the following
 command to rerun the pipeline:
 
 ```{r pipeline_exec, echo=FALSE, results="asis"}
-cat("`echo ", basename(params["pipeline"]), "`\n")
+cat("`echo ", as.character(basename(params["pipeline"])), "`\n")
 ```
 
 ## Samplesheet
@@ -1948,8 +1948,8 @@ to download the script to your computer:
 
 ```{r samplesheet_download, echo=FALSE}
 xfun::embed_file(
-    path=params["samplesheet"],
-    name=basename(params["samplesheet"]),
+    path=as.character(params["samplesheet"]),
+    name=basename(as.character(params["samplesheet"])),
     text="Download PURR samplesheet")
 ```
 
