@@ -301,6 +301,7 @@ echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Compressing the trimmed counts matrice
 # We have to use a subshell here because zip will store the full path to the
 # counts files in the archive. If we do not use the subshell, then when the
 # user expands the file, it will 
+rm -f "${OUTDIR}/Counts.zip"
 (cd "${OUTDIR}" && zip -r "./Counts.zip" "Counts/cpm_list.txt" "Counts/subread_counts_gene_symbol.txt" "Counts/subread_counts.trimmed.txt")
 
 # Link the work directories to the output directory
