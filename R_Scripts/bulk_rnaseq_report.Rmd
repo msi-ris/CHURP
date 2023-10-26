@@ -1937,7 +1937,7 @@ properly specified. Then, upload the script to MSI systems. Use the following
 command to rerun the pipeline:
 
 ```{r pipeline_exec, echo=FALSE, results="asis"}
-cat("`echo ", basename(as.character(params["pipeline"])), "`\n")
+cat("`bash ", basename(as.character(params["pipeline"])), "`\n")
 ```
 
 ## Samplesheet
@@ -1955,8 +1955,8 @@ xfun::embed_file(
 
 To reuse this samplesheet to rerun the pipeline, first upload the file to MSI
 systems. Then, upload the accompanying pipeline control script (see above). Be
-sure that the paths to the FASTQ folder and the reference genome are correctly
-specified.
+sure that the paths to the FASTQ folder, the reference genome alignment index,
+and the GTF annotation are correctly specified.
 
 ## Software Environment {.tabset}
 ### Single Sample Job Software
