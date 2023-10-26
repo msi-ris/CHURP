@@ -142,8 +142,8 @@ The path to the GTF annotation is
 
 The MD5sum of the GTF is
 
-```{bash gtf_md5, echo=FALSE}
-md5sum ${_GTF}
+```{bash gtf_md5, echo=FALSE, comment=NA}
+md5sum < ${_GTF} | awk '{print $1}'
 ```
 
 This is mostly useful for keeping track of the exact version of the GTF that
