@@ -48,7 +48,7 @@ genome <- as.character(sheet[1, 10])
 annot <- as.character(sheet[1, 13])
 # Push the annotation filename into the environment variables list so that we
 # can access it via bash for an md5sum
-Sys.setenv(_GTF=annot)
+Sys.setenv(`_GTF`=annot)
 
 # Unpack the samplesheet for sample names and the number of samples run
 samplenames <- sheet$V1
