@@ -1937,7 +1937,7 @@ properly specified. Then, upload the script to MSI systems. Use the following
 command to rerun the pipeline:
 
 ```{r pipeline_exec, echo=FALSE, results="asis"}
-cat("`echo ", as.character(basename(params["pipeline"])), "`\n")
+cat("`echo ", basename(as.character(params["pipeline"])), "`\n")
 ```
 
 ## Samplesheet
