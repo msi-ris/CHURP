@@ -1386,7 +1386,7 @@ if(large_dataset) {
             cex=0.7)
 }
 
-cat("#### Table")
+cat("\n\n#### Table")
 hisat_tab <- hisat_summary
 names(hisat_tab) <- c(
     "Sample Name",
@@ -1458,7 +1458,7 @@ if(large_dataset) {
             cex=0.7)
 }
 
-cat("#### Table")
+cat("\n\n#### Table")
 hisat_prop <- data.frame(
     SN=as.character(hisat_summary$SampleName),
     TO=rep("100%", nrow(hisat_summary)),
