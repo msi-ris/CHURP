@@ -275,6 +275,35 @@ join \
     | tr ' ' '\t' \
     >> "${COUNTSDIR}/subread_counts_gene_symbol.txt"
 
+# Let's make a subset of the counts matrix for inclusion in the HTML report
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Removing transcript-specific information in subread_counts.txt" >> "${LOG_FNAME}"
+awk '
+NR<=2 {
+    print $0
+}
+NR>2 {
+    split($2, chrs, ";")
+    split($3, starts, ";")
+    split($4, ends, ";")
+    split($5, strands, ";")
+
+    $2=chrs[1]
+    $3=starts[1]
+    $4=ends[1]
+    $5=strands[1]
+
+    OFS="\t"
+    print $0
+}' "${COUNTSDIR}/subread_counts.txt" > "${COUNTSDIR}/subread_counts.trimmed.txt"
+
+# Then compress the files of interest
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Compressing the trimmed counts matrices" >> "${LOG_FNAME}"
+# We have to use a subshell here because zip will store the full path to the
+# counts files in the archive. If we do not use the subshell, then when the
+# user expands the file, it will 
+rm -f "${OUTDIR}/Counts.zip"
+(cd "${OUTDIR}" && zip -r "./Counts.zip" "Counts/cpm_list.txt" "Counts/subread_counts_gene_symbol.txt" "Counts/subread_counts.trimmed.txt")
+
 # Link the work directories to the output directory
 echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="Linking"
