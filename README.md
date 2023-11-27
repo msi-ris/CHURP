@@ -22,7 +22,7 @@ The following pipelines have been implemented:
 The current version is `0.2.4`, released on 2023-11-27.
 
 ## Development Versions
-To gain access to a development version, with experimental new features and bug fixes, please contact the MSI help desk. Be warned that development versions are highly unstable and not tested for accuracy; you should only use a development version if you are familiar with Python package development and RNAseq analysis "by hand."
+To gain access to a development version, with experimental new features and bug fixes, see the other branches in this repository. Be warned that development versions are highly unstable and not tested for accuracy; you should only use a development version if you are familiar with Python package development and RNAseq analysis "by hand." **We do not support issues arising from a development version of CHURP.**
 
 ### Old Versions
 If you need to use an older version of the pipelines to reproduce an analysis,
