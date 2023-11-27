@@ -19,10 +19,10 @@ The following pipelines have been implemented:
 - Bulk RNAseq
 
 ## Current Version
-The current version is `0.2.3`, released on 2022-05-06.
+The current version is `0.2.4`, released on 2023-11-27.
 
-## Development Version
-To gain access to the development version, with experimental new features and bug fixes, please clone this repository and run `git checkout dev` from within the cloned repository.
+## Development Versions
+To gain access to a development version, with experimental new features and bug fixes, please contact the MSI help desk. Be warned that development versions are highly unstable and not tested for accuracy; you should only use a development version if you are familiar with Python package development and RNAseq analysis "by hand."
 
 ### Old Versions
 If you need to use an older version of the pipelines to reproduce an analysis,
