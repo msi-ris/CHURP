@@ -1,13 +1,28 @@
 # CHURP Changelog
 2023-11-27
 
-## [TODO]
+## [0.2.5] 2023-12-07
+Patch-level release of CHURP and PURR. This update fixes an issue with the
+`human` annotation path in the organism alias functionality.
+
+### Added
+- Nothing
+
+### Modified
+- Fixed the path to the human GTF in bioref (MSI's internal library of
+  biological reference resources)
+
+### Removed
+- Nothing
+
+### Bugs Fixed
+- #131, added some special handling for the human GTF case
 
 ## [0.2.4] 2023-11-27
 Patch-level release of CHURP and PURR (RNAseq pipeline). This update adds a new
 subcommand and many small tweaks to the output.
 
-# Added
+### Added
 - `genome_aliases` subcommand to CHURP to list aliases for common genomics
   models, see below
 - Routines to PURR that color-code plots by experimental group
@@ -16,7 +31,7 @@ subcommand and many small tweaks to the output.
 - Downloadable pipeline.sh script file to PURR HTML report
 - Downloadable samplesheet.txt file to PURR HTML report
 
-# Modified
+### Modified
 - PURR HTML report is much smaller and less redundant now
 - GTF md5sum is now reported in PURR HTML report
 - Uninformative rRNA plots from RNASeQC were removed from PURR HTML report
@@ -26,14 +41,14 @@ subcommand and many small tweaks to the output.
   with FDR<0.05
 - Old package names have been standardized
 
-# Removed
+### Removed
 - Nothing else removed
 
-# Bugs Fixed
+### Bugs Fixed
 - #114: DEGs should now have the correct polarity as described in the PURR
   report
 
-## Genome Aliases
+#### Genome Aliases
 When you run `python churp.py genome_aliases`, a table with commonly-used
 genomics models is printed. These are genomes that MSI maintains in a local
 library ("bioref;" https://www.msi.umn.edu/content/bioref). You can use the
