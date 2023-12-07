@@ -63,6 +63,9 @@ for sp in FAVE_ASM:
         f'{CHURPipelines.BIOREF_BASE}/{div}/{spn}-{rel}/{ver}/hisat2/genome')
     sp_d['seq'] = (
         f'{CHURPipelines.BIOREF_BASE}/{div}/{spn}-{rel}/{ver}/seq/genome.fa')
+    # For human, there is no patch-level code on the GTF for some reason.
+    if sp == 'human':
+        ver = ver.split('.')[0]
     sp_d['gtf'] = (
         f'{CHURPipelines.BIOREF_BASE}/{div}/{spn}-{rel}/{ver}/annotation/'
         f'{spn}.{ver}.{rel}.gtf')
