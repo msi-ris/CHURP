@@ -236,22 +236,28 @@ if(length(samp_ids) == 1) {
         if (n_true_groups > 0){
             # pheatmap uses a dataframe for variable annotation where the rownames match the matrix samplenames
             annotation <- group_sheet
-            print(annotation)
             row.names(annotation) <- make.names(group_sheet[,1])
             annotation[,1] <- NULL
-            print(annotation)
             # to specify annotation colors for pheatmap, use a named list with named color vector
             colors <- col_vec
             names(colors) <- annotation[,1]
             colors <- unique(colors)
-            names(colors) <- unique(annotation[,1])
+            # A quick fix - if the length of the color vector is 1, then we
+            # either have 1 group or >4 groups. We will overwrite the color
+            # vector in this case
+            if(length(colors) == 1) {
+                colors <- rep(colors, unique(annotation[,1]))
+                names(colors) <- unique(annotation[,1])
+            } else {
+                names(colors) <- unique(annotation[,1])
+            }
             color_list <- list()
             color_list[[colnames(annotation)[1]]] <- colors
             pheatmap::pheatmap(high_var,
                treeheight_row = 0,
                show_rownames = FALSE,
                annotation_col = annotation,
-               annotation_colors = color_list)            
+               annotation_colors = color_list)
         }else{
             pheatmap::pheatmap(high_var,
                treeheight_row = 0,
