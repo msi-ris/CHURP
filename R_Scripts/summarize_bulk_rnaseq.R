@@ -246,7 +246,7 @@ if(length(samp_ids) == 1) {
             # either have 1 group or >4 groups. We will overwrite the color
             # vector in this case
             if(length(colors) == 1) {
-                colors <- rep(colors, unique(annotation[,1]))
+                colors <- rep(colors, length(unique(annotation[,1])))
                 names(colors) <- unique(annotation[,1])
             } else {
                 names(colors) <- unique(annotation[,1])
