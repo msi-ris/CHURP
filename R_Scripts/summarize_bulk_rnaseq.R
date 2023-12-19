@@ -171,7 +171,7 @@ if(length(samp_ids) < 3) {
     legend(par("usr")[2], mean(par("usr")[3:4])+.25, legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
     legend(par("usr")[2], mean(par("usr")[3:4])-.25, legend = c(batch_name, uniq_batches), pch = c(26, unique(pch_vec)), bty = "n")
 
-    par(opar)    
+    par(opar)
 } else {
     opar <- par(no.readonly = TRUE)
     par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
@@ -236,8 +236,10 @@ if(length(samp_ids) == 1) {
         if (n_true_groups > 0){
             # pheatmap uses a dataframe for variable annotation where the rownames match the matrix samplenames
             annotation <- group_sheet
+            print(annotation)
             row.names(annotation) <- make.names(group_sheet[,1])
             annotation[,1] <- NULL
+            print(annotation)
             # to specify annotation colors for pheatmap, use a named list with named color vector
             colors <- col_vec
             names(colors) <- annotation[,1]
