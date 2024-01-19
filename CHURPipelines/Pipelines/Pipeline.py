@@ -93,10 +93,10 @@ class Pipeline(object):
                 self.ppn)
             DieGracefully.die_gracefully(DieGracefully.BAD_RESOURCES)
         try:
-            assert self.mem >= 1 and self.mem <= 60000
+            assert self.mem >= 1 and self.mem <= 512000
         except AssertionError as e:
             self.logger.error(
-                'Mem value of %i is invalid! Specify between 1 and 60000.',
+                'Mem value of %i is invalid! Specify between 1 and 512000.',
                 self.mem)
             DieGracefully.die_gracefully(DieGracefully.BAD_RESOURCES)
         try:
