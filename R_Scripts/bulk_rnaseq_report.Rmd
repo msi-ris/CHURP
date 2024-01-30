@@ -12,6 +12,7 @@ output:
         df_print: paged
 date: "`r format(Sys.time(), '%Y-%m-%d, %T')`"
 params:
+    churp_version: NA
     pipeline: NA
     samplesheet: NA
     outdir: NA
@@ -126,11 +127,13 @@ MSI with funding provided by the University of Minnesota Informatics Institute
 
 <https://research.umn.edu/units/umii>
 
+This report was generated with CHURP version ``r churp_version``.
+
 # Data Processed
 
 The location of the FASTQ files for this run is 
 
-``r fastq_dir``. 
+``r fastq_dir``.
 
 This run consists of ``r nsamp`` samples. The path to the reference genome is
 
