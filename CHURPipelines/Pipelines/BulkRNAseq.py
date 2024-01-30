@@ -472,7 +472,10 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         handle.write('echo "Output and logs will be written to ${OUTDIR}"\n')
         handle.write('echo "Emails will be sent to ${user_email}"\n')
         handle.write('echo "Sbatch array to samplename key: ${KEYFILE}"\n')
-        handle.write('echo "Single samples job array ID: ${single_id}"\n')
+        if not self.valid_args['summary_only']:
+            handle.write('echo "Single samples job array ID: ${single_id}"\n')
+        else:
+            handle.write('echo "CHURP invoked with --summary-only. No single-sample job ID\n')
         handle.write('echo "Summary job ID: ${summary_id}"\n')
         self.pipe_logger.debug('sbatch:\n%s', ' '.join(aln_cmd))
         self.pipe_logger.debug('sbatch:\n%s', ' '.join(summary_cmd))
