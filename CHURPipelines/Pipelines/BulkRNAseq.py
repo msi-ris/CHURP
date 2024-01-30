@@ -398,7 +398,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             '1']
         # Write some logic to detect if we are running in a job
         handle.write('if [ -z "${SLUM_JOB_ID+NULL}" ]\n')
-        handle.write('    then echo "You should run this script with \"bash\" from outside of a job allocation. > /dev/stderr\n')
+        handle.write('    then echo "You should run this script with \'bash\' from outside of a job allocation." > /dev/stderr\n')
         handle.write('    exit 99\n')
         handle.write('fi\n')
         # Write the first qsub command
