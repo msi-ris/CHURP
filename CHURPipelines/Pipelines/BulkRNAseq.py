@@ -375,6 +375,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             'RRNA_SCREEN="${RRNA_SCREEN}"',
             'SUBSAMPLE="${SUBSAMPLE}"'
             ])
+        # And the command for the single-sample job array
         aln_cmd = [
             'sbatch',
             '--parsable',
@@ -397,14 +398,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             '||',
             'exit',
             '1']
-        # Write some logic to detect if we are running in a job
-        handle.write('if [ ! -z "${SLURM_JOB_ID+NULL}" ]\n')
-        handle.write('    then echo "You should run this script with \'bash\' from outside of a job allocation." > /dev/stderr\n')
-        handle.write('    exit 99\n')
-        handle.write('fi\n')
-        # Write the first qsub command
-        handle.write('single_id=$(' + ' '.join(aln_cmd) + ')\n')
-        # This is the command for counting and normalizing reads
+        # The variables to export for the summary job
         summary_vars = ','.join([
             'SampleSheet="${SAMPLESHEET}"',
             'GroupSheet="${GROUPSHEET}"',
@@ -414,28 +408,63 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             'RSUMMARY="${DE_SCRIPT}"',
             'PIPE_SCRIPT="${PIPE_SCRIPT}"',
             'BULK_RNASEQ_REPORT="${REPORT_SCRIPT}"'])
-        summary_cmd = [
-            'sbatch',
-            '--parsable',
-            '--ignore-pbs',
-            '-p', self.msi_queue,
-            '--mail-type=BEGIN,END,FAIL',
-            '--mail-user="${user_email}"',
-            qsub_group,
-            '-o', '"${OUTDIR}/run_summary_stats-%j.out"',
-            '-e', '"${OUTDIR}/run_summary_stats-%j.err"',
-            '-N', '1',
-            '--mem=' + str(self.mem) + 'mb',
-            '--tmp=' + str(self.tmp_space) + 'mb',
-            '-n', '1',
-            '-c', str(self.ppn),
-            '--time=' + str(self.walltime * 60),
-            '--depend=afterok:${single_id}',
-            '--export=' + summary_vars,
-            self.summary_script,
-            '||',
-            'exit',
-            '1']
+        # Write some logic to detect if we are running in a job allocation.
+        # Quit the bash script if it is.
+        handle.write('if [ ! -z "${SLURM_JOB_ID+NULL}" ]\n')
+        handle.write('    then echo "You should run this script with \'bash\' from outside of a job allocation." > /dev/stderr\n')
+        handle.write('    exit 99\n')
+        handle.write('fi\n')
+        # Check if the user has not supplied the --summary-only option
+        if not self.valid_args['summary_only']:
+            # Write the first qsub command
+            handle.write('single_id=$(' + ' '.join(aln_cmd) + ')\n')
+            # This is the command for counting and normalizing reads. Note that
+            # if the user has not supplied --summary-only, then we need to
+            # include the single sample job array ID as a dependency
+            summary_cmd = [
+                'sbatch',
+                '--parsable',
+                '--ignore-pbs',
+                '-p', self.msi_queue,
+                '--mail-type=BEGIN,END,FAIL',
+                '--mail-user="${user_email}"',
+                qsub_group,
+                '-o', '"${OUTDIR}/run_summary_stats-%j.out"',
+                '-e', '"${OUTDIR}/run_summary_stats-%j.err"',
+                '-N', '1',
+                '--mem=' + str(self.mem) + 'mb',
+                '--tmp=' + str(self.tmp_space) + 'mb',
+                '-n', '1',
+                '-c', str(self.ppn),
+                '--time=' + str(self.walltime * 60),
+                '--depend=afterok:${single_id}',
+                '--export=' + summary_vars,
+                self.summary_script,
+                '||',
+                'exit',
+                '1']
+        else:
+            summary_cmd = [
+                'sbatch',
+                '--parsable',
+                '--ignore-pbs',
+                '-p', self.msi_queue,
+                '--mail-type=BEGIN,END,FAIL',
+                '--mail-user="${user_email}"',
+                qsub_group,
+                '-o', '"${OUTDIR}/run_summary_stats-%j.out"',
+                '-e', '"${OUTDIR}/run_summary_stats-%j.err"',
+                '-N', '1',
+                '--mem=' + str(self.mem) + 'mb',
+                '--tmp=' + str(self.tmp_space) + 'mb',
+                '-n', '1',
+                '-c', str(self.ppn),
+                '--time=' + str(self.walltime * 60),
+                '--export=' + summary_vars,
+                self.summary_script,
+                '||',
+                'exit',
+                '1']
         # Write the second command
         handle.write('summary_id=$(' + ' '.join(summary_cmd) + ')\n')
         # Write some echo statements for users' information
