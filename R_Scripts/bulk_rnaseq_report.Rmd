@@ -127,7 +127,7 @@ MSI with funding provided by the University of Minnesota Informatics Institute
 
 <https://research.umn.edu/units/umii>
 
-This report was generated with CHURP version ``r churp_version``.
+This report was generated with CHURP version ``r params["churp_version"]``.
 
 # Data Processed
 
