@@ -408,6 +408,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         summary_vars = ','.join([
             'SampleSheet="${SAMPLESHEET}"',
             'GroupSheet="${GROUPSHEET}"',
+            'CHURP_VERSION="${CHURP_VERSION}"',
             'MINLEN="' + self.min_gene_len + '"',
             'MINCPM="' + self.min_cpm + '"',
             'RSUMMARY="${DE_SCRIPT}"',
@@ -438,6 +439,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # Write the second command
         handle.write('summary_id=$(' + ' '.join(summary_cmd) + ')\n')
         # Write some echo statements for users' information
+        handle.write('echo "You are running CHURP version ${CHURP_VERSION}"\n')
         handle.write('echo "Output and logs will be written to ${OUTDIR}"\n')
         handle.write('echo "Emails will be sent to ${user_email}"\n')
         handle.write('echo "Sbatch array to samplename key: ${KEYFILE}"\n')
