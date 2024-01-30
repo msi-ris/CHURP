@@ -353,6 +353,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             qsub_array += '-' + str(len(self.sheet.final_sheet))
         # Write a few variables into the header of the script so they are
         # easy to find
+        handle.write('CHURP_VERSION=' + '"' + CHURPipelines.__version__ + '"\n')
         handle.write('KEYFILE=' + '"' + keyname + '"\n')
         handle.write('QSUB_ARRAY=' + '"' + qsub_array + '"\n')
         handle.write('OUTDIR=' + '"' + str(self.real_out) + '"\n')
