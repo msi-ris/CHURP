@@ -278,7 +278,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             DieGracefully.die_gracefully(DieGracefully.PE_SE_MIX, pe, se)
         ss_path = self.sheet.write_sheet(self.real_out, self.pipe_name, '|')
         return ss_path
-        
+
     def _prepare_groupsheet(self):
         """Checks if a groupsheet has been made. If none have been made,
         create a stub groupsheet in the outdir so that the downstream 
@@ -295,7 +295,6 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
                 for sample in samples:
                     file.write(f"{sample},NULL\n")
             self.valid_args["expr_groups"] = os.path.realpath(expr_group_path)
-
         return(self.valid_args["expr_groups"])
 
     def qsub(self):
