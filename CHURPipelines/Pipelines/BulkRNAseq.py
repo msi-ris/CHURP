@@ -40,6 +40,11 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         self.real_out = valid_args['outdir']
         self.real_work = valid_args['workdir']
         self.nosubmit = valid_args['no_auto_submit']
+        # Set the boolean summary_only option
+        if valid_args['summary_only']:
+            self.summary_only = 'true'
+        else:
+            self.summary_only = 'false'
 
         # Set the minimum gene length
         self.min_gene_len = str(valid_args['mingene'])
@@ -354,6 +359,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # Write a few variables into the header of the script so they are
         # easy to find
         handle.write('CHURP_VERSION=' + '"' + CHURPipelines.__version__ + '"\n')
+        handle.write('SUMMARY_ONLY=' + '"' + self.summary_only + '"\n')
         handle.write('KEYFILE=' + '"' + keyname + '"\n')
         handle.write('QSUB_ARRAY=' + '"' + qsub_array + '"\n')
         handle.write('OUTDIR=' + '"' + str(self.real_out) + '"\n')
@@ -414,68 +420,70 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         handle.write('    then echo "You should run this script with \'bash\' from outside of a job allocation." > /dev/stderr\n')
         handle.write('    exit 99\n')
         handle.write('fi\n')
-        # Check if the user has not supplied the --summary-only option
-        if not self.valid_args['summary_only']:
-            # Write the first qsub command
-            handle.write('single_id=$(' + ' '.join(aln_cmd) + ')\n')
-            # This is the command for counting and normalizing reads. Note that
-            # if the user has not supplied --summary-only, then we need to
-            # include the single sample job array ID as a dependency
-            summary_cmd = [
-                'sbatch',
-                '--parsable',
-                '--ignore-pbs',
-                '-p', self.msi_queue,
-                '--mail-type=BEGIN,END,FAIL',
-                '--mail-user="${user_email}"',
-                qsub_group,
-                '-o', '"${OUTDIR}/run_summary_stats-%j.out"',
-                '-e', '"${OUTDIR}/run_summary_stats-%j.err"',
-                '-N', '1',
-                '--mem=' + str(self.mem) + 'mb',
-                '--tmp=' + str(self.tmp_space) + 'mb',
-                '-n', '1',
-                '-c', str(self.ppn),
-                '--time=' + str(self.walltime * 60),
-                '--depend=afterok:${single_id}',
-                '--export=' + summary_vars,
-                self.summary_script,
-                '||',
-                'exit',
-                '1']
-        else:
-            summary_cmd = [
-                'sbatch',
-                '--parsable',
-                '--ignore-pbs',
-                '-p', self.msi_queue,
-                '--mail-type=BEGIN,END,FAIL',
-                '--mail-user="${user_email}"',
-                qsub_group,
-                '-o', '"${OUTDIR}/run_summary_stats-%j.out"',
-                '-e', '"${OUTDIR}/run_summary_stats-%j.err"',
-                '-N', '1',
-                '--mem=' + str(self.mem) + 'mb',
-                '--tmp=' + str(self.tmp_space) + 'mb',
-                '-n', '1',
-                '-c', str(self.ppn),
-                '--time=' + str(self.walltime * 60),
-                '--export=' + summary_vars,
-                self.summary_script,
-                '||',
-                'exit',
-                '1']
-        # Write the second command
-        handle.write('summary_id=$(' + ' '.join(summary_cmd) + ')\n')
+        # Make two versions of the summary command: one with the single sample
+        # array dependency and one without
+        summary_cmd_dep = [
+            'sbatch',
+            '--parsable',
+            '--ignore-pbs',
+            '-p', self.msi_queue,
+            '--mail-type=BEGIN,END,FAIL',
+            '--mail-user="${user_email}"',
+            qsub_group,
+            '-o', '"${OUTDIR}/run_summary_stats-%j.out"',
+            '-e', '"${OUTDIR}/run_summary_stats-%j.err"',
+            '-N', '1',
+            '--mem=' + str(self.mem) + 'mb',
+            '--tmp=' + str(self.tmp_space) + 'mb',
+            '-n', '1',
+            '-c', str(self.ppn),
+            '--time=' + str(self.walltime * 60),
+            '--depend=afterok:${single_id}',
+            '--export=' + summary_vars,
+            self.summary_script,
+            '||',
+            'exit',
+            '1']
+        summary_cmd = [
+            'sbatch',
+            '--parsable',
+            '--ignore-pbs',
+            '-p', self.msi_queue,
+            '--mail-type=BEGIN,END,FAIL',
+            '--mail-user="${user_email}"',
+            qsub_group,
+            '-o', '"${OUTDIR}/run_summary_stats-%j.out"',
+            '-e', '"${OUTDIR}/run_summary_stats-%j.err"',
+            '-N', '1',
+            '--mem=' + str(self.mem) + 'mb',
+            '--tmp=' + str(self.tmp_space) + 'mb',
+            '-n', '1',
+            '-c', str(self.ppn),
+            '--time=' + str(self.walltime * 60),
+            '--export=' + summary_vars,
+            self.summary_script,
+            '||',
+            'exit',
+            '1']
+        # Write the logic for if the user has specified the "--summary-only"
+        # option.
+        handle.write('if [ "${SUMMARY_ONLY}" = "true" ]\n')
+        handle.write('then\n')
+        handle.write('    summary_id=$(' + ' '.join(summary_cmd) + ')\n')
+        handle.write('else\n')
+        handle.write('    single_id=$(' + ' '.join(aln_cmd) + ')\n')
+        handle.write('    summary_id=$(' + ' '.join(summary_cmd_dep) + ')\n')
+        handle.write('fi\n')
         # Write some echo statements for users' information
         handle.write('echo "You are running CHURP version ${CHURP_VERSION}"\n')
         handle.write('echo "Output and logs will be written to ${OUTDIR}"\n')
         handle.write('echo "Emails will be sent to ${user_email}"\n')
         handle.write('echo "Sbatch array to samplename key: ${KEYFILE}"\n')
-        if not self.valid_args['summary_only']:
-            handle.write('echo "Single samples job array ID: ${single_id}"\n')
-        else:
-            handle.write('echo "CHURP invoked with --summary-only. No single-sample job ID\n')
+        handle.write('if [ "${SUMMARY_ONLY}" = "true" ]\n')
+        handle.write('then echo "--summary-only" specified; no single samples job array ID\n')
+        handle.write('else echo "Single samples job array ID: ${single_id}"\n')
+        handle.write('fi\n')
+        handle.write('echo "CHURP invoked with --summary-only. No single-sample job ID\n')
         handle.write('echo "Summary job ID: ${summary_id}"\n')
         self.pipe_logger.debug('sbatch:\n%s', ' '.join(aln_cmd))
         self.pipe_logger.debug('sbatch:\n%s', ' '.join(summary_cmd))
