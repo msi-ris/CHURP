@@ -2,7 +2,7 @@
 # Gopher pipelines version 0.1.0 bulk RNA-seq summary script
 # R version 3.5.0
 # All relevant R libraries are installed at /panfs/roc/groups/14/msistaff/public/gopher-pipelines/v0/R/
-# Usage: Rscript summarize_counts.R <out_dir> <work_dir> <sample sheet path> <merged_counts_path> <min_feature_length> <min_count> &> Rout.txt
+# Usage: Rscript summarize_counts.R <out_dir> <work_dir> <sample sheet path> <merged_counts_path> <min_feature_length> <min_count> <group_sheet_loc> <comparison_csv> &> Rout.txt
 # See run_summary_stats.pbs for additional run context.
 # See https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf for the edgeR user manual.
 # Contact help@msi.umn.edu for questions
@@ -10,7 +10,7 @@
 
 
 # Prepend the library path to libPaths
-.libPaths(c("/panfs/roc/groups/14/msistaff/public/CHURP_Deps/v0/R/",.libPaths()))
+.libPaths(c("/home/msistaff/public/CHURP_Deps/v0/R/",.libPaths()))
 
 # Load libraries
 library('limma')
@@ -20,6 +20,8 @@ library('reshape2')
 library('gplots')
 library('gtools')
 library('grid')
+library('readxl')
+library('tools')
 
 #grab the working and output directories, as well as the sample sheet,
 # and merged raw counts matrix, and the groupsheet
@@ -32,6 +34,21 @@ min_len <- as.numeric(args[5])
 min_cts <- as.numeric(args[6])
 group_sheet_loc <- args[7]
 
+# Check if the DEG comparison file is missing from the argument list
+# If the DEG comparison file is present, check the extension on the file to see if
+# it is CSV or XLSX.
+if (length(args)==7) {
+	do_deg <- FALSE
+	write("No DEG Comparisons CSV or XLSX file was specified. Will not perform DEG testing. If you'd like analysis help, please e-mail ribhelp@msi.umn.edu.", stderr())
+}else if (length(args)==8) {
+	comparison_csv_file <- args[8] 
+	if (file_ext(comparison_csv_file) == "csv"){
+		comparison_csv <- read.csv(comparison_csv_file)}
+	if (file_ext(comparison_csv_file) == "xls" | file_ext(comparison_csv_file) == "xlsx" ){
+		comparison_csv <- read_excel(comparison_csv_file)}
+}
+
+
 setwd(work_dir)
 # Boolean to check if we will attempt DEG testing
 do_deg <- TRUE
@@ -42,6 +59,7 @@ do_deg <- TRUE
 
 # Get the sample sheet to grab group membership downstream 
 sheet <- read.table(samp_sheet, sep = "|", header = F, comment.char = "#")
+
 
 # Get the group sheet for group and batch membership
 group_sheet <- read.csv(group_sheet_loc, header = TRUE)
@@ -76,11 +94,11 @@ if (ncol(group_sheet) > 2){
 }
 
 # Check if the number of groups meets our analysis criteria
-if (n_true_groups >= 5){
-write("Maximum number of groups exceeded: This experimental design appears to be too complex for this pipeline. If you'd like analysis help, please e-mail ribhelp@msi.umn.edu.", stderr())
+#if (n_true_groups >= 5){
+#write("Maximum number of groups exceeded: This experimental design appears to be too complex for this pipeline. If you'd like analysis help, please e-mail ribhelp@msi.umn.edu.", stderr())
 # quit(status = 0, save = "no")
-do_deg <- FALSE
-}
+#do_deg <- FALSE
+#}
 
 # Then check if the number of replicates meets our criteria.
 if (length(true_groups[which(table(true_groups) < 3)]) > 0){
@@ -89,6 +107,7 @@ writeLines(text = paste("This group has fewer than three replicates", unique(gro
 do_deg <- FALSE
 # quit(status = 0, save = "no")
 }
+
 
 # Set filename variables
 mds_plot <- paste(out_dir, "Plots/mds_plot.pdf", sep = "/")
@@ -272,9 +291,9 @@ write("Only 1 grouping present, skipping differential expression tests.", stderr
 quit(status = 0, save = "no")
 }
 
+
 # Subset the data object to get rid of samples with a 'NULL' group
 edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
-
 
 
 # Filter out lowly expressed features. To do so we define what the minimum CPM would be for our minimum count cut-off in the smallest library. We keep only those features that have at least as many samples with the minimum CPM as there are samples in the smallest group.
@@ -283,30 +302,56 @@ keep <- rowSums(cpm(edge_mat, log = T, prior.count = 1)) >= min(table(true_group
 edge_mat <- edge_mat[keep, ,keep.lib.sizes = F]
 
 #Redefine these variables
-uniq_groups <- as.vector(unique(edge_mat$samples$group))
+#uniq_groups <- as.vector(unique(edge_mat$samples$group))
 #n_groups = length(uniq_groups)
+
 
 # Generate the design matrix for GLM fitting and estimate common and tag-wise dispersion in one go.
 design <- model.matrix(~0+group, data = edge_mat$samples)
 #colnames(design) <- uniq_groups
 # Let's grab the new group labels from the design matrix for making our group combos
-uniq_groups <- colnames(design)
+##uniq_groups <- colnames(design)
 edge_mat <- estimateDisp(edge_mat, design = design)
 
 # Fit the per-feature negative binomial GLM.
 fit <- glmQLFit(edge_mat, design)
 
-# Generate the matrix of pairwise combinations
-combos <- combinations(n = n_true_groups, r = 2, v = uniq_groups, repeats.allowed = F)
 
-# Now we loop over all unique (non-self) comparisons, performing the DE test via quasi-likelihood F-test (edgeR recommended), and write the significant (at 0.05) DE genes to file.  
-for (row in 1:nrow(combos)){
-	comp <- paste(combos[row,][2],"-",combos[row][1], sep = "")
-	comp_var <- makeContrasts(comp, levels = design)
-	qlf <- glmQLFTest(fit, contrast  = comp_var)
-	tags = topTags(qlf, n = nrow(qlf$genes))
-	# update the comparison label to remove the word "group"
-	comp <- gsub("group","",comp)
-	de_file <- paste(out_dir, "/DEGs/DE_", comp, "_list.txt", sep = "") 
-	write.table(tags$table, file = de_file, sep = '\t', quote = FALSE, row.names = FALSE)
+## Generate the matrix of pairwise combinations
+##combos <- combinations(n = n_true_groups, r = 2, v = uniq_groups, repeats.allowed = F)
+
+## Now we loop over all unique (non-self) comparisons, performing the DE test via quasi-likelihood F-test (edgeR recommended), and write the significant (at 0.05) DE genes to file.  
+##for (row in 1:nrow(combos)){
+##	comp <- paste(combos[row,][2],"-",combos[row][1], sep = "")
+##	comp_var <- makeContrasts(comp, levels = design)
+##	qlf <- glmQLFTest(fit, contrast  = comp_var)
+##	tags = topTags(qlf, n = nrow(qlf$genes))
+##	# update the comparison label to remove the word "group"
+##	comp <- gsub("group","",comp)
+##	de_file <- paste(out_dir, "/DEGs/DE_", comp, "_list.txt", sep = "") 
+##	write.table(tags$table, file = de_file, sep = '\t', quote = FALSE, row.names = FALSE)
+##	}
+
+
+# Check if the Reference and Test Groups listed in the comparison CSV file are 
+# present within the edgeR sample groups. If not, skip testing for that comparison.
+for (i in 1:dim(comparison_csv)[1]){
+	# check if the groups in the comparison match what is present in the sample sheet
+	comparison <- comparison_csv$Comparison_Name[i]
+	ref_group <- comparison_csv$Reference_Group[i]
+	test_group <- comparison_csv$Test_Group[i]
+	if (ref_group %in% true_groups & test_group %in% true_groups){
+		comp <- paste0("group",test_group,"-group",ref_group)
+		comp_var <- makeContrasts(comp, levels = design)
+		qlf <- glmQLFTest(fit, contrast  = comp_var)
+		tags = topTags(qlf, n = nrow(qlf$genes))
+		comp <- gsub("group","",comp)
+		de_file <- paste(out_dir, "/DEGs/DE_", comp, "_list.txt", sep = "")
+		write.table(tags$table, file = de_file, sep = '\t', quote = FALSE, row.names = FALSE)
+	}else{
+	 #print missing a group. or group misspelled
+	 write(paste0("Missing a group in Comparison: ",comparison,". A Reference and/or Test group does not match the groups listed in the Sample Sheet. Check the spelling of the group names to make sure that they match. "), stderr())
+	}
 }
+
+
