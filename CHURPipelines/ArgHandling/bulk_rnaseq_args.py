@@ -210,6 +210,12 @@ def add_args(ap):
         type=str,
         default='')
     ap_opt.add_argument(
+        '--summary-only',
+        help='Do not generate single-sample job array, just summary job.',
+        dest='summary_only',
+        action='store_true',
+        default=False)
+    ap_opt.add_argument(
         '--no-submit',
         help=('Do not automatically submit pipeline jobs. Use this when you '
               'want to make changes to the pipeline script or samplesheet '
