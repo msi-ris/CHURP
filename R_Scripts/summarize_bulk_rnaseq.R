@@ -190,7 +190,7 @@ if(length(samp_ids) < 3) {
     legend(par("usr")[2], mean(par("usr")[3:4])+.25, legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
     legend(par("usr")[2], mean(par("usr")[3:4])-.25, legend = c(batch_name, uniq_batches), pch = c(26, unique(pch_vec)), bty = "n")
 
-    par(opar)    
+    par(opar)
 } else {
     opar <- par(no.readonly = TRUE)
     par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
@@ -261,14 +261,22 @@ if(length(samp_ids) == 1) {
             colors <- col_vec
             names(colors) <- annotation[,1]
             colors <- unique(colors)
-            names(colors) <- unique(annotation[,1])
+            # A quick fix - if the length of the color vector is 1, then we
+            # either have 1 group or >4 groups. We will overwrite the color
+            # vector in this case
+            if(length(colors) == 1) {
+                colors <- rep(colors, length(unique(annotation[,1])))
+                names(colors) <- unique(annotation[,1])
+            } else {
+                names(colors) <- unique(annotation[,1])
+            }
             color_list <- list()
             color_list[[colnames(annotation)[1]]] <- colors
             pheatmap::pheatmap(high_var,
                treeheight_row = 0,
                show_rownames = FALSE,
                annotation_col = annotation,
-               annotation_colors = color_list)            
+               annotation_colors = color_list)
         }else{
             pheatmap::pheatmap(high_var,
                treeheight_row = 0,

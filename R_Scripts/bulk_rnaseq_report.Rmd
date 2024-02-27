@@ -12,6 +12,7 @@ output:
         df_print: paged
 date: "`r format(Sys.time(), '%Y-%m-%d, %T')`"
 params:
+    churp_version: NA
     pipeline: NA
     samplesheet: NA
     outdir: NA
@@ -126,11 +127,13 @@ MSI with funding provided by the University of Minnesota Informatics Institute
 
 <https://research.umn.edu/units/umii>
 
+This report was generated with CHURP version ``r params["churp_version"]``.
+
 # Data Processed
 
 The location of the FASTQ files for this run is 
 
-``r fastq_dir``. 
+``r fastq_dir``.
 
 This run consists of ``r nsamp`` samples. The path to the reference genome is
 
@@ -1386,7 +1389,7 @@ if(large_dataset) {
             cex=0.7)
 }
 
-cat("#### Table")
+cat("\n\n#### Table")
 hisat_tab <- hisat_summary
 names(hisat_tab) <- c(
     "Sample Name",
@@ -1458,7 +1461,7 @@ if(large_dataset) {
             cex=0.7)
 }
 
-cat("#### Table")
+cat("\n\n#### Table")
 hisat_prop <- data.frame(
     SN=as.character(hisat_summary$SampleName),
     TO=rep("100%", nrow(hisat_summary)),
