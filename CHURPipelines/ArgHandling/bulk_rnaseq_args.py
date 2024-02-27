@@ -80,10 +80,11 @@ def add_args(ap):
     ap_opt.add_argument(
         '--expr-groups',
         '-e',
-        help=('CSV from the "group_template" subcommand that lists '
-              'experimental groups for each sample. This file must be '
-              'hand-edited to include experimental groups to enable '
-              'differential expression testing. See the manual for details.'),
+        help=('Excel file from the "group_template" subcommand that contains '
+              'two sheets. The first sheet lists the sample names and the '
+              'groups to which they belong. The second sheet lists the '
+              'specific pairwise comparisons that are to be performed during '
+              'DEG testing. See the manual and tutorial for details.'),
         default=None)
     ap_opt.add_argument(
         '--verbosity',
