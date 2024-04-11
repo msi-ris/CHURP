@@ -478,19 +478,19 @@ if [ ! -f dup.done ]; then
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Soring raw HISAT2 BAM by query in prep for deduplication." >> "${LOG_FNAME}"
     _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" picard \
         SortSam \
-        I="${SAMPLENM}.bam" \
-        O="${SAMPLENM}_Raw_QuerySort.bam" \
-        SORT_ORDER="queryname" \
+        -I "${SAMPLENM}.bam" \
+        -O "${SAMPLENM}_Raw_QuerySort.bam" \
+        --SORT_ORDER "queryname" \
         2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     if [ "${RMDUP}" = "yes" ]; then 
         echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing duplicate reads with Picard MarkDuplicates." >> "${LOG_FNAME}"
         _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" picard \
             MarkDuplicates \
-            I="${SAMPLENM}_Raw_QuerySort.bam" \
-            O="${SAMPLENM}_Raw_DeDup.bam" \
-            REMOVE_DUPLICATES="true" \
-            ASSUME_SORT_ORDER="queryname" \
-            M="${SAMPLENM}_MarkDup_Metrics.txt" \
+            -I "${SAMPLENM}_Raw_QuerySort.bam" \
+            -O "${SAMPLENM}_Raw_DeDup.bam" \
+            --REMOVE_DUPLICATES "true" \
+            --ASSUME_SORT_ORDER "queryname" \
+            -M "${SAMPLENM}_MarkDup_Metrics.txt" \
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
         # Set the name of the bam to filter
         TO_FLT="${SAMPLENM}_Raw_DeDup.bam"
@@ -498,11 +498,11 @@ if [ ! -f dup.done ]; then
         echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Marking duplicate reads with Picard MarkDuplicates." >> "${LOG_FNAME}"
         _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" picard \
             MarkDuplicates \
-            I="${SAMPLENM}_Raw_QuerySort.bam" \
-            O="${SAMPLENM}_Raw_MarkDup.bam" \
-            REMOVE_DUPLICATES="false" \
-            ASSUME_SORT_ORDER="queryname" \
-            M="${SAMPLENM}_MarkDup_Metrics.txt" \
+            -I "${SAMPLENM}_Raw_QuerySort.bam" \
+            -O "${SAMPLENM}_Raw_MarkDup.bam" \
+            --REMOVE_DUPLICATES "false" \
+            --ASSUME_SORT_ORDER "queryname" \
+            -M "${SAMPLENM}_MarkDup_Metrics.txt" \
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
         TO_FLT="${SAMPLENM}_Raw_MarkDup.bam"
     fi
@@ -639,9 +639,10 @@ if [ ! -f is_stats.done ]; then
         mkdir -p "${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp"
         _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" picard \
             CollectInsertSizeMetrics \
-            I="${WORKDIR}/singlesamples/${SAMPLENM}/${FOR_COUNTS}" \
-            O="${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_metrics.txt" \
-            H="${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_hist.pdf" \
+            -I "${WORKDIR}/singlesamples/${SAMPLENM}/${FOR_COUNTS}" \
+            -O "${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_metrics.txt" \
+            -H "${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_hist.pdf" \
+            --VERBOSITY DEBUG \
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
         # Extract the mean, median, standard deviation from the metrics file
         if [ -s "${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_metrics.txt" ]; then
