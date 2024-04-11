@@ -10,7 +10,6 @@
 
 
 # Prepend the library path to libPaths
-.libPaths(c("/home/msistaff/public/CHURP_Deps/v0/R/",.libPaths()))
 
 # Load libraries
 library('limma')

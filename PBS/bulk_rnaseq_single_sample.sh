@@ -8,6 +8,11 @@ set -o pipefail
 # interfere.
 export PATH="/opt/msi/bin:/usr/share/Modules/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin"
 
+# Load our conda environment
+module load python3/3.8.3_anaconda2020.07_mamba
+source /home/msistaff/public/CHURP_Deps/v1/Conda_Initialize.sh
+conda activate /home/msistaff/public/CHURP_Deps/v1/churp_env
+
 # Export the PS4 variable for the trace
 # Taken from https://wiki.bash-hackers.org/scripting/debuggingtips
 LOG_SECTION="General"
@@ -174,21 +179,7 @@ echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 echo "###############################################################################" >> "${LOG_FNAME}"
 echo "# $(date '+%F %T'): Analysis started for ${SAMPLENM}" >> "${LOG_FNAME}"
 echo "# $(date '+%F %T'): Job ID: ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}" >> "${LOG_FNAME}"
-# This is annoying to see, so we will exclude it from verbose outout
-# load necessary modules
-module load python3/3.6.3_anaconda5.0.1
-module load hisat2/2.1.0
-module load fastqc/0.11.7
-module load trimmomatic/0.33
-module load samtools/1.7
-module load picard/2.9.0
-module load R/3.5.0
-module load java/openjdk-11.0.2
 
-module list -t
-echo '#BEGIN_MODULES' >> "${LOG_FNAME}"
-module list -t 2>> "${LOG_FNAME}"
-echo '#END_MODULES' >> "${LOG_FNAME}"
 
 # For future debugging, print which java we are using
 echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Using $(which java)" >> "${LOG_FNAME}"
@@ -202,10 +193,6 @@ set -x
 # Set paths to BBDuk, seqtk, and the SILVA databases
 DEPS_DIR="/home/msistaff/public/CHURP_Deps/v${PIPELINE_VERSION}"
 SILVA_REF="${DEPS_DIR}/db/SILVA_132_LSU_SSU_Ref_Dedup_Kmers_min100.fasta.gz"
-BBDUK="${DEPS_DIR}/Supp/bbmap/bbduk.sh"
-SEQTK="${DEPS_DIR}/Supp/seqtk-1.3/seqtk"
-GTFTOGENEPRED="${DEPS_DIR}/Supp/UCSC/gtfToGenePred"
-CONDA_ENV="${DEPS_DIR}/Conda/envs/RNASeQC_RefPrep"
 COLLAPSE_GTF="${DEPS_DIR}/Supp/GTEx_Pipeline/collapse_annotation.py"
 RNASEQC="${DEPS_DIR}/Supp/RNASeQC/rnaseqc.v2.3.4.linux"
 
@@ -241,10 +228,10 @@ if [ "${SUBSAMPLE}" -eq 0 ]; then
     echo "# $(date '+%F %T'): Not subsampling reads for sample ${SAMPLENM} for analysis" >> "${LOG_FNAME}"
 else
     echo "# $(date '+%F %T'): Subsampling ${SAMPLENM} to ${SUBSAMPLE} fragments for rRNA quantification" >> "${LOG_FNAME}"
-    ${SEQTK} sample -s123 -2 "${R1FILE}" "${SUBSAMPLE}" | gzip -c > "${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R1.fastq.gz" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
+    seqtk sample -s123 -2 "${R1FILE}" "${SUBSAMPLE}" | gzip -c > "${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R1.fastq.gz" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     R1FILE="${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R1.fastq.gz"
     if [ "${PE}" = "true" ]; then
-        ${SEQTK} sample -s123 -2 "${R2FILE}" "${SUBSAMPLE}" | gzip -c > "${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R2.fastq.gz" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
+        seqtk sample -s123 -2 "${R2FILE}" "${SUBSAMPLE}" | gzip -c > "${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R2.fastq.gz" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
         R2FILE="${WORKDIR}/singlesamples/${SAMPLENM}/Subsample_R2.fastq.gz"
     fi
 fi
@@ -256,9 +243,9 @@ echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f subsamp.done ]; then
     # subsample the FASTQ and assay for rRNA contamination
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Subsampling reads to ${RRNA_SCREEN} fragments." >> "${LOG_FNAME}"
-    ${SEQTK} sample -s123 -2 "${R1FILE}" "${RRNA_SCREEN}" > "${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R1.fastq" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
+    seqtk sample -s123 -2 "${R1FILE}" "${RRNA_SCREEN}" > "${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R1.fastq" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     if [ "${PE}" = "true" ]; then
-        ${SEQTK} sample -s123 -2 "${R2FILE}" "${RRNA_SCREEN}" > "${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R2.fastq" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
+        seqtk sample -s123 -2 "${R2FILE}" "${RRNA_SCREEN}" > "${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R2.fastq" 2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     fi
     touch subsamp.done
 else
@@ -272,7 +259,7 @@ echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f bbduk.done ]; then
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Using BBDuk to search for rRNA contamination in subsampled reads." >> "${LOG_FNAME}"
     if [ "${PE}" = "true" ]; then
-        ${BBDUK} \
+        bbduk.sh \
             in="${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R1.fastq" \
             in2="${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R2.fastq" \
             ref="${SILVA_REF}" \
@@ -284,7 +271,7 @@ if [ ! -f bbduk.done ]; then
             -Xmx10g \
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     else
-        ${BBDUK} \
+        bbduk.sh \
             in="${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_R1.fastq" \
             ref="${SILVA_REF}" \
             stats="${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_rRNA_Stats.txt" \
@@ -357,7 +344,7 @@ if [ "${TRIM}" = "yes" ]; then
         if [ "${PE}" = "true" ]
         then
             echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Running trimmomatic on ${R1FILE} and ${R2FILE}." >> "${LOG_FNAME}"
-            java -jar "${TRIMMOMATIC}"/trimmomatic.jar \
+            trimmomatic \
                 PE \
                 -threads "${SLURM_CPUS_PER_TASK}" \
                 "${R1FILE}" "${R2FILE}" \
@@ -367,7 +354,7 @@ if [ "${TRIM}" = "yes" ]; then
                 && touch trimmomatic.done
         else
             echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Running trimmomatic on ${R1FILE}." >> "${LOG_FNAME}"
-            java -jar "${TRIMMOMATIC}"/trimmomatic.jar \
+            trimmomatic \
                 SE \
                 -threads "${SLURM_CPUS_PER_TASK}" \
                 "${R1FILE}" \
@@ -489,7 +476,7 @@ LOG_SECTION="MarkDuplicates"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 if [ ! -f dup.done ]; then
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Soring raw HISAT2 BAM by query in prep for deduplication." >> "${LOG_FNAME}"
-    _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
+    _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" picard \
         SortSam \
         I="${SAMPLENM}.bam" \
         O="${SAMPLENM}_Raw_QuerySort.bam" \
@@ -497,7 +484,7 @@ if [ ! -f dup.done ]; then
         2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     if [ "${RMDUP}" = "yes" ]; then 
         echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing duplicate reads with Picard MarkDuplicates." >> "${LOG_FNAME}"
-        _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
+        _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" picard \
             MarkDuplicates \
             I="${SAMPLENM}_Raw_QuerySort.bam" \
             O="${SAMPLENM}_Raw_DeDup.bam" \
@@ -509,7 +496,7 @@ if [ ! -f dup.done ]; then
         TO_FLT="${SAMPLENM}_Raw_DeDup.bam"
     else
         echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Marking duplicate reads with Picard MarkDuplicates." >> "${LOG_FNAME}"
-        _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
+        _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" picard \
             MarkDuplicates \
             I="${SAMPLENM}_Raw_QuerySort.bam" \
             O="${SAMPLENM}_Raw_MarkDup.bam" \
@@ -610,9 +597,7 @@ echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 echo "# $(date '+%F %T'): Note, this section is OPTIONAL (errors will not kill pipeline jobs)." >> /dev/stderr
 if [ ! -f rnaseqc.done ]; then
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): 'Collapsing' gene models in GTF for use with RNASeQC." >> "${LOG_FNAME}"
-    source activate "${CONDA_ENV}" || true
     python "${COLLAPSE_GTF}" <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") "${WORKDIR}/singlesamples/${SAMPLENM}/collapsed.gtf" || true
-    source deactivate || true
     echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Collecting unstranded RNAseq metrics with RNASeQC." >> "${LOG_FNAME}"
     RNASEQC_OPTIONS="-v -v --sample=${SAMPLENM}_Unstranded --legacy"
     "${RNASEQC}" \
@@ -652,7 +637,7 @@ if [ ! -f is_stats.done ]; then
         echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Collecting insert size metrics with Picard InsertSizeMetrics." >> "${LOG_FNAME}"
         mkdir -p "${OUTDIR}/InsertSizeMetrics"
         mkdir -p "${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp"
-        _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" ${PTOOL}/picard.jar \
+        _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" picard \
             CollectInsertSizeMetrics \
             I="${WORKDIR}/singlesamples/${SAMPLENM}/${FOR_COUNTS}" \
             O="${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_metrics.txt" \
