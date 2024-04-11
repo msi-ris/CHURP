@@ -637,7 +637,7 @@ if [ ! -f is_stats.done ]; then
         echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Collecting insert size metrics with Picard InsertSizeMetrics." >> "${LOG_FNAME}"
         mkdir -p "${OUTDIR}/InsertSizeMetrics"
         mkdir -p "${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp"
-        _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp" picard \
+        _JAVA_OPTIONS="-Djava.io.tmpdir=${WORKDIR}/singlesamples/${SAMPLENM}/picard_tmp -Djdk.lang.Process.launchMechanism=vfork" picard \
             CollectInsertSizeMetrics \
             -I "${WORKDIR}/singlesamples/${SAMPLENM}/${FOR_COUNTS}" \
             -O "${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_metrics.txt" \
