@@ -45,12 +45,11 @@ if (length(args)==7) {
 		comparison_csv <- read.csv(comparison_csv_file)}
 	if (file_ext(comparison_csv_file) == "xls" | file_ext(comparison_csv_file) == "xlsx" ){
 		comparison_csv <- read_excel(comparison_csv_file)}
+    do_deg <- TRUE
 }
 
 
 setwd(work_dir)
-# Boolean to check if we will attempt DEG testing
-do_deg <- TRUE
 
 ############################
 # Read in data and prep relevant data and set output files
@@ -342,6 +341,7 @@ fit <- glmQLFit(edge_mat, design)
 
 # Check if the Reference and Test Groups listed in the comparison CSV file are 
 # present within the edgeR sample groups. If not, skip testing for that comparison.
+if(do_deg) {
 for (i in 1:dim(comparison_csv)[1]){
 	# check if the groups in the comparison match what is present in the sample sheet
 	comparison <- comparison_csv$Comparison_Name[i]
@@ -360,5 +360,5 @@ for (i in 1:dim(comparison_csv)[1]){
 	 write(paste0("Missing a group in Comparison: ",comparison,". A Reference and/or Test group does not match the groups listed in the Sample Sheet. Check the spelling of the group names to make sure that they match. "), stderr())
 	}
 }
-
+}
 
