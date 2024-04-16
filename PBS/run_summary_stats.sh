@@ -16,7 +16,7 @@ conda activate /home/msistaff/public/CHURP_Deps/v1/churp_env
 # Export the PS4 variable for the trace
 # Taken from https://wiki.bash-hackers.org/scripting/debuggingtips
 LOG_SECTION="General"
-export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
+export PS4='+[$(date "+%F %T")] [Job ${SLURM_JOB_ID}] [${LOG_SECTION}] [Line ${LINENO}]: '
 
 # Define a function to report errors to the job log and give meawningful exit
 # codes. This just wraps a bunch of exit calls into a case block

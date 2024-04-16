@@ -16,7 +16,7 @@ conda activate /home/msistaff/public/CHURP_Deps/v1/churp_env
 # Export the PS4 variable for the trace
 # Taken from https://wiki.bash-hackers.org/scripting/debuggingtips
 LOG_SECTION="General"
-export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
+export PS4='+[$(date "+%F %T")] [Job ${SLURM_JOB_ID}] [${LOG_SECTION}] [Line ${LINENO}]: '
 
 # Define a function to report errors to the job log and give meawningful exit
 # codes. This just wraps a bunch of exit calls into a case block
@@ -194,7 +194,8 @@ set -x
 DEPS_DIR="/home/msistaff/public/CHURP_Deps/v${PIPELINE_VERSION}"
 SILVA_REF="${DEPS_DIR}/db/SILVA_132_LSU_SSU_Ref_Dedup_Kmers_min100.fasta.gz"
 COLLAPSE_GTF="${DEPS_DIR}/Supp/GTEx_Pipeline/collapse_annotation.py"
-RNASEQC="${DEPS_DIR}/Supp/RNASeQC/rnaseqc.v2.3.4.linux"
+#RNASEQC="${DEPS_DIR}/Supp/RNASeQC/rnaseqc.v2.3.4.linux"
+RNASEQC="/home/msistaff/public/CHURP_Deps/v1/Supp/RNASeQC/rnaseqc.v2.4.2.linux"
 
 # Check if we are running in paired or single end mode
 if [ -z "${R2FILE}" ]
@@ -642,7 +643,6 @@ if [ ! -f is_stats.done ]; then
             -I "${WORKDIR}/singlesamples/${SAMPLENM}/${FOR_COUNTS}" \
             -O "${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_metrics.txt" \
             -H "${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_hist.pdf" \
-            --VERBOSITY DEBUG \
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
         # Extract the mean, median, standard deviation from the metrics file
         if [ -s "${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_metrics.txt" ]; then
