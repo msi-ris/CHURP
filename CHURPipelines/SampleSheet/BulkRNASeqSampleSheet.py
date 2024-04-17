@@ -5,6 +5,7 @@ samples."""
 import os
 import re
 import pprint
+import pandas as pd
 
 from CHURPipelines import DieGracefully
 from CHURPipelines.SampleSheet import SampleSheet
@@ -106,21 +107,12 @@ class BulkRNASeqSampleSheet(SampleSheet.Samplesheet):
             return
         else:
             self.sheet_logger.debug('Parsing %s for groups.', groups)
-            csv_gps = {}
-            with open(groups, 'r') as f:
-                for index, line in enumerate(f):
-                    if index == 0:
-                        continue
-                    elif line.strip() == '':
-                        self.sheet_logger.warn(
-                            'Line %d in groups csv is empty, skipping.', index)
-                    elif len(line.strip().split(',')) < 2:
-                        self.sheet_logger.warn(
-                            ('Line %d in groups csv has fewer than 2 fields, '
-                             'skipping.'), index)
-                    else:
-                        tmp = line.strip().split(',')
-                        csv_gps[tmp[0]] = tmp[1]
+            # load the group sheet (the first sheet) from the xlsx
+            groups_sheet = pd.read_excel(groups, 
+                                         sheet_name = 0, 
+                                         keep_default_na = False)
+            # convert the pandas df to a dict for set tests 
+            csv_gps = groups_sheet.set_index('SampleName')['Group'].to_dict()
             self.sheet_logger.debug(
                 'CSV experimental groups:\n%s',
                 pprint.pformat(csv_gps))
