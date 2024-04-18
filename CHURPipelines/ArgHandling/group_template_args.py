@@ -58,18 +58,6 @@ def add_args(ap):
         help='Write the XLSX to this file. Defaults to ' + str(brnaseq_def_xlsx),
         default=brnaseq_def_xlsx)
     brnaseq_group_opt.add_argument(
-        '--extra-column',
-        '-e',
-        metavar='<extra column>',
-        action='append',
-        default=[],
-        help=('Extra column to add to the CSV file. This option may be passed '
-              'more than once to add multiple columns. Please note that if '
-              'you use this option, then you will need to run a customised '
-              'edgeR or DESeq2 analysis to properly handle the experimental '
-              'conditions in your metadata CSV. The "SampleName" and "Group" '
-              'columns are present by default.'))
-    brnaseq_group_opt.add_argument(
         '--command-log',
         dest='cmd_log',
         help=('Save the command that was run into this file. This file will be'
