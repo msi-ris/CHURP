@@ -2,7 +2,7 @@
 # Gopher pipelines version 0.1.0 bulk RNA-seq summary script
 # R version 3.5.0
 # All relevant R libraries are installed at /panfs/roc/groups/14/msistaff/public/gopher-pipelines/v0/R/
-# Usage: Rscript summarize_counts.R <out_dir> <work_dir> <sample sheet path> <merged_counts_path> <min_feature_length> <min_count> <group_sheet_loc> <comparison_csv> &> Rout.txt
+# Usage: Rscript summarize_counts.R <out_dir> <work_dir> <sample sheet path> <merged_counts_path> <min_feature_length> <min_count> <group_sheet_loc> <comparison_sheet> &> Rout.txt
 # See run_summary_stats.pbs for additional run context.
 # See https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf for the edgeR user manual.
 # Contact help@msi.umn.edu for questions
@@ -10,7 +10,6 @@
 
 
 # Prepend the library path to libPaths
-
 # Load libraries
 library('limma')
 library('edgeR')
@@ -33,22 +32,6 @@ min_len <- as.numeric(args[5])
 min_cts <- as.numeric(args[6])
 group_sheet_loc <- args[7]
 
-# Check if the DEG comparison file is missing from the argument list
-# If the DEG comparison file is present, check the extension on the file to see if
-# it is CSV or XLSX.
-if (length(args)==7) {
-	do_deg <- FALSE
-	write("No DEG Comparisons CSV or XLSX file was specified. Will not perform DEG testing. If you'd like analysis help, please e-mail ribhelp@msi.umn.edu.", stderr())
-}else if (length(args)==8) {
-	comparison_csv_file <- args[8] 
-	if (file_ext(comparison_csv_file) == "csv"){
-		comparison_csv <- read.csv(comparison_csv_file)}
-	if (file_ext(comparison_csv_file) == "xls" | file_ext(comparison_csv_file) == "xlsx" ){
-		comparison_csv <- read_excel(comparison_csv_file)}
-    do_deg <- TRUE
-}
-
-
 setwd(work_dir)
 
 ############################
@@ -56,23 +39,48 @@ setwd(work_dir)
 ############################
 
 # Get the sample sheet to grab group membership downstream 
-sheet <- read.table(samp_sheet, sep = "|", header = F, comment.char = "#")
+sample_sheet <- read.table(samp_sheet, sep = "|", header = F, comment.char = "#")
+
+# parse the excel spreadsheet. The first sheet has group (and batch)
+# information. The second sheet, if present, has DEG testing contrast information.
+# the file itself should always exist, because it is tested for earlier. However,
+# there hasn't yet been a test for the DEG groups (sheet 2), so here we'll pay
+# careful attention to that.
+group_sheet <- readxl::read_excel(group_sheet_loc,
+                                  sheet =1)
+comparison_sheet <- tryCatch({
+  readxl::read_excel(group_sheet_loc,
+                     sheet =2)
+}, 
+error = function(e){
+  NULL
+}
+)
+if (is.null(comparison_sheet) || nrow(comparison_sheet) == 0){
+  write(
+    paste0("No contrasts found in sheet 2 of ",
+           basename(group_sheet_loc),
+           ", will not perform DEG testing."),
+    stderr()
+  )
+  do_deg = FALSE
+}else{
+  do_deg = TRUE
+}
 
 
-# Get the group sheet for group and batch membership
-group_sheet <- read.csv(group_sheet_loc, header = TRUE)
 # Because there may be cases where a subset of individuals in the samplesheet are run. We'll pull in the featureCounts matrix early and grab the relevant IDs
 raw_mat <- read.table(fc_mat, header = T, sep = '\t', comment.char = '#')
 samp_ids <- names(raw_mat)[-(1:6)]
-sheet <- sheet[which(make.names(sheet$V1) %in% samp_ids),]
-group_sheet <- group_sheet[which(make.names(group_sheet[,1]) %in% samp_ids),]
-group_sheet <- group_sheet[match(samp_ids, make.names(group_sheet[,1])),]
+sample_sheet <- sample_sheet[which(make.names(sample_sheet$V1) %in% samp_ids),]
+group_sheet <- group_sheet[which(make.names(group_sheet$SampleName) %in% samp_ids),]
+group_sheet <- group_sheet[match(samp_ids, make.names(group_sheet$SampleName)),]
+
 # Now we can proceed with group determinations. We have to call make.names()
 # for the groups because level names must be valid R object names.
 # The call to make.names() converts the 'NULL' group designation to 'NULL.', which 
 # we have to account for in our true_groups assignments.
-
-groups <- make.names(as.vector(group_sheet[,2]))
+groups <- make.names(as.vector(group_sheet$Group))
 uniq_groups <- unique(groups)
 true_groups <- groups[which(groups != 'NULL.')]
 n_true_groups <- length(uniq_groups[which(uniq_groups != 'NULL.')])
@@ -83,29 +91,21 @@ n_true_groups <- length(uniq_groups[which(uniq_groups != 'NULL.')])
 # batch categories than their are total samples
 has_batch_variable <- FALSE
 if (ncol(group_sheet) > 2){
-    batch_name <- colnames(group_sheet)[3]
-    batches <- make.names(as.vector(group_sheet[,3]))
-    uniq_batches <- unique(batches)
-    if (length(uniq_batches) < nrow(group_sheet)){
-        has_batch_variable <- TRUE
-    }
+  batch_name <- colnames(group_sheet)[3]
+  batches <- make.names(as.vector(group_sheet[,3]))
+  uniq_batches <- unique(batches)
+  if (length(uniq_batches) < nrow(group_sheet)){
+    has_batch_variable <- TRUE
+  }
 }
 
-# Check if the number of groups meets our analysis criteria
-#if (n_true_groups >= 5){
-#write("Maximum number of groups exceeded: This experimental design appears to be too complex for this pipeline. If you'd like analysis help, please e-mail ribhelp@msi.umn.edu.", stderr())
-# quit(status = 0, save = "no")
-#do_deg <- FALSE
-#}
 
 # Then check if the number of replicates meets our criteria.
 if (length(true_groups[which(table(true_groups) < 3)]) > 0){
-write("At least one of the groups has fewer than three replicates, which makes reliable statistical interpretation difficult", stderr())
-writeLines(text = paste("This group has fewer than three replicates", unique(groups)[which(table(groups) < 3)], sep=" : "), con = stderr())
-do_deg <- FALSE
-# quit(status = 0, save = "no")
+  write("At least one of the groups has fewer than three replicates, which makes reliable statistical interpretation difficult and therefore DEG testing will not be done.", stderr())
+  writeLines(text = paste("This group has fewer than three replicates", unique(groups)[which(table(groups) < 3)], sep=" : "), con = stderr())
+  do_deg <- FALSE
 }
-
 
 # Set filename variables
 mds_plot <- paste(out_dir, "Plots/mds_plot.pdf", sep = "/")
@@ -116,18 +116,18 @@ hmap <- paste(out_dir, "Plots/high_variance_heatmap.pdf", sep = "/")
 # Filter the featureCounts matrix (read in above) on variance and feature length.
 # But, we can only apply the variance filter if there is more than one sample.
 if(length(samp_ids) > 1) {
-    # Define a vector to tag which rows to drop from the gene expression matrix
-    # on the basis of variance filtering
-    varflt <- apply(raw_mat[,seq(-1,-6)],1,var) < 1
-    # If all of these are TRUE (drop them all), then we write a message and
-    # continue
-    if(all(varflt)) {
-        write("All genes appear to be invariant. Skipping the variance filtering step. This is not an error.", stderr())
-    } else {
-        raw_mat <- raw_mat[-which(varflt),]
-    }
+  # Define a vector to tag which rows to drop from the gene expression matrix
+  # on the basis of variance filtering
+  varflt <- apply(raw_mat[,seq(-1,-6)],1,var) < 1
+  # If all of these are TRUE (drop them all), then we write a message and
+  # continue
+  if(all(varflt)) {
+    write("All genes appear to be invariant. Skipping the variance filtering step. This is not an error.", stderr())
+  } else {
+    raw_mat <- raw_mat[-which(varflt),]
+  }
 } else {
-    write("There is only one sample, so we do not apply variance filtering to the raw counts. This is not an error.", stderr())
+  write("There is only one sample, so we do not apply variance filtering to the raw counts. This is not an error.", stderr())
 }
 raw_mat <- raw_mat[which(raw_mat$Length >= min_len),]
 
@@ -135,7 +135,7 @@ raw_mat <- raw_mat[which(raw_mat$Length >= min_len),]
 lib_sizes <- colSums(raw_mat[,seq(-1,-6)])
 if (any(lib_sizes == 0)){
   write(paste0("summarize_bulk_rnaseq.R: ERROR\n",
-  "The following samples had zero counts after removing genes shorter than min_len or with zero variance, exiting early:\n", 
+               "The following samples had zero counts after removing genes shorter than min_len or with zero variance, exiting early:\n", 
                paste(samp_ids[lib_sizes == 0], collapse = ","),
                "\nPerhaps your GTF doesn't match your species?"),
         stderr())
@@ -153,16 +153,12 @@ edge_mat <- calcNormFactors(edge_mat)
 # Note that we DO NOT apply the minimum count filters prior to these descriptive summaries.
 ############################
 
-# set a diverging color palette. From http://colorbrewer2.org/#type=qualitative&scheme=Set1&n=6
-#pal <- c('#e41a1c','#377eb8','#4daf4a','#984ea3') Nice colors but they're not colorblind friendly
-
-
 # This is THE ONLY colorblind acceptable palette with 4 colors from colorbrewer: http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=4
 if(length(uniq_groups) > 4) {
-    write("There are more than four groups, so all groups will be colored dark blue. We plot a maximum of four colors for colorblindness and print-friendly considerations.", stderr())
-    pal <- rep("#1f78b4", length.out=length(uniq_groups))
+  write("There are more than four groups, so all groups will be colored dark blue. We plot a maximum of four colors for colorblindness and print-friendly considerations.", stderr())
+  pal <- rep("#1f78b4", length.out=length(uniq_groups))
 } else {
-    pal <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c')
+  pal <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c')
 }
 col_vec <- pal[match(groups,uniq_groups)]
 
@@ -173,33 +169,31 @@ pdf(mds_plot)
 # but we can't actually generate an MDS plot. The edgeR function dies with
 # less than 3 samples
 if(length(samp_ids) < 3) {
-    plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
-    text(x=0.5, y=0.5, "Less than 3 samples;\nMDS not possible", cex=1, col="black")
+  plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+  text(x=0.5, y=0.5, "Less than 3 samples;\nMDS not possible", cex=1, col="black")
 } else if (has_batch_variable){
-    pchs <- 21:(20+length(uniq_batches))
-    pch_vec <- pchs[match(batches, uniq_batches)]
-
-    opar <- par(no.readonly = TRUE)
-    par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
-    plotMDS(edge_mat, cex = 0.75, col = col_vec, bg= col_vec, pch = pch_vec)
-    # we do this to get the x,y locs, because we can't plot labels and points in a single plotMDS call
-    xy <- as.data.frame(plotMDS(edge_mat, cex = 0.75, plot = FALSE))
-    text(xy$x, xy$y, label = row.names(xy), pos = 1, cex = 0.5)
-    legend(par("usr")[2], mean(par("usr")[3:4])+.25, legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
-    legend(par("usr")[2], mean(par("usr")[3:4])-.25, legend = c(batch_name, uniq_batches), pch = c(26, unique(pch_vec)), bty = "n")
-
-    par(opar)
+  pchs <- 21:(20+length(uniq_batches))
+  pch_vec <- pchs[match(batches, uniq_batches)]
+  
+  opar <- par(no.readonly = TRUE)
+  par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
+  plotMDS(edge_mat, cex = 0.75, col = col_vec, bg= col_vec, pch = pch_vec)
+  # we do this to get the x,y locs, because we can't plot labels and points in a single plotMDS call
+  xy <- as.data.frame(plotMDS(edge_mat, cex = 0.75, plot = FALSE))
+  text(xy$x, xy$y, label = row.names(xy), pos = 1, cex = 0.5)
+  legend(par("usr")[2], mean(par("usr")[3:4])+.25, legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
+  legend(par("usr")[2], mean(par("usr")[3:4])-.25, legend = c(batch_name, uniq_batches), pch = c(26, unique(pch_vec)), bty = "n")
+  
+  par(opar)
 } else {
-    opar <- par(no.readonly = TRUE)
-    par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
-    plotMDS(edge_mat, cex = 0.75, col = col_vec)
-    legend(par("usr")[2], mean(par("usr")[3:4]), legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
-    par(opar)
+  opar <- par(no.readonly = TRUE)
+  par(xpd = TRUE, mar = par()$mar + c(0, 0, 0, 5))
+  plotMDS(edge_mat, cex = 0.75, col = col_vec)
+  legend(par("usr")[2], mean(par("usr")[3:4]), legend = c('Group', uniq_groups), text.col = c('black', unique(col_vec)), bty = "n")
+  par(opar)
 }
 dev.off()
 
-## set par back to original
-#par(opar)
 
 # Set a variable holding the log2(1+CPM) counts.
 cpm_counts <- cpm(edge_mat, log = T, prior.count = 1)
@@ -215,9 +209,9 @@ tidy_cdf$group <- factor(rep(uniq_groups[match(groups,uniq_groups)], each = nrow
 # Set the counts plot pdf and write the violin plot of normalized counts per sample
 pdf(counts_plot)
 p <- ggplot(tidy_cdf, aes(x = sample_id, y = per_feature_count, fill = group)) + 
-         geom_violin(trim = F) + 
-         theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size = 7)) + 
-         scale_fill_manual("Group", values = pal)
+  geom_violin(trim = F) + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1, size = 7)) + 
+  scale_fill_manual("Group", values = pal)
 p + labs(x = "Sample ID", y = "Feature count -- log(1+cpm)", fill = "Group")
 dev.off()
 
@@ -227,74 +221,72 @@ dev.off()
 # For some reason, sometimes there are fewer than 500 genes that pass filtering
 n_genes <- min(500, nrow(cpm_counts))
 if(n_genes < 500) {
-    write("There are fewer than 500 genes that pass variance filtering for the clustering heatmap. This is not an error, but you should be aware of it.", stderr())
+  write("There are fewer than 500 genes that pass variance filtering for the clustering heatmap. This is not an error, but you should be aware of it.", stderr())
 }
 if(length(samp_ids) == 1) {
-    write("There is only one sample, so we will not try to generate a clustering heatmap. This is not an error.", stderr())
+  write("There is only one sample, so we will not try to generate a clustering heatmap. This is not an error.", stderr())
+  pdf(hmap)
+  plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
+  text(x=0.5, y=0.5, "1 sample;\nClustering heatmap not possible", cex=1, col="black")
+  dev.off()
+} else {
+  gene_var <- apply(cpm_counts, 1, var)
+  # Need to run a check here to see that they are not all 0 variance
+  if(all(gene_var == 0)) {
+    write("All genes have 0 variance, so we will not try to generate a clustering heatmap. This is not an error.", stderr())
     pdf(hmap)
     plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
-    text(x=0.5, y=0.5, "1 sample;\nClustering heatmap not possible", cex=1, col="black")
+    text(x=0.5, y=0.5, "All genes have 0 variance in expression;\nClustering heatmap not possible", cex=1, col="black")
     dev.off()
-} else {
-    gene_var <- apply(cpm_counts, 1, var)
-    # Need to run a check here to see that they are not all 0 variance
-    if(all(gene_var == 0)) {
-        write("All genes have 0 variance, so we will not try to generate a clustering heatmap. This is not an error.", stderr())
-        pdf(hmap)
-        plot(c(0, 1), c(0, 1), ann=F, bty="n", type="n", xaxt="n", yaxt="n")
-        text(x=0.5, y=0.5, "All genes have 0 variance in expression;\nClustering heatmap not possible", cex=1, col="black")
-        dev.off()
-    } else {
-        select_var <- names(sort(gene_var, decreasing=TRUE))[1:n_genes]
-        high_var <- cpm_counts[select_var,]
-        # Set the heatmap pdf and plot the normalized counts heatmap
-        pdf(hmap)
-        # different cases for when there are group variables or not
-        if (n_true_groups > 0){
-            # pheatmap uses a dataframe for variable annotation where the rownames match the matrix samplenames
-            annotation <- group_sheet
-            row.names(annotation) <- make.names(group_sheet[,1])
-            annotation[,1] <- NULL
-            # to specify annotation colors for pheatmap, use a named list with named color vector
-            colors <- col_vec
-            names(colors) <- annotation[,1]
-            colors <- unique(colors)
-            # A quick fix - if the length of the color vector is 1, then we
-            # either have 1 group or >4 groups. We will overwrite the color
-            # vector in this case
-            if(length(colors) == 1) {
-                colors <- rep(colors, length(unique(annotation[,1])))
-                names(colors) <- unique(annotation[,1])
-            } else {
-                names(colors) <- unique(annotation[,1])
-            }
-            color_list <- list()
-            color_list[[colnames(annotation)[1]]] <- colors
-            pheatmap::pheatmap(high_var,
-               treeheight_row = 0,
-               show_rownames = FALSE,
-               annotation_col = annotation,
-               annotation_colors = color_list)
-        }else{
-            pheatmap::pheatmap(high_var,
-               treeheight_row = 0,
-               show_rownames = FALSE)
-        }
-        dev.off()
+  } else {
+    select_var <- names(sort(gene_var, decreasing=TRUE))[1:n_genes]
+    high_var <- cpm_counts[select_var,]
+    # Set the heatmap pdf and plot the normalized counts heatmap
+    pdf(hmap)
+    # different cases for when there are group variables or not
+    if (n_true_groups > 0){
+      # pheatmap uses a dataframe for variable annotation where the rownames match the matrix samplenames
+      annotation <- as.data.frame(group_sheet)
+      row.names(annotation) <- make.names(group_sheet$SampleName)
+      annotation[,1] <- NULL
+      # to specify annotation colors for pheatmap, use a named list with named color vector
+      colors <- col_vec
+      colors <- unique(colors)
+      # A quick fix - if the length of the color vector is 1, then we
+      # either have 1 group or >4 groups. We will overwrite the color
+      # vector in this case
+      if(length(colors) == 1) {
+        colors <- rep(colors, length(unique(annotation[,1])))
+      }
+      names(colors) <- unique(annotation[,1])
+      
+      color_list <- list()
+      color_list[[colnames(annotation)[1]]] <- colors
+      pheatmap::pheatmap(high_var,
+                         treeheight_row = 0,
+                         show_rownames = FALSE,
+                         annotation_col = annotation,
+                         annotation_colors = color_list)
+    }else{
+      pheatmap::pheatmap(high_var,
+                         treeheight_row = 0,
+                         show_rownames = FALSE)
     }
+    dev.off()
+  }
 }
 ############################
 # Differential expression testing and summaries
 ############################
 if(!do_deg) {
-quit(status = 0, save = "no")
+  quit(status = 0, save = "no")
 }
 n_groups <- length(uniq_groups)
 
 # If there is only one grouping in the data, we don't need to run the subsequent tests.
 if (n_groups == 1){
-write("Only 1 grouping present, skipping differential expression tests.", stderr())
-quit(status = 0, save = "no")
+  write("Only 1 grouping present, skipping differential expression tests.", stderr())
+  quit(status = 0, save = "no")
 }
 
 
@@ -307,58 +299,32 @@ min_cpm <- log2((1 + as.numeric(min_cts)) / min(edge_mat$samples$lib.size) * 1e6
 keep <- rowSums(cpm(edge_mat, log = T, prior.count = 1)) >= min(table(true_groups))
 edge_mat <- edge_mat[keep, ,keep.lib.sizes = F]
 
-#Redefine these variables
-#uniq_groups <- as.vector(unique(edge_mat$samples$group))
-#n_groups = length(uniq_groups)
-
-
 # Generate the design matrix for GLM fitting and estimate common and tag-wise dispersion in one go.
 design <- model.matrix(~0+group, data = edge_mat$samples)
-#colnames(design) <- uniq_groups
-# Let's grab the new group labels from the design matrix for making our group combos
-##uniq_groups <- colnames(design)
 edge_mat <- estimateDisp(edge_mat, design = design)
 
 # Fit the per-feature negative binomial GLM.
 fit <- glmQLFit(edge_mat, design)
 
 
-## Generate the matrix of pairwise combinations
-##combos <- combinations(n = n_true_groups, r = 2, v = uniq_groups, repeats.allowed = F)
-
-## Now we loop over all unique (non-self) comparisons, performing the DE test via quasi-likelihood F-test (edgeR recommended), and write the significant (at 0.05) DE genes to file.  
-##for (row in 1:nrow(combos)){
-##	comp <- paste(combos[row,][2],"-",combos[row][1], sep = "")
-##	comp_var <- makeContrasts(comp, levels = design)
-##	qlf <- glmQLFTest(fit, contrast  = comp_var)
-##	tags = topTags(qlf, n = nrow(qlf$genes))
-##	# update the comparison label to remove the word "group"
-##	comp <- gsub("group","",comp)
-##	de_file <- paste(out_dir, "/DEGs/DE_", comp, "_list.txt", sep = "") 
-##	write.table(tags$table, file = de_file, sep = '\t', quote = FALSE, row.names = FALSE)
-##	}
-
-
 # Check if the Reference and Test Groups listed in the comparison CSV file are 
 # present within the edgeR sample groups. If not, skip testing for that comparison.
-if(do_deg) {
-for (i in 1:dim(comparison_csv)[1]){
-	# check if the groups in the comparison match what is present in the sample sheet
-	comparison <- comparison_csv$Comparison_Name[i]
-	ref_group <- comparison_csv$Reference_Group[i]
-	test_group <- comparison_csv$Test_Group[i]
-	if (ref_group %in% true_groups & test_group %in% true_groups){
-		comp <- paste0("group",test_group,"-group",ref_group)
-		comp_var <- makeContrasts(comp, levels = design)
-		qlf <- glmQLFTest(fit, contrast  = comp_var)
-		tags = topTags(qlf, n = nrow(qlf$genes))
-		comp <- gsub("group","",comp)
-		de_file <- paste(out_dir, "/DEGs/DE_", comp, "_list.txt", sep = "")
-		write.table(tags$table, file = de_file, sep = '\t', quote = FALSE, row.names = FALSE)
-	}else{
-	 #print missing a group. or group misspelled
-	 write(paste0("Missing a group in Comparison: ",comparison,". A Reference and/or Test group does not match the groups listed in the Sample Sheet. Check the spelling of the group names to make sure that they match. "), stderr())
-	}
-}
+for (i in 1:dim(comparison_sheet)[1]){
+  # check if the groups in the comparison match what is present in the sample sheet
+  comparison <- comparison_sheet$Comparison_Name[i]
+  ref_group <- comparison_sheet$Reference_Group[i]
+  test_group <- comparison_sheet$Test_Group[i]
+  if (ref_group %in% true_groups & test_group %in% true_groups){
+    comp <- paste0("group",test_group,"-group",ref_group)
+    comp_var <- makeContrasts(comp, levels = design)
+    qlf <- glmQLFTest(fit, contrast  = comp_var)
+    tags = topTags(qlf, n = nrow(qlf$genes))
+    comp <- gsub("group","",comp)
+    de_file <- paste(out_dir, "/DEGs/DE_", comp, "_list.txt", sep = "")
+    write.table(tags$table, file = de_file, sep = '\t', quote = FALSE, row.names = FALSE)
+  }else{
+    #print missing a group. or group misspelled
+    write(paste0("Missing a group in Comparison: ",comparison,". A Reference and/or Test group does not match the groups listed in the Sample Sheet. Check the spelling of the group names to make sure that they match. "), stderr())
+  }
 }
 
