@@ -320,9 +320,9 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # populate the group sheet with the sample names
         groups = pd.DataFrame({'SampleName': samples,
                     'Group': 'NULL'})
-        contrasts = pd.DataFrame({'Contrast' : [],
-                      'Treatment' : [],
-                      'Control' : []})
+        contrasts = pd.DataFrame({'Comparison_Name' : [],
+                      'Reference_Group' : [],
+                      'Test_Group' : []})
         # make sure the directory exists and make the expt group path
         expr_group_path = f'{args["outdir"]}/experimental_groups.xlsx'
         # if the outdir hasn't been made, make it

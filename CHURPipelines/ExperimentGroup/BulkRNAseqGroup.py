@@ -48,9 +48,9 @@ class BulkRNAseqGroup(ExpGroup.ExpGroup):
         # populate the group sheet with the sample names
         groups = pd.DataFrame({'SampleName': list(self.samples.keys()),
                     'Group': 'NULL'})
-        contrasts = pd.DataFrame({'Contrast' : [],
-                      'Treatment' : [],
-                      'Control' : []})
+        contrasts = pd.DataFrame({'Comparison_Name' : [],
+                      'Reference_Group' : [],
+                      'Test_Group' : []})
         # save the group and contrast sheets
         with pd.ExcelWriter(self.dest) as writer:  
             groups.to_excel(writer, sheet_name='groups', index = False)
