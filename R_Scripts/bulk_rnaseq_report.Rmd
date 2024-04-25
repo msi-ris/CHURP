@@ -1812,8 +1812,8 @@ Trimmomatic.
 
 If trimmed, the Trimmomatic options used were:
 
-```{r trim_options}
-sheet$V9[1]
+```{r trim_options, echo=FALSE}
+cat(as.character(sheet$V9[1]), "`\n")
 ```
 
 Trimmed reads were re-assessed with FastQC. Length,

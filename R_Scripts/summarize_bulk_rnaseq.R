@@ -163,7 +163,8 @@ if(length(uniq_groups) > 8) {
     pal <- rep("navy", length.out=length(uniq_groups))
 } else {
   # Colorblind friendly palette
-  pal <- c("#81C5E6","#7AF3DE","#1E88E5","#FFC107","#F21245","#004D40","#A43CB3","#5330A0")
+  pal <- c("#5330A0","#F21245","#1E88E5","#FFC107",
+           "#7AF3DE","#81C5E6","#004D40","#A43CB3")
 }
 col_vec <- pal[match(groups,uniq_groups)]
 
