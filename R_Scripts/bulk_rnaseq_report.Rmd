@@ -317,7 +317,7 @@ if(!file.exists(insertsize_file)) {
         "Width of 30% Bin",
         "Width of 70% Bin",
         "Width of 90% Bin")
-    knitr::kable(is_summary)
+    is_summary
 }
 ```
 
@@ -1321,7 +1321,7 @@ names(mapping_summary) <- c(
     "Max Read Length",
     "Average Read Length",
     "Average Read Quality")
-knitr::kable(mapping_summary)
+mapping_summary
 ```
 
 \*: **Note** that the `Reads Mapped` column shows **reads** and not
@@ -1650,7 +1650,7 @@ samples <- colnames(subread_sum)[-c(1)]
 t_subread <- as.data.frame(t(subread_sum[,-c(1)]))
 rownames(t_subread) <- samples
 colnames(t_subread) <- hdr
-kable(t_subread)
+t_subread
 ```
 
 ### Number of Expressed Features
