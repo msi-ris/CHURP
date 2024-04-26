@@ -17,9 +17,6 @@ params:
     samplesheet: NA
     outdir: NA
     workdir: NA
-editor_options: 
-  markdown: 
-    wrap: 72
 ---
 
 ```{r setup_env, echo=FALSE, message=FALSE}
@@ -190,7 +187,7 @@ knitr::kable(sumsheet[,1:4])
 
 # Download and Save Important Files
 
--   **Expression Matrices** Use the link below to download the raw
+-   **Expression Matrices:** Use the link below to download the raw
     counts matrix and normalized CPM matrix to your computer. You will
     need them to do further analysis and to upload your findings to
     public repositories such as
@@ -201,7 +198,9 @@ xfun::embed_file(
     path=paste(params["outdir"], "Counts.zip", sep="/"),
     name="Relative_Expression.zip",
     text="Download expression matrices")
+
 ```
+
 
 -   **Pipeline Script** We have bundled a version of the pipeline script
     for you. It is important for troubleshooting and reruning your
@@ -213,7 +212,9 @@ xfun::embed_file(
     path=as.character(params["pipeline"]),
     name=basename(as.character(params["pipeline"])),
     text="Download PURR pipeline script")
+
 ```
+
 
 -   **Samplesheet** We have also bundled a version of the samplesheet.
     This contains details on the methods used and will be needed to
@@ -225,6 +226,7 @@ xfun::embed_file(
     path=as.character(params["samplesheet"]),
     name=basename(as.character(params["samplesheet"])),
     text="Download PURR samplesheet")
+
 ```
 
 # Results
@@ -297,8 +299,9 @@ names(read_summary) <- c(
 knitr::kable(read_summary)
 ```
 
-### Insert Size Metrics
+### Insert Size Metrics {.tabset}
 
+#### Plot
 The plot below shows the variance in insert size for each sample. The
 black dot shows the mean insert size, the red dot shows the median
 insert size, the grey shaded region shows the bin that encompasses 30%
@@ -356,7 +359,12 @@ if(!file.exists(insertsize_file)) {
         labels=is_summary$V1,
         las=2,
         cex.axis=0.75)
+}
+```
 
+#### Table
+
+```{r is_table, echo=F}
     is_summary$V3 <- round(is_summary$V3, 3)
     is_summary$V4 <- round(is_summary$V4, 3)
     names(is_summary) <- c(
@@ -370,7 +378,6 @@ if(!file.exists(insertsize_file)) {
         "Width of 90% Bin")
     
     is_summary
-}
 ```
 
 ### Estimated rRNA Content {.tabset}
