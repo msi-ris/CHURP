@@ -183,8 +183,46 @@ names(sumsheet) <- c(
 knitr::kable(sumsheet[,1:4])
 ```
 
-# Quality Metrics
-## Read Counts {.tabset}
+# Download and Save Important Files!
+## Expression Matrices
+Use the link below to download the raw counts matrix and normalized CPM matrix
+to your computer. You will need them to do further analysis and to upload your 
+findings to public repositories such as [GEO](https://www.ncbi.nlm.nih.gov/geo/info/seq.html).
+
+```{r counts_download, echo=FALSE}
+xfun::embed_file(
+    path=paste(params["outdir"], "Counts.zip", sep="/"),
+    name="Relative_Expression.zip",
+    text="Download expression matrices")
+```
+
+## Pipeline Script
+We have bundled a version of the pipeline script for you. It is important for 
+troubleshooting and reruning your analysis. Click the following link to download 
+the script to your computer:
+
+```{r pipeline_download, echo=FALSE}
+xfun::embed_file(
+    path=as.character(params["pipeline"]),
+    name=basename(as.character(params["pipeline"])),
+    text="Download PURR pipeline script")
+```
+
+## Samplesheet
+We have also bundled a version of the samplesheet. This contains details on the 
+methods used and will be needed to rerun the analysis. Click the following link
+to download it to your computer:
+
+```{r samplesheet_download, echo=FALSE}
+xfun::embed_file(
+    path=as.character(params["samplesheet"]),
+    name=basename(as.character(params["samplesheet"])),
+    text="Download PURR samplesheet")
+```
+
+# Results
+## Quality Metrics
+### Read Counts {.tabset}
 
 ```{r counts_sum, echo=FALSE, results='asis'}
 read_dat <- matrix(
@@ -194,10 +232,10 @@ read_dat <- matrix(
     )
 max_reads <- max(read_dat)
 if(large_dataset) {
-    cat("### Fragment Counts Plots {.tabset}\n")
+    cat("#### Fragment Counts Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subdat <- read_dat[idx,,drop=FALSE]
         at <- barplot(
             t(subdat),
@@ -218,7 +256,7 @@ if(large_dataset) {
         cat("\n\n")
     }
 } else {
-    cat("### Fragment Counts Plot\n")
+    cat("#### Fragment Counts Plot\n")
     at <- barplot(
         t(read_dat),
         beside=TRUE,
@@ -238,7 +276,7 @@ if(large_dataset) {
 }
 ```
 
-### Table
+#### Table
 ```{r read_counts, echo=FALSE, message=FALSE}
 names(read_summary) <- c(
     "Sample Name",
@@ -249,7 +287,7 @@ names(read_summary) <- c(
 knitr::kable(read_summary)
 ```
 
-## Insert Size Metrics
+### Insert Size Metrics
 The plot below shows the variance in insert size for each sample. The black dot
 shows the mean insert size, the red dot shows the median insert size, the grey
 shaded region shows the bin that encompasses 30% of the insert sizes, and the
@@ -321,7 +359,7 @@ if(!file.exists(insertsize_file)) {
 }
 ```
 
-## Estimated rRNA Content {.tabset}
+### Estimated rRNA Content {.tabset}
 These counts were based on searching a subset of the raw reads against a
 reference database of ribosomal K-mers from various organisms. Click on the 
 table headers to show the summaries of rRNA content.
@@ -329,11 +367,11 @@ table headers to show the summaries of rRNA content.
 ```{r bbduk_plot, echo=FALSE, message=FALSE, results="asis"}
 plt_dat <- as.numeric(gsub("%", "", as.character(bbduk_summary$rRNA_Pct))) / 100
 if(large_dataset) {
-    cat("### Plots {.tabset}\n")
+    cat("#### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         subdat <- plt_dat[idx]
-        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         at <- barplot(
             subdat,
             col="#e41a1c",
@@ -378,7 +416,7 @@ if(large_dataset) {
         cat("\n\n")
     }
 } else {
-    cat("### Plot\n")
+    cat("#### Plot\n")
     # A bit silly, but make an empty plot first so that we can overlay the bars
     # on top of the shaded background.
     at <- barplot(
@@ -427,13 +465,13 @@ if(large_dataset) {
 }
 ```
 
-### Table
+#### Table
 ```{r bbduk_table, echo=FALSE, message=FALSE}
 knitr::kable(bbduk_summary,
     caption="Number of read pairs (from subsample) and percentage of library that is estimated to be derived from ribosomal RNA.")
 ```
 
-## Basecall Quality {.tabset}
+### Basecall Quality {.tabset}
 Click on the tab headers to show plots of raw and trimmed read qualities. Raw
 read qualities are shown as they came off the sequencing instrument. Trimmed read qualities are shown if low quality edges of each read were trimmed out with [Trimmomatic](https://github.com/usadellab/Trimmomatic).
 
@@ -603,15 +641,15 @@ plotqual_last <- function(sn,rt) {
 read_type <- "raw"
 
 if(large_dataset){
-    cat("### Raw Reads {.tabset}\n\n")   
+    cat("#### Raw Reads {.tabset}\n\n")   
 }else{
-    cat("### Raw Reads\n\n")
+    cat("#### Raw Reads\n\n")
 }
 
 if(large_dataset) {
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subsamp <- samplenames[idx]
         nsubsamp <- length(subsamp)
         cat("\n\n")
@@ -661,15 +699,15 @@ if(length(trim_samp) > 0) {
     read_type <- "trim"
     
     if(large_dataset){
-        cat("### Trimmed Reads {.tabset}\n")   
+        cat("#### Trimmed Reads {.tabset}\n")   
     }else{
-        cat("### Trimmed Reads\n\n")
+        cat("#### Trimmed Reads\n\n")
     }
     
     if(large_dataset) {
         for(i in unique(chunks)) {
             idx <- which(chunks == i)
-            cat("#### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
             subsamp <- samplenames[idx]
             nsubsamp <- length(subsamp)
             cat("\n\n")
@@ -705,11 +743,11 @@ if(length(trim_samp) > 0) {
     }
     
 } else {
-    cat("### Trimmed Reads\n\nNo trimming performed.")
+    cat("#### Trimmed Reads\n\nNo trimming performed.")
 }
 ```
 
-### Raw Reads (FastQC-style)
+#### Raw Reads (FastQC-style)
 The plots below show the variance in quality across the reads for each sample.
 The black dot shows the mean quality, the red dot shows the median quality,
 the grey shaded region shows the inter-quartile range, and the vertical black
@@ -785,10 +823,10 @@ plotqual <- function(sn) {
 }
 if(large_dataset) {
     par(mfrow=c(lg_cutoff, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
-    cat("#### Plots {.tabset}\n")
+    cat("##### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subsamp <- samplenames[idx]
         plt_out <- sapply(subsamp, plotqual)
         cat("\n\n")
@@ -799,7 +837,7 @@ if(large_dataset) {
 }
 ```
 
-### Trimmed Reads (FastQC-style)
+#### Trimmed Reads (FastQC-style)
 The plots below show the variance in quality across the reads for each sample.
 The black dot shows the mean quality, the red dot shows the median quality,
 the grey shaded region shows the inter-quartile range, and the vertical black
@@ -883,10 +921,10 @@ if(length(trim_samp) > 0) {
     }
     if(large_dataset) {
         par(mfrow=c(lg_cutoff, 2), mar=c(4, 3.5, 1, 0), mgp=c(2.5, 0.75, 0))
-        cat("#### Plots {.tabset}\n")
+        cat("##### Plots {.tabset}\n")
         for(i in unique(chunks)) {
             idx <- which(chunks == i)
-            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
             subsamp <- trim_samp[idx]
             plt_out <- sapply(subsamp, plotqual)
             cat("\n\n")
@@ -901,11 +939,11 @@ if(length(trim_samp) > 0) {
 ```
 
 
-## QC Based on Mapping to Reference Genome {.tabset}
+### QC Based on Mapping to Reference Genome {.tabset}
 These plots show QC metrics based on summaries of the BAM alignment files, as
 generated by [RNASeQC](https://github.com/broadinstitute/rnaseqc).
 
-### Expression Profiling Efficiency
+#### Expression Profiling Efficiency
 This plot shows the proportion of high-quality alignments that are in exons. For
 messenger RNA libraries, this value is expected to be close to 1.
 
@@ -914,11 +952,11 @@ par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
 if(rnaseqc_do) {
     epe_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Expression Profiling Efficiency"])
     if(large_dataset) {
-        cat("#### Plots {.tabset}\n")
+        cat("##### Plots {.tabset}\n")
         for(i in unique(chunks)) {
             idx <- which(chunks == i)
             subdat <- epe_dat[idx]
-            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
             at <- barplot(
                 subdat,
                 axes=FALSE,
@@ -965,7 +1003,7 @@ if(rnaseqc_do) {
 }
 ```
 
-### Estimated Library Complexity
+#### Estimated Library Complexity
 This plot shows the estimated number of unique cDNA fragments that are present
 in each library. This is determined using the same method as the one used by
 [Picard EstimateLibraryComplexity](https://broadinstitute.github.io/picard/command-line-overview.html#EstimateLibraryComplexity).
@@ -977,11 +1015,11 @@ if(rnaseqc_do) {
     elc_dat <- elc_dat / 1000000
     lim <- max(elc_dat) * 1.1
     if(large_dataset) {
-        cat("#### Plots {.tabset}\n")
+        cat("##### Plots {.tabset}\n")
         for(i in unique(chunks)) {
             idx <- which(chunks == i)
             subdat <- elc_dat[idx]
-            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
             at <- barplot(
                 subdat,
                 axes=FALSE,
@@ -1028,7 +1066,7 @@ if(rnaseqc_do) {
 }
 ```
 
-### Sequence Duplication
+#### Sequence Duplication
 This plot shows the proportion of alignments that are positional duplicates in
 each sample, as determined in the default algorithm of the
 [Picard MarkDuplicates](https://broadinstitute.github.io/picard/command-line-overview.html#MarkDuplicates) tool.
@@ -1038,11 +1076,11 @@ par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
 if(rnaseqc_do) {
     dup_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "Duplicate Rate of Mapped"])
     if(large_dataset) {
-        cat("#### Plots {.tabset}\n")
+        cat("##### Plots {.tabset}\n")
         for(i in unique(chunks)) {
             idx <- which(chunks == i)
             subdat <- dup_dat[idx]
-            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
             at <- barplot(
                 subdat,
                 axes=FALSE,
@@ -1089,7 +1127,7 @@ if(rnaseqc_do) {
 }
 ```
 
-### gDNA and Strand Agreement
+#### gDNA and Strand Agreement
 These plots show both gDNA contamination and strand-specificity. The plot on
 the left shows the read alignments to exons, introns, and to intergenic regions
 while accounting for the strand of the annotations. The plot on the right shows
@@ -1126,12 +1164,12 @@ if(rnaseqc_do) {
     bar_cols <- c("#a6cee3", "#1f78b4", "#b2df8a")
 
     if(large_dataset) {
-        cat("#### Plots {.tabset}\n")
+        cat("##### Plots {.tabset}\n")
         for(i in unique(chunks)) {
             idx <- which(chunks == i)
             subdat <- gdna_dat[,idx,drop=FALSE]
             subdat_uns <- gdna_dat_uns[,idx,drop=FALSE]
-            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
             at <- barplot(
                 subdat,
                 beside=TRUE,
@@ -1253,11 +1291,11 @@ par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
 if(rnaseqc_do) {
     rrna_dat <- as.numeric(rnaseqc_summary$Value[rnaseqc_summary$Statistic == "rRNA Rate"])
     if(large_dataset) {
-        cat("#### Plots {.tabset}\n")
+        cat("##### Plots {.tabset}\n")
         for(i in unique(chunks)) {
             idx <- which(chunks == i)
             subdat <- rrna_dat[idx]
-            cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+            cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
             at <- barplot(
                 subdat,
                 axes=FALSE,
@@ -1304,8 +1342,8 @@ if(rnaseqc_do) {
 }
 ```
 
-# Alignment to Reference Genome
-## Mapping Statistics
+## Alignment to Reference Genome
+### Mapping Statistics
 The following table summarizes read alignment to the reference genome with the output from
 `samtools stats`. 
 
@@ -1324,11 +1362,11 @@ names(mapping_summary) <- c(
 mapping_summary
 ```
 
-\*: **Note** that the `Reads Mapped` column shows **reads** and not
+**Note** that the `Reads Mapped` column shows **reads** and not
 **fragments**.
 
-## HISAT2 Summaries {.tabset}
-### Counts-Based
+### HISAT2 Summaries {.tabset}
+#### Counts-Based
 These plots summarize the number of fragments that align uniquely, multiply,
 discordantly, or do not map to the genome.
 
@@ -1337,10 +1375,10 @@ count_dat <- as.matrix(
     hisat_summary[,c("UniqueMapped", "MultiMapped", "DiscoMapped", "Unmapped")])
 max_reads <- max(hisat_summary$Total)/1000000
 if(large_dataset) {
-    cat("#### Plots {.tabset}\n")
+    cat("##### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subdat <- count_dat[idx,,drop=FALSE]
         at <- barplot(
             t(subdat)/1000000,
@@ -1389,7 +1427,7 @@ if(large_dataset) {
             cex=0.7)
 }
 
-cat("\n\n#### Table")
+cat("\n\n##### Table")
 hisat_tab <- hisat_summary
 names(hisat_tab) <- c(
     "Sample Name",
@@ -1402,17 +1440,17 @@ knitr::kable(hisat_tab,
     caption="Summary of alignment from HISAT2 based on fragment counts. Note that if the samples are paired-end, then each fragment is represented by 2 reads. If the samples are single-end, then each fragment is represented by 1 read.")
 ```
 
-### Proportion-Based
+#### Proportion-Based
 These plots summarize the mapping as a proportion of the total reads.
 
 ```{r hisat2_prop, echo=FALSE, message=FALSE, results="asis"}
 # Then make a proportion plot
 prop_dat <- count_dat / as.numeric(hisat_summary$Total)
 if(large_dataset) {
-    cat("#### Plots {.tabset}\n")
+    cat("##### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subdat <- prop_dat[idx,,drop=FALSE]
         at <- barplot(
             t(subdat),
@@ -1461,7 +1499,7 @@ if(large_dataset) {
             cex=0.7)
 }
 
-cat("\n\n#### Table")
+cat("\n\n##### Table")
 hisat_prop <- data.frame(
     SN=as.character(hisat_summary$SampleName),
     TO=rep("100%", nrow(hisat_summary)),
@@ -1498,19 +1536,8 @@ knitr::kable(hisat_prop,
 
 
 
-## Feature Counts
-### Download Expression Matrices
-Use the link below to download the raw counts matrix and normalized CPM matrix
-to your computer:
-
-```{r counts_download, echo=FALSE}
-xfun::embed_file(
-    path=paste(params["outdir"], "Counts.zip", sep="/"),
-    name="Relative_Expression.zip",
-    text="Download expression matrices")
-```
-
-### Subread Assignment Summary {.tabset}
+### Feature Counts
+#### Subread Assignment Summary {.tabset}
 These plots will show the breakdown of read assignment by `featureCounts`.
 
 ```{r subread_summary, echo=FALSE, message=FALSE, fig.width=8, fig.height=8, results="asis"}
@@ -1534,10 +1561,10 @@ bar_cols <- c("#1f78b4", "#999999")
 maxct <- max(plt_dat_comb)/1000000
 
 if(large_dataset) {
-    cat("#### Counts-based Plots {.tabset}\n")
+    cat("##### Counts-based Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subdat <- plt_dat_comb[,idx,drop=FALSE]
         at <- barplot(
             subdat/1000000,
@@ -1561,7 +1588,7 @@ if(large_dataset) {
         cat("\n\n")
     }
 } else {
-  cat("#### Counts-based Plot \n")
+  cat("##### Counts-based Plot \n")
     at <- barplot(
         plt_dat_comb/1000000,
         beside=TRUE,
@@ -1591,10 +1618,10 @@ plt_dat_prop <- plt_dat_prop/rowSums(plt_dat_prop)
 plt_dat_prop <- t(plt_dat_prop)
 par(mar=c(4, 3.5, 1, 0.5), mgp=c(2.5, 0.75, 0))
 if(large_dataset) {
-    cat("#### Proportions-based Plots {.tabset}\n")
+    cat("##### Proportions-based Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         subdat <- plt_dat_prop[,idx,drop=FALSE]
         at <- barplot(
             subdat,
@@ -1618,7 +1645,7 @@ if(large_dataset) {
         cat("\n\n")
     }
 } else {
-  cat("#### Proportions-based Plot\n")
+  cat("##### Proportions-based Plot\n")
     at <- barplot(
         plt_dat_prop,
         beside=FALSE,
@@ -1642,7 +1669,7 @@ if(large_dataset) {
 ```
 
 ```{r subread_summary_table, echo=FALSE, message=FALSE, fig.height=4, results="asis"}
-cat("#### Table\n")
+cat("##### Table\n")
 # We want to transpose this table so that it scales vertically with the number
 # of samples.
 hdr <- as.character(subread_sum$Status)
@@ -1653,7 +1680,7 @@ colnames(t_subread) <- hdr
 t_subread
 ```
 
-### Number of Expressed Features
+#### Number of Expressed Features
 This plot shows the number of features (genes) that have at least one fragment
 mapping to them.
 
@@ -1671,11 +1698,11 @@ if(nsamp == 1) {
 }
 maxexpr <- max(num_expressed)
 if(large_dataset) {
-    cat("#### Plots {.tabset}\n")
+    cat("##### Plots {.tabset}\n")
     for(i in unique(chunks)) {
         idx <- which(chunks == i)
         subdat <- num_expressed[idx]
-        cat("##### Samples ", idx[1], " to ", idx[length(idx)], "\n")
+        cat("###### Samples ", idx[1], " to ", idx[length(idx)], "\n")
         at <- barplot(
             subdat,
             ylab="Number of Expressed Features",
@@ -1698,10 +1725,10 @@ if(large_dataset) {
 }
 ```
 
-# Analysis of Expression 
-## Exploratory Plots {.tabset}
+## Analysis of Expression 
+### Exploratory Plots {.tabset}
 
-### Expression in Counts-per-million
+#### Expression in Counts-per-million
 Shown below is a distribution of expression values as log2(1+CPM). CPM
 (counts-per-million) is a transformation of raw counts that considers 
 differences in sequencing depth (i.e. number of fragments sequenced in the 
@@ -1715,7 +1742,7 @@ cpm_plot <- paste(params["outdir"], "Plots", "cpm_plot.pdf", sep="/")
 knitr::include_graphics(cpm_plot)
 ```
 
-### Sample Clustering Heatmap
+#### Sample Clustering Heatmap
 We then calculated the variance in CPM values for each gene across the sequenced
 samples. The 500 genes with the highest variance in expression were used to
 generate the following heatmap:
@@ -1725,7 +1752,7 @@ heatmap_plot <- paste(params["outdir"], "Plots", "high_variance_heatmap.pdf", se
 knitr::include_graphics(heatmap_plot)
 ```
 
-### Multidimensional Scaling
+#### Multidimensional Scaling
 CPM values were then used to generate a multidimensional scaling (MDS) plot,
 which functions similarly to a principal components plot:
 
@@ -1735,7 +1762,7 @@ knitr::include_graphics(mds_plot)
 ```
 
 
-## Differential Expression Testing
+### Differential Expression Testing
 If the experimental groups and desired comparisons were supplied, and each 
 group has at least three replicates, we test for differential expression (DE) 
 among them with a quasi-likelihood test (using `glmQLFit` in `edgeR`). 
@@ -1743,7 +1770,7 @@ We apply a `0.05` false discovery rate correction to the DE tests.
 If you did not supply the required information or the dataset does not have 
 enough replication, then this section will mostly be empty.
 
-### Experimental Groups
+#### Experimental Groups
 The following experimental groups were supplied to the pipeline. These are read
 out of the samplesheet:
 
@@ -1753,7 +1780,7 @@ names(sheet_sub) <- c("Sample Name", "Group")
 knitr::kable(sheet_sub)
 ```
 
-### Results Summary
+#### Results Summary
 The top differentially expressed genes (DEGs) are given below. Comparisons were 
 made based on the DEG Comparisons CSV or XLSX file supplied and reported as 
 `Test_Group-Reference_Group`, with `Test_Group` serving as the numerator for 
@@ -1766,11 +1793,11 @@ naming convention:
 ```{r degs, echo=FALSE, message=FALSE, results="asis"}
 degdir <- paste(params["outdir"], "DEGs", sep="/")
 if(!dir.exists(degdir)) {
-    print("There were no groups defined, so there are no differentially expressed genes.")
+    print("No comparisons were defined in the required group spreadsheet, so no DE testing occurred.")
 } else {
     deg_files <- list.files(degdir, full.names=TRUE)
     if(length(deg_files) == 0) {
-        print("There were no groups defined, so there are no differentially expressed genes.")
+        print("No comparisons were defined in the required group spreadsheet, so no DE testing occurred.")
     } else {
         gene_names <- read.table(
             paste(params["outdir"], "gene_id_gene_name_map.txt", sep="/"),
@@ -1802,8 +1829,7 @@ if(!dir.exists(degdir)) {
 
 
 # Methods
-## General Workflow
-### Read QC
+## Read QC
 A subsample of 10,000 reads or read pairs were sampled from each sample's reads.
 This subsample of 10,000 reads was searched for contamination from ribosomal
 RNA using a representative rRNA sequence list from the SILVA database release
@@ -1819,7 +1845,7 @@ cat(as.character(sheet$V9[1]), "`\n")
 Trimmed reads were re-assessed with FastQC. Length,
 quality, and duplication metrics were extracted from each FastQC run.
 
-### Alignment
+## Alignment
 Trimmed reads (or raw reads, if `--no-trim` was specified) were aligned to the
 reference genome with HISAT2. Duplicate reads based on alignment position were
 marked with SAMTools. If `--rmdup` was specified, then the positional duplicates
@@ -1829,7 +1855,7 @@ and quantify the proportion of "on-target" reads. Processed alignments were
 filtered of reads that have a mapping quality of less than 60, and sorted by
 query name rather than position.
 
-### Counts and Differential Expression testing
+## Counts and Differential Expression testing
 Cleaned and name-sorted alignments were processed with the featureCounts tool
 from the subread package. Fragments were counted in a strand-specific manner,
 unless the `--strand U` option was passed for a library that was prepared in
@@ -1844,17 +1870,17 @@ expression testing was performed with a quasi-likelihood test in `edgeR` between
 the groups defined by the user. A 0.05 false discovery rate correction
 was applied to the tests.
 
-## Results and Intermediate Files
-### Output Directory
+# Other Output and Intermediate Files
+## Output Directory
 The output directory is located at
 
 ``r params["outdir"]``
 
 This directory contains final results files and log files for the pipeline. Be
 sure to save these files if you would like to keep them. However, the pipeline
-script and samplesheet (reproduced below) are sufficient to recreate all output
-files. It will just require additional compute time and service units. The
-following directories are of interest:
+script and samplesheet are sufficient to recreate all output files. It will just 
+require additional compute time and service units. The following directories 
+are of interest:
 
 - ``r paste(params["outdir"], "Counts", sep="/")``
 
@@ -1907,16 +1933,14 @@ following directories are of interest:
     embedded into the "Counts Summaries" subsection of the "Alignment Summaries"
     section of this report.
 
-### Work Directory
+## Work Directory
 The work directory is located at
 
 ``r params["workdir"]``
 
 This directory contains intermediate files for the pipeline. Be sure to save
-these files if you would like to refer to them in the future. However, the
-pipeline script and samplesheet (reproduced below) are sufficient to recreate
-all intermediate files for the pipeline. The work directory contains the
-following:
+these files if you would like to refer to them in the future. The work directory 
+contains the following:
 
 - ``r paste(params["workdir"], "allsamples", sep="/")``
 
@@ -1935,16 +1959,6 @@ following:
 ## Pipeline Script
 The path to the pipeline script on MSI systems is ``r params["pipeline"]``
 
-We have bundled a version of the pipeline script below. Click the following
-link to download the script to your computer:
-
-```{r pipeline_download, echo=FALSE}
-xfun::embed_file(
-    path=as.character(params["pipeline"]),
-    name=basename(as.character(params["pipeline"])),
-    text="Download PURR pipeline script")
-```
-
 To use this script to rerun your pipeline, be sure that the FASTQ directory,
 output directory, work directory, experimental groups CSV, and samplesheet are
 properly specified. Then, upload the script to MSI systems. Use the following
@@ -1957,23 +1971,13 @@ cat("`bash ", basename(as.character(params["pipeline"])), "`\n")
 ## Samplesheet
 The path to the samplesheet is ``r params["samplesheet"]``
 
-We have bundled a version of the samplesheet below. Click the following link
-to download the script to your computer:
-
-```{r samplesheet_download, echo=FALSE}
-xfun::embed_file(
-    path=as.character(params["samplesheet"]),
-    name=basename(as.character(params["samplesheet"])),
-    text="Download PURR samplesheet")
-```
-
 To reuse this samplesheet to rerun the pipeline, first upload the file to MSI
 systems. Then, upload the accompanying pipeline control script (see above). Be
 sure that the paths to the FASTQ folder, the reference genome alignment index,
 and the GTF annotation are correctly specified.
 
-## Software Environment {.tabset}
-### Single Sample Job Software
+# Software Environment {.tabset}
+## Single Sample Job Software
 This is the list of programs that we use in the single-sample workflow
 for read cleaning and mapping.
 
@@ -1992,7 +1996,7 @@ gtfToGenePred-447
 RNASeQC-2.4.2
 ```
 
-### Summary Job Software
+## Summary Job Software
 For the summary workflow, which includes read counting, differential expression 
 testing, and report generation we also use the following programs.
 
