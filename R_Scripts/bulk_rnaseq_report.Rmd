@@ -17,6 +17,9 @@ params:
     samplesheet: NA
     outdir: NA
     workdir: NA
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup_env, echo=FALSE, message=FALSE}
@@ -118,30 +121,32 @@ library(knitr)
 ![](/home/msistaff/public/CHURP_Deps/Assets/UMII_Graphic_rs.png)
 
 PURR is the RNASeq analysis pipeline that is housed within CHURP, the
-**C**ollection of **H**ierarchical **U**MII/**R**I **P**ipelines. CHURP is
-developed and maintained by the Research Informatics (RI) group at
-MSI with funding provided by the University of Minnesota Informatics Institute
-(UMII).
+**C**ollection of **H**ierarchical **U**MII/**R**I **P**ipelines. CHURP
+is developed and maintained by the Research Informatics (RI) group at
+MSI with funding provided by the University of Minnesota Informatics
+Institute (UMII).
 
 <https://www.msi.umn.edu/>
 
 <https://research.umn.edu/units/umii>
 
-This report was generated with CHURP version ``r params["churp_version"]``.
+This report was generated with CHURP version
+`r params["churp_version"]`.
 
 # Data Processed
 
-The location of the FASTQ files for this run is 
+The location of the FASTQ files for this run is
 
-``r fastq_dir``.
+`r fastq_dir`.
 
-This run consists of ``r nsamp`` samples. The path to the reference genome is
+This run consists of `r nsamp` samples. The path to the reference genome
+is
 
-``r genome``
+`r genome`
 
 The path to the GTF annotation is
 
-``r annot``
+`r annot`
 
 The MD5sum of the GTF is
 
@@ -149,8 +154,8 @@ The MD5sum of the GTF is
 md5sum < ${_GTF} | awk '{print $1}'
 ```
 
-This is mostly useful for keeping track of the exact version of the GTF that
-was used for this analysis.
+This is mostly useful for keeping track of the exact version of the GTF
+that was used for this analysis.
 
 A tabular summary of the samples analyzed is shown below:
 
@@ -183,11 +188,13 @@ names(sumsheet) <- c(
 knitr::kable(sumsheet[,1:4])
 ```
 
-# Download and Save Important Files!
-## Expression Matrices
-Use the link below to download the raw counts matrix and normalized CPM matrix
-to your computer. You will need them to do further analysis and to upload your 
-findings to public repositories such as [GEO](https://www.ncbi.nlm.nih.gov/geo/info/seq.html).
+# Download and Save Important Files
+
+-   **Expression Matrices** Use the link below to download the raw
+    counts matrix and normalized CPM matrix to your computer. You will
+    need them to do further analysis and to upload your findings to
+    public repositories such as
+    [GEO](https://www.ncbi.nlm.nih.gov/geo/info/seq.html).
 
 ```{r counts_download, echo=FALSE}
 xfun::embed_file(
@@ -196,10 +203,10 @@ xfun::embed_file(
     text="Download expression matrices")
 ```
 
-## Pipeline Script
-We have bundled a version of the pipeline script for you. It is important for 
-troubleshooting and reruning your analysis. Click the following link to download 
-the script to your computer:
+-   **Pipeline Script** We have bundled a version of the pipeline script
+    for you. It is important for troubleshooting and reruning your
+    analysis. Click the following link to download the script to your
+    computer:
 
 ```{r pipeline_download, echo=FALSE}
 xfun::embed_file(
@@ -208,10 +215,10 @@ xfun::embed_file(
     text="Download PURR pipeline script")
 ```
 
-## Samplesheet
-We have also bundled a version of the samplesheet. This contains details on the 
-methods used and will be needed to rerun the analysis. Click the following link
-to download it to your computer:
+-   **Samplesheet** We have also bundled a version of the samplesheet.
+    This contains details on the methods used and will be needed to
+    rerun the analysis. Click the following link to download it to your
+    computer:
 
 ```{r samplesheet_download, echo=FALSE}
 xfun::embed_file(
@@ -221,7 +228,9 @@ xfun::embed_file(
 ```
 
 # Results
+
 ## Quality Metrics
+
 ### Read Counts {.tabset}
 
 ```{r counts_sum, echo=FALSE, results='asis'}
@@ -277,6 +286,7 @@ if(large_dataset) {
 ```
 
 #### Table
+
 ```{r read_counts, echo=FALSE, message=FALSE}
 names(read_summary) <- c(
     "Sample Name",
@@ -288,14 +298,17 @@ knitr::kable(read_summary)
 ```
 
 ### Insert Size Metrics
-The plot below shows the variance in insert size for each sample. The black dot
-shows the mean insert size, the red dot shows the median insert size, the grey
-shaded region shows the bin that encompasses 30% of the insert sizes, and the
-black lines show the bin that encompasses 90% of the insert sizes.
 
-The bin widths reported in the table are widths of intervals, centered around
-the median, that encompass a certain percentage of the insert sizes. For a full
-description of the bin widths, see the [Picard Documentation](https://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics).
+The plot below shows the variance in insert size for each sample. The
+black dot shows the mean insert size, the red dot shows the median
+insert size, the grey shaded region shows the bin that encompasses 30%
+of the insert sizes, and the black lines show the bin that encompasses
+90% of the insert sizes.
+
+The bin widths reported in the table are widths of intervals, centered
+around the median, that encompass a certain percentage of the insert
+sizes. For a full description of the bin widths, see the [Picard
+Documentation](https://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics).
 
 ```{r is_stats, echo=FALSE, message=FALSE}
 insertsize_file <- paste(params["workdir"], "allsamples", "IS_Stats.txt", sep="/")
@@ -355,14 +368,16 @@ if(!file.exists(insertsize_file)) {
         "Width of 30% Bin",
         "Width of 70% Bin",
         "Width of 90% Bin")
+    
     is_summary
 }
 ```
 
 ### Estimated rRNA Content {.tabset}
+
 These counts were based on searching a subset of the raw reads against a
-reference database of ribosomal K-mers from various organisms. Click on the 
-table headers to show the summaries of rRNA content.
+reference database of ribosomal K-mers from various organisms. Click on
+the table headers to show the summaries of rRNA content.
 
 ```{r bbduk_plot, echo=FALSE, message=FALSE, results="asis"}
 plt_dat <- as.numeric(gsub("%", "", as.character(bbduk_summary$rRNA_Pct))) / 100
@@ -466,14 +481,19 @@ if(large_dataset) {
 ```
 
 #### Table
+
 ```{r bbduk_table, echo=FALSE, message=FALSE}
 knitr::kable(bbduk_summary,
     caption="Number of read pairs (from subsample) and percentage of library that is estimated to be derived from ribosomal RNA.")
 ```
 
 ### Basecall Quality {.tabset}
-Click on the tab headers to show plots of raw and trimmed read qualities. Raw
-read qualities are shown as they came off the sequencing instrument. Trimmed read qualities are shown if low quality edges of each read were trimmed out with [Trimmomatic](https://github.com/usadellab/Trimmomatic).
+
+Click on the tab headers to show plots of raw and trimmed read
+qualities. Raw read qualities are shown as they came off the sequencing
+instrument. Trimmed read qualities are shown if low quality edges of
+each read were trimmed out with
+[Trimmomatic](https://github.com/usadellab/Trimmomatic).
 
 ```{r raw_qual_fun, echo=FALSE}
 # Functions for Read Quality Plots
@@ -689,7 +709,6 @@ if(large_dataset) {
 }
 ```
 
-
 ```{r trim_qual_sum, echo=FALSE, fig.width=8, fig.height=8, results='asis'}
 # This section is basically lifted from the previous, but running on the
 # trimmed reads instead of the raw reads.
@@ -748,10 +767,11 @@ if(length(trim_samp) > 0) {
 ```
 
 #### Raw Reads (FastQC-style)
-The plots below show the variance in quality across the reads for each sample.
-The black dot shows the mean quality, the red dot shows the median quality,
-the grey shaded region shows the inter-quartile range, and the vertical black
-lines show the 10th-90th percentile range.
+
+The plots below show the variance in quality across the reads for each
+sample. The black dot shows the mean quality, the red dot shows the
+median quality, the grey shaded region shows the inter-quartile range,
+and the vertical black lines show the 10th-90th percentile range.
 
 ```{r raw_read_quals_fastqc, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(1.7*nrow(sheet), 1.7*lg_cutoff), results="asis"}
 plotqual <- function(sn) {
@@ -838,10 +858,11 @@ if(large_dataset) {
 ```
 
 #### Trimmed Reads (FastQC-style)
-The plots below show the variance in quality across the reads for each sample.
-The black dot shows the mean quality, the red dot shows the median quality,
-the grey shaded region shows the inter-quartile range, and the vertical black
-lines show the 10th-90th percentile range.
+
+The plots below show the variance in quality across the reads for each
+sample. The black dot shows the mean quality, the red dot shows the
+median quality, the grey shaded region shows the inter-quartile range,
+and the vertical black lines show the 10th-90th percentile range.
 
 ```{r trim_read_quals_fastqc, echo=FALSE, message=FALSE, fig.width=8, fig.height=min(1.7*nrow(sheet), 1.7*lg_cutoff), results="asis"}
 # Like with the 1-D heatmap style, this is borrowed heavily from the previous
@@ -938,14 +959,17 @@ if(length(trim_samp) > 0) {
 }
 ```
 
-
 ### QC Based on Mapping to Reference Genome {.tabset}
-These plots show QC metrics based on summaries of the BAM alignment files, as
-generated by [RNASeQC](https://github.com/broadinstitute/rnaseqc).
+
+These plots show QC metrics based on summaries of the BAM alignment
+files, as generated by
+[RNASeQC](https://github.com/broadinstitute/rnaseqc).
 
 #### Expression Profiling Efficiency
-This plot shows the proportion of high-quality alignments that are in exons. For
-messenger RNA libraries, this value is expected to be close to 1.
+
+This plot shows the proportion of high-quality alignments that are in
+exons. For messenger RNA libraries, this value is expected to be close
+to 1.
 
 ```{r epe_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=4, results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
@@ -1004,9 +1028,11 @@ if(rnaseqc_do) {
 ```
 
 #### Estimated Library Complexity
-This plot shows the estimated number of unique cDNA fragments that are present
-in each library. This is determined using the same method as the one used by
-[Picard EstimateLibraryComplexity](https://broadinstitute.github.io/picard/command-line-overview.html#EstimateLibraryComplexity).
+
+This plot shows the estimated number of unique cDNA fragments that are
+present in each library. This is determined using the same method as the
+one used by [Picard
+EstimateLibraryComplexity](https://broadinstitute.github.io/picard/command-line-overview.html#EstimateLibraryComplexity).
 
 ```{r est_lib_complex, echo=FALSE, message=FALSE, fig.width=8, fig.height=4, results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
@@ -1067,9 +1093,12 @@ if(rnaseqc_do) {
 ```
 
 #### Sequence Duplication
-This plot shows the proportion of alignments that are positional duplicates in
-each sample, as determined in the default algorithm of the
-[Picard MarkDuplicates](https://broadinstitute.github.io/picard/command-line-overview.html#MarkDuplicates) tool.
+
+This plot shows the proportion of alignments that are positional
+duplicates in each sample, as determined in the default algorithm of the
+[Picard
+MarkDuplicates](https://broadinstitute.github.io/picard/command-line-overview.html#MarkDuplicates)
+tool.
 
 ```{r dup_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=4, results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0))
@@ -1128,17 +1157,19 @@ if(rnaseqc_do) {
 ```
 
 #### gDNA and Strand Agreement
-These plots show both gDNA contamination and strand-specificity. The plot on
-the left shows the read alignments to exons, introns, and to intergenic regions
-while accounting for the strand of the annotations. The plot on the right shows
-the same region-based summary, but ignoring the strand of the annotations. If
-the unstranded plot shows much higher assignment to exons than the strand-aware
-plot, then it is likely that you have given the incorrect strand-specificity
-for your library. Please refer to the library preparation protocol to determine
-the correct strand-specificity.
 
-If the plots look similar in terms of assignment proportions, then you have
-given the correct strand-specificity.
+These plots show both gDNA contamination and strand-specificity. The
+plot on the left shows the read alignments to exons, introns, and to
+intergenic regions while accounting for the strand of the annotations.
+The plot on the right shows the same region-based summary, but ignoring
+the strand of the annotations. If the unstranded plot shows much higher
+assignment to exons than the strand-aware plot, then it is likely that
+you have given the incorrect strand-specificity for your library. Please
+refer to the library preparation protocol to determine the correct
+strand-specificity.
+
+If the plots look similar in terms of assignment proportions, then you
+have given the correct strand-specificity.
 
 ```{r gdna_plot, echo=FALSE, message=FALSE, fig.width=8, fig.height=8, results="asis"}
 par(mar=c(4, 4, 5, 1), mgp=c(2.5, 0.75, 0), mfrow=c(1, 2))
@@ -1343,9 +1374,11 @@ if(rnaseqc_do) {
 ```
 
 ## Alignment to Reference Genome
+
 ### Mapping Statistics
-The following table summarizes read alignment to the reference genome with the output from
-`samtools stats`. 
+
+The following table summarizes read alignment to the reference genome
+with the output from `samtools stats`.
 
 ```{r map_stats, echo=FALSE, message=FALSE}
 mapping_summary <- read.table(
@@ -1366,9 +1399,11 @@ mapping_summary
 **fragments**.
 
 ### HISAT2 Summaries {.tabset}
-#### Counts-Based
-These plots summarize the number of fragments that align uniquely, multiply,
-discordantly, or do not map to the genome.
+
+#### Counts-Based Plots
+
+These plots summarize the number of fragments that align uniquely,
+multiply, discordantly, or do not map to the genome.
 
 ```{r hisat2_counts, echo=FALSE, message=FALSE, results="asis"}
 count_dat <- as.matrix(
@@ -1426,8 +1461,10 @@ if(large_dataset) {
             ncol=4,
             cex=0.7)
 }
+```
 
-cat("\n\n##### Table")
+#### Counts-Based Table
+```{r cb_table, echo=F}
 hisat_tab <- hisat_summary
 names(hisat_tab) <- c(
     "Sample Name",
@@ -1440,7 +1477,8 @@ knitr::kable(hisat_tab,
     caption="Summary of alignment from HISAT2 based on fragment counts. Note that if the samples are paired-end, then each fragment is represented by 2 reads. If the samples are single-end, then each fragment is represented by 1 read.")
 ```
 
-#### Proportion-Based
+#### Proportion-Based Plots
+
 These plots summarize the mapping as a proportion of the total reads.
 
 ```{r hisat2_prop, echo=FALSE, message=FALSE, results="asis"}
@@ -1498,8 +1536,12 @@ if(large_dataset) {
             ncol=4,
             cex=0.7)
 }
+```
 
-cat("\n\n##### Table")
+
+#### Proportion-Based Table
+
+```{r propb_table, echo=F}
 hisat_prop <- data.frame(
     SN=as.character(hisat_summary$SampleName),
     TO=rep("100%", nrow(hisat_summary)),
@@ -1534,11 +1576,12 @@ knitr::kable(hisat_prop,
     caption="Summary of alignment from HISAT2 based on percentage of total reads. Note that if the samples are paired-end, then each fragment is represented by 2 reads. If the samples are single-end, then each fragment is represented by 1 read.")
 ```
 
-
-
 ### Feature Counts
+
 #### Subread Assignment Summary {.tabset}
-These plots will show the breakdown of read assignment by `featureCounts`.
+
+These plots will show the breakdown of read assignment by
+`featureCounts`.
 
 ```{r subread_summary, echo=FALSE, message=FALSE, fig.width=8, fig.height=8, results="asis"}
 par(mar=c(4, 3.5, 1, 0.5), mgp=c(2.5, 0.75, 0))
@@ -1611,7 +1654,6 @@ if(large_dataset) {
 }
 ```
 
-
 ```{r subread_summary_prop, echo=FALSE, message=FALSE, fig.height=4, results="asis"}
 plt_dat_prop <- t(plt_dat_comb)
 plt_dat_prop <- plt_dat_prop/rowSums(plt_dat_prop)
@@ -1681,8 +1723,9 @@ t_subread
 ```
 
 #### Number of Expressed Features
-This plot shows the number of features (genes) that have at least one fragment
-mapping to them.
+
+This plot shows the number of features (genes) that have at least one
+fragment mapping to them.
 
 ```{r expressed_features, echo=FALSE, message=FALSE, results="asis"}
 subread_counts <- read.table(
@@ -1725,16 +1768,19 @@ if(large_dataset) {
 }
 ```
 
-## Analysis of Expression 
+## Analysis of Expression
+
 ### Exploratory Plots {.tabset}
 
 #### Expression in Counts-per-million
+
 Shown below is a distribution of expression values as log2(1+CPM). CPM
-(counts-per-million) is a transformation of raw counts that considers 
-differences in sequencing depth (i.e. number of fragments sequenced in the 
-library), like FPKM. It does not correct differences in gene length like FPKM, 
-however. You can compare CPM values for the same gene across samples, but 
-do not compare CPM values for different genes in the same sample.
+(counts-per-million) is a transformation of raw counts that considers
+differences in sequencing depth (i.e. number of fragments sequenced in
+the library), like FPKM. It does not correct differences in gene length
+like FPKM, however. You can compare CPM values for the same gene across
+samples, but do not compare CPM values for different genes in the same
+sample.
 
 ```{r cpm_summary, echo=FALSE, message=FALSE, out.width="750", out.height="750"}
 cpm_plot <- paste(params["outdir"], "Plots", "cpm_plot.pdf", sep="/")
@@ -1743,9 +1789,10 @@ knitr::include_graphics(cpm_plot)
 ```
 
 #### Sample Clustering Heatmap
-We then calculated the variance in CPM values for each gene across the sequenced
-samples. The 500 genes with the highest variance in expression were used to
-generate the following heatmap:
+
+We then calculated the variance in CPM values for each gene across the
+sequenced samples. The 500 genes with the highest variance in expression
+were used to generate the following heatmap:
 
 ```{r var_hmp, echo=FALSE, message=FALSE, out.width="750", out.height="750"}
 heatmap_plot <- paste(params["outdir"], "Plots", "high_variance_heatmap.pdf", sep="/")
@@ -1753,26 +1800,29 @@ knitr::include_graphics(heatmap_plot)
 ```
 
 #### Multidimensional Scaling
-CPM values were then used to generate a multidimensional scaling (MDS) plot,
-which functions similarly to a principal components plot:
+
+CPM values were then used to generate a multidimensional scaling (MDS)
+plot, which functions similarly to a principal components plot:
 
 ```{r mds_plot, echo=FALSE, message=FALSE, out.width="750", out.height="750"}
 mds_plot <- paste(params["outdir"], "Plots", "mds_plot.pdf", sep="/")
 knitr::include_graphics(mds_plot)
 ```
 
+### Differential Gene Expression
 
-### Differential Expression Testing
-If the experimental groups and desired comparisons were supplied, and each 
-group has at least three replicates, we test for differential expression (DE) 
-among them with a quasi-likelihood test (using `glmQLFit` in `edgeR`). 
-We apply a `0.05` false discovery rate correction to the DE tests.
-If you did not supply the required information or the dataset does not have 
-enough replication, then this section will mostly be empty.
+If the experimental groups and desired comparisons were supplied, and
+each group has at least three replicates, we test for differential
+expression (DE) among them with a quasi-likelihood test (using
+`glmQLFit` in `edgeR`). We apply a `0.05` false discovery rate
+correction to the DE tests. If you did not supply the required
+information or the dataset does not have enough replication, then this
+section will mostly be empty.
 
 #### Experimental Groups
-The following experimental groups were supplied to the pipeline. These are read
-out of the samplesheet:
+
+The following experimental groups were supplied to the pipeline. These
+are read out of the samplesheet:
 
 ```{r expr_groups, echo=FALSE, message=FALSE}
 sheet_sub <- sheet[,c(1, 2)]
@@ -1781,23 +1831,24 @@ knitr::kable(sheet_sub)
 ```
 
 #### Results Summary
-The top differentially expressed genes (DEGs) are given below. Comparisons were 
-made based on the DEG Comparisons CSV or XLSX file supplied and reported as 
-`Test_Group-Reference_Group`, with `Test_Group` serving as the numerator for 
-the fold change calculations. That is, if `logFC` is positive, then the gene 
-has higher expression in `Test_Group` than in `Reference_Group`. 
-The files in the `DEGs/` directory under the output directory follow this 
-naming convention:
+
+The top differentially expressed genes (DEGs) are given below.
+Comparisons were made based on the DEG Comparisons CSV or XLSX file
+supplied and reported as `Test_Group-Reference_Group`, with `Test_Group`
+serving as the numerator for the fold change calculations. That is, if
+`logFC` is positive, then the gene has higher expression in `Test_Group`
+than in `Reference_Group`. The files in the `DEGs/` directory under the
+output directory follow this naming convention:
 `DE_Test_Group-Reference_Group_list.txt`.
 
 ```{r degs, echo=FALSE, message=FALSE, results="asis"}
 degdir <- paste(params["outdir"], "DEGs", sep="/")
 if(!dir.exists(degdir)) {
-    print("No comparisons were defined in the required group spreadsheet, so no DE testing occurred.")
+    cat("No comparisons were defined in the required group spreadsheet, so no DE testing occurred.")
 } else {
     deg_files <- list.files(degdir, full.names=TRUE)
     if(length(deg_files) == 0) {
-        print("No comparisons were defined in the required group spreadsheet, so no DE testing occurred.")
+        cat("No comparisons were defined in the required group spreadsheet, so no DE testing occurred.")
     } else {
         gene_names <- read.table(
             paste(params["outdir"], "gene_id_gene_name_map.txt", sep="/"),
@@ -1827,14 +1878,15 @@ if(!dir.exists(degdir)) {
 }
 ```
 
-
 # Methods
+
 ## Read QC
-A subsample of 10,000 reads or read pairs were sampled from each sample's reads.
-This subsample of 10,000 reads was searched for contamination from ribosomal
-RNA using a representative rRNA sequence list from the SILVA database release
-132. Raw reads were summarized with FastQC, and optionally trimmed with
-Trimmomatic.
+
+A subsample of 10,000 reads or read pairs were sampled from each
+sample's reads. This subsample of 10,000 reads was searched for
+contamination from ribosomal RNA using a representative rRNA sequence
+list from the SILVA database release 132. Raw reads were summarized with
+FastQC, and optionally trimmed with Trimmomatic.
 
 If trimmed, the Trimmomatic options used were:
 
@@ -1842,146 +1894,159 @@ If trimmed, the Trimmomatic options used were:
 cat(as.character(sheet$V9[1]), "`\n")
 ```
 
-Trimmed reads were re-assessed with FastQC. Length,
-quality, and duplication metrics were extracted from each FastQC run.
+Trimmed reads were re-assessed with FastQC. Length, quality, and
+duplication metrics were extracted from each FastQC run.
 
 ## Alignment
-Trimmed reads (or raw reads, if `--no-trim` was specified) were aligned to the
-reference genome with HISAT2. Duplicate reads based on alignment position were
-marked with SAMTools. If `--rmdup` was specified, then the positional duplicates
-were removed instead of marked. Alignments with duplicates marked were
-summarized with RNASeQC to quantify the proportion of positional duplicates
-and quantify the proportion of "on-target" reads. Processed alignments were
-filtered of reads that have a mapping quality of less than 60, and sorted by
-query name rather than position.
+
+Trimmed reads (or raw reads, if `--no-trim` was specified) were aligned
+to the reference genome with HISAT2. Duplicate reads based on alignment
+position were marked with SAMTools. If `--rmdup` was specified, then the
+positional duplicates were removed instead of marked. Alignments with
+duplicates marked were summarized with RNASeQC to quantify the
+proportion of positional duplicates and quantify the proportion of
+"on-target" reads. Processed alignments were filtered of reads that have
+a mapping quality of less than 60, and sorted by query name rather than
+position.
 
 ## Counts and Differential Expression testing
-Cleaned and name-sorted alignments were processed with the featureCounts tool
-from the subread package. Fragments were counted in a strand-specific manner,
-unless the `--strand U` option was passed for a library that was prepared in
-a strand-unspecific way. Both mates of a read pair were required to map to a
-feature to be counted, if the data were paired-end.
 
-Raw counts were imported into the `edgeR` package in R. Genes that are shorter
-than the specified minimum length (`--min-len` argument, default 200 bp) were
-pruned from the counts matrix before differential expression testing. If
-experimental groups were specified (`-e` argument), then the differential
-expression testing was performed with a quasi-likelihood test in `edgeR` between
-the groups defined by the user. A 0.05 false discovery rate correction
-was applied to the tests.
+Cleaned and name-sorted alignments were processed with the featureCounts
+tool from the subread package. Fragments were counted in a
+strand-specific manner, unless the `--strand U` option was passed for a
+library that was prepared in a strand-unspecific way. Both mates of a
+read pair were required to map to a feature to be counted, if the data
+were paired-end.
+
+Raw counts were imported into the `edgeR` package in R. Genes that are
+shorter than the specified minimum length (`--min-len` argument, default
+200 bp) were pruned from the counts matrix before differential
+expression testing. If experimental groups were specified (`-e`
+argument), then the differential expression testing was performed with a
+quasi-likelihood test in `edgeR` between the groups defined by the user.
+A 0.05 false discovery rate correction was applied to the tests.
 
 # Other Output and Intermediate Files
+
 ## Output Directory
+
 The output directory is located at
 
-``r params["outdir"]``
+`r params["outdir"]`
 
-This directory contains final results files and log files for the pipeline. Be
-sure to save these files if you would like to keep them. However, the pipeline
-script and samplesheet are sufficient to recreate all output files. It will just 
-require additional compute time and service units. The following directories 
-are of interest:
+This directory contains final results files and log files for the
+pipeline. Be sure to save these files if you would like to keep them.
+However, the pipeline script and samplesheet are sufficient to recreate
+all output files. It will just require additional compute time and
+service units. The following directories are of interest:
 
-- ``r paste(params["outdir"], "Counts", sep="/")``
+-   `r paste(params["outdir"], "Counts", sep="/")`
 
-    Contains raw and CPM-transformed counts for each gene in the supplied GTF
-    annotation.
+    Contains raw and CPM-transformed counts for each gene in the
+    supplied GTF annotation.
 
-- ``r paste(params["outdir"], "DEGs", sep="/")``
+-   `r paste(params["outdir"], "DEGs", sep="/")`
 
     Contains a list of significantly differentially expressed genes, if
-    experimental groups were supplied. If differential expression analysis was
-    conducted, but no genes passed thresholds for significance, then the files
-    will only have a header. Pairwise combinations of groups are tested for
-    significance, so this directory may contain multiple files.
+    experimental groups were supplied. If differential expression
+    analysis was conducted, but no genes passed thresholds for
+    significance, then the files will only have a header. Pairwise
+    combinations of groups are tested for significance, so this
+    directory may contain multiple files.
 
-- ``r paste(params["outdir"], "Coordinate_Sorted_BAMs", sep="/")``
+-   `r paste(params["outdir"], "Coordinate_Sorted_BAMs", sep="/")`
 
-    Contains BAM alignments sorted on alignment coordinates and BAM index files
-    for loading into IGV or other alignment visualization tools. There are both
-    pre-filtered (`*markdup.bam` or `*rmdup.bam`) and post-filtered
-    (`*Filtered_CoordSort.bam`) files. In this case, the filtering is performed
-    on mapping quality.
+    Contains BAM alignments sorted on alignment coordinates and BAM
+    index files for loading into IGV or other alignment visualization
+    tools. There are both pre-filtered (`*markdup.bam` or `*rmdup.bam`)
+    and post-filtered (`*Filtered_CoordSort.bam`) files. In this case,
+    the filtering is performed on mapping quality.
 
-- ``r paste(params["outdir"], "Dup_Stats", sep="/")``
+-   `r paste(params["outdir"], "Dup_Stats", sep="/")`
 
-    Contains per-read (2 files per sample for paired-end data) summaries of
-    duplication levels in *raw* reads. These are extracted directly from the
-    FastQC data file.
+    Contains per-read (2 files per sample for paired-end data) summaries
+    of duplication levels in *raw* reads. These are extracted directly
+    from the FastQC data file.
 
-- ``r paste(params["outdir"], "RNASeqMetrics", sep="/")``
+-   `r paste(params["outdir"], "RNASeqMetrics", sep="/")`
 
-    Contains per-sample output files from Picard CollectRnaSeqMetrics from the
-    pre-filtering BAM file. There are also per-sample metaplots of coverage
-    bias across the transcripts.
+    Contains per-sample output files from Picard CollectRnaSeqMetrics
+    from the pre-filtering BAM file. There are also per-sample metaplots
+    of coverage bias across the transcripts.
 
-- ``r paste(params["outdir"], "InsertSizeMetrics", sep="/")``
+-   `r paste(params["outdir"], "InsertSizeMetrics", sep="/")`
 
-    Contains per-sample insert size summaries from Picard tools. The mean,
-    median, and standard deviation are summarized in a table in the "Alignment
-    Summaries" section of this report.
+    Contains per-sample insert size summaries from Picard tools. The
+    mean, median, and standard deviation are summarized in a table in
+    the "Alignment Summaries" section of this report.
 
-- ``r paste(params["outdir"], "Logs", sep="/")``
+-   `r paste(params["outdir"], "Logs", sep="/")`
 
-    Contains per-sample run logs for read QC, trimming, and alignment. Also
-    contains a log file for counting reads and performing differential
-    expression testing.
+    Contains per-sample run logs for read QC, trimming, and alignment.
+    Also contains a log file for counting reads and performing
+    differential expression testing.
 
-- ``r paste(params["outdir"], "Plots", sep="/")``
+-   `r paste(params["outdir"], "Plots", sep="/")`
 
-    Contains PDF vector images of DEG testing summary plots. The plots are also
-    embedded into the "Counts Summaries" subsection of the "Alignment Summaries"
-    section of this report.
+    Contains PDF vector images of DEG testing summary plots. The plots
+    are also embedded into the "Counts Summaries" subsection of the
+    "Alignment Summaries" section of this report.
 
 ## Work Directory
+
 The work directory is located at
 
-``r params["workdir"]``
+`r params["workdir"]`
 
-This directory contains intermediate files for the pipeline. Be sure to save
-these files if you would like to refer to them in the future. The work directory 
-contains the following:
+This directory contains intermediate files for the pipeline. Be sure to
+save these files if you would like to refer to them in the future. The
+work directory contains the following:
 
-- ``r paste(params["workdir"], "allsamples", sep="/")``
+-   `r paste(params["workdir"], "allsamples", sep="/")`
 
-    Summary files used to generate this report and final BAM files used for
-    generating raw counts.
+    Summary files used to generate this report and final BAM files used
+    for generating raw counts.
 
-- ``r paste(params["workdir"], "singlesamples", sep="/")``
+-   `r paste(params["workdir"], "singlesamples", sep="/")`
 
-    Sub-directories, one for each sample, with FastQC reports, trimmed reads,
-    intermediate SAM and BAM files, and alignment summary files. Refer to these
-    if you would like to see the details of one particular sample. For example,
-    if one sample has unexpected expression values, it may be because the
-    sample is of low quality; this would be apparent in the read quality reports
-    and the alignment summaries that are found in its work directory.
+    Sub-directories, one for each sample, with FastQC reports, trimmed
+    reads, intermediate SAM and BAM files, and alignment summary files.
+    Refer to these if you would like to see the details of one
+    particular sample. For example, if one sample has unexpected
+    expression values, it may be because the sample is of low quality;
+    this would be apparent in the read quality reports and the alignment
+    summaries that are found in its work directory.
 
 ## Pipeline Script
-The path to the pipeline script on MSI systems is ``r params["pipeline"]``
 
-To use this script to rerun your pipeline, be sure that the FASTQ directory,
-output directory, work directory, experimental groups CSV, and samplesheet are
-properly specified. Then, upload the script to MSI systems. Use the following
-command to rerun the pipeline:
+The path to the pipeline script on MSI systems is `r params["pipeline"]`
+
+To use this script to rerun your pipeline, be sure that the FASTQ
+directory, output directory, work directory, experimental groups CSV,
+and samplesheet are properly specified. Then, upload the script to MSI
+systems. Use the following command to rerun the pipeline:
 
 ```{r pipeline_exec, echo=FALSE, results="asis"}
 cat("`bash ", basename(as.character(params["pipeline"])), "`\n")
 ```
 
 ## Samplesheet
-The path to the samplesheet is ``r params["samplesheet"]``
 
-To reuse this samplesheet to rerun the pipeline, first upload the file to MSI
-systems. Then, upload the accompanying pipeline control script (see above). Be
-sure that the paths to the FASTQ folder, the reference genome alignment index,
-and the GTF annotation are correctly specified.
+The path to the samplesheet is `r params["samplesheet"]`
+
+To reuse this samplesheet to rerun the pipeline, first upload the file
+to MSI systems. Then, upload the accompanying pipeline control script
+(see above). Be sure that the paths to the FASTQ folder, the reference
+genome alignment index, and the GTF annotation are correctly specified.
 
 # Software Environment {.tabset}
+
 ## Single Sample Job Software
+
 This is the list of programs that we use in the single-sample workflow
 for read cleaning and mapping.
 
-```
+```         
 python3/3.8.3_anaconda2020.07_mamba
 hisat2/2.1.0
 fastqc/0.12.1
@@ -1997,10 +2062,12 @@ RNASeQC-2.4.2
 ```
 
 ## Summary Job Software
-For the summary workflow, which includes read counting, differential expression 
-testing, and report generation we also use the following programs.
 
-```
+For the summary workflow, which includes read counting, differential
+expression testing, and report generation we also use the following
+programs.
+
+```         
 subread-2.0.6
 pandoc-3.1.13
 ```
