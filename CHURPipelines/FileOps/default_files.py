@@ -18,6 +18,11 @@ def default_samplesheet(pipeline):
         'samplesheet.txt'])
     return ss_name
 
+def default_group_xlsx(pipeline):
+    """Return a filename for a default group xlsx file."""
+    gt_name = '.'.join([
+        CHURPipelines.TODAY, CHURPipelines.UNAME, pipeline, 'groups.xlsx'])
+    return gt_name
 
 def default_group_csv(pipeline):
     """Return a filename for a default group CSV file."""

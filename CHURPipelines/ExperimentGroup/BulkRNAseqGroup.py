@@ -3,6 +3,7 @@
 
 import pprint
 import os
+import pandas as pd
 
 import CHURPipelines
 from CHURPipelines import DieGracefully
@@ -21,10 +22,37 @@ class BulkRNAseqGroup(ExpGroup.ExpGroup):
         directory, and the columns that were passed."""
         ExpGroup.ExpGroup.__init__(self, args)
         valid_args = self._validate(args)
-        # Append the extra columns to the default ones
-        self.columns.extend(valid_args['extra_column'])
+        self._ensure_dest_suffix_xlsx()
         self.samples = self._get_sample_names(valid_args['fq_folder'])
         self._build_groups()
+        return
+    
+    def _ensure_dest_suffix_xlsx(self):
+        """ If a destination suffix other than xlsx was given, change it """
+        dest_parts = self.dest.split('.')
+        no_suffix_parts = '.'.join(dest_parts[:-1])
+        suffix = dest_parts[-1]
+        self.dest = no_suffix_parts + '.xlsx'
+        if not suffix in ['xls', 'xlsx']:
+            self.group_logger.warning(
+                'Groups file must end in xlsx, converting to : %s', self.dest)            
+    
+    def write_sheet(self):
+        """Write a stub excel spreadsheet to the output file."""
+        if os.path.isfile(self.dest):
+            self.group_logger.warning(
+                'Groups file %s exists! Overwriting!', self.dest)
+        
+        # populate the group sheet with the sample names
+        groups = pd.DataFrame({'SampleName': list(self.samples.keys()),
+                    'Group': 'NULL'})
+        contrasts = pd.DataFrame({'Comparison_Name' : [],
+                      'Reference_Group' : [],
+                      'Test_Group' : []})
+        # save the group and contrast sheets
+        with pd.ExcelWriter(self.dest) as writer:  
+            groups.to_excel(writer, sheet_name='groups', index = False)
+            contrasts.to_excel(writer, sheet_name='contrasts', index = False)
         return
 
     def _validate(self, a):
@@ -34,27 +62,14 @@ class BulkRNAseqGroup(ExpGroup.ExpGroup):
         self._validate_fastq_folder(a['fq_folder'])
         # Drop a warning that specifying extra columns means that there will be
         # some more specialized statistical analysis required
-        if a['extra_column']:
-            self.group_logger.warning(
-                'Specifying additional columns for experimental conditions '
-                'is an advanced feature, and will require you to write custom '
-                'scripts for statistical analysis. gopher-pipelines will do '
-                'tests on the "Group" column (present by default), but will '
-                'not account for additional experimental details in your '
-                'design. This is not an error message.')
         # Check the experimental columns - first make sure that the names are
         # not duplicated
-        tot_col = self.columns + a['extra_column']
+        tot_col = self.columns
         if len(tot_col) != len(set(tot_col)):
             self.group_logger.warning(
                 'Duplicate columns specified. This will not cause an error ' +
                 'in the Python script, but it may cause an error in any ' +
                 'downstream statistical analysis.')
-        # Check the supplied columns for bad values
-        for e in a['extra_column']:
-            if ',' in e:
-                self.group_logger.error('Column names cannot contain commas.')
-                DieGracefully.die_gracefully(DieGracefully.GROUP_BAD_COL)
         # Turn relative paths into absolute paths
         a['fq_folder'] = os.path.realpath(
             os.path.expanduser(a['fq_folder']))

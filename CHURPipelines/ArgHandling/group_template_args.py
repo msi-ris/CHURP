@@ -19,8 +19,8 @@ def add_args(ap):
         help='Available pipelines')
 
     # This is a parser for the bulk RNAseq options.
-    brnaseq_def_csv = default_dirs.default_output('bulk_rnaseq') / \
-        default_files.default_group_csv('bulk_rnaseq')
+    brnaseq_def_xlsx = default_dirs.default_output('bulk_rnaseq') / \
+        default_files.default_group_xlsx('bulk_rnaseq')
     brnaseq_group = ap_sub.add_parser(
         'bulk_rnaseq',
         help='Generate template groups file for bulk RNAseq analysis.',
@@ -55,20 +55,8 @@ def add_args(ap):
         '-o',
         metavar='<output file>',
         dest='outfile',
-        help='Write the CSV to this file. Defaults to ' + str(brnaseq_def_csv),
-        default=brnaseq_def_csv)
-    brnaseq_group_opt.add_argument(
-        '--extra-column',
-        '-e',
-        metavar='<extra column>',
-        action='append',
-        default=[],
-        help=('Extra column to add to the CSV file. This option may be passed '
-              'more than once to add multiple columns. Please note that if '
-              'you use this option, then you will need to run a customised '
-              'edgeR or DESeq2 analysis to properly handle the experimental '
-              'conditions in your metadata CSV. The "SampleName" and "Group" '
-              'columns are present by default.'))
+        help='Write the XLSX to this file. Defaults to ' + str(brnaseq_def_xlsx),
+        default=brnaseq_def_xlsx)
     brnaseq_group_opt.add_argument(
         '--command-log',
         dest='cmd_log',

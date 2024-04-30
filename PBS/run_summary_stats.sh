@@ -8,10 +8,15 @@ set -o pipefail
 # interfere.
 export PATH="/opt/msi/bin:/usr/share/Modules/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/ibutils/bin:/opt/puppetlabs/bin"
 
+# Load our conda environment
+module load python3/3.8.3_anaconda2020.07_mamba
+source /home/msistaff/public/CHURP_Deps/v1/Conda_Initialize.sh
+conda activate /home/msistaff/public/CHURP_Deps/v1/churp_env
+
 # Export the PS4 variable for the trace
 # Taken from https://wiki.bash-hackers.org/scripting/debuggingtips
 LOG_SECTION="General"
-export PS4='+[$(date "+%F %T")] [${SLURM_JOB_ID}] [${LOG_SECTION}]: '
+export PS4='+[$(date "+%F %T")] [Job ${SLURM_JOB_ID}] [${LOG_SECTION}] [Line ${LINENO}]: '
 
 # Define a function to report errors to the job log and give meawningful exit
 # codes. This just wraps a bunch of exit calls into a case block
@@ -87,9 +92,6 @@ while IFS="|" read -ra OPTS; do
     GTFFILE=${OPTS[12]}
 done <<< "$IN"
 
-# load necessary modules
-module load R/3.5.0
-module load python/3.6.3
 # Make directories for the output files. We want to keep the outdir organized
 LOGDIR="${OUTDIR}/Logs"
 COUNTSDIR="${OUTDIR}/Counts"
@@ -134,14 +136,8 @@ else
     echo "# NOTE! We do not support mixing of single-end and paired-end samples for counts and differential expression testing." >> "${LOG_FNAME}"
 fi
 
-# Set the R_LIBS_USER variable here. This is where packages will be loaded from
-# within R
-echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Adding /home/msistaff/public/CHURP_Deps/v${PIPELINE_VERSION}/R to R_LIBS_USER" >> "${LOG_FNAME}"
-export R_LIBS_USER="/home/msistaff/public/CHURP_Deps/v${PIPELINE_VERSION}/R"
-
 # Set the path to the featureCounts executable.
-echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Using counting reads with featureCounts v. 1.6.2" >> "${LOG_FNAME}"
-FEATURECOUNTS="/home/msistaff/public/CHURP_Deps/v${PIPELINE_VERSION}/Supp/subread-1.6.2-Linux-x86_64/bin/featureCounts"
+echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Using counting reads with featureCounts v. XXX" >> "${LOG_FNAME}"
 mkdir -p "${WORKDIR}/allsamples" && cd "${WORKDIR}/allsamples"
 
 # Use featureCounts to make a merged counts matrix
@@ -153,7 +149,7 @@ BAM_LIST=($(find . -type l -exec basename {} \;| sort -V))
 if [ "${PE}" = "true" ]
 then
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Library is paired-end with strand ${STRAND}." >> "${LOG_FNAME}"
-    "${FEATURECOUNTS}" \
+    featureCounts \
         -a "${GTFFILE}" \
         -T ${SLURM_CPUS_PER_TASK} \
         -B \
@@ -164,7 +160,7 @@ then
         "${BAM_LIST[@]}" || pipeline_error "${LOG_SECTION}"
 else
     echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Library is single-end with strand ${STRAND}" >> "${LOG_FNAME}"
-    "${FEATURECOUNTS}" \
+    featureCounts \
         -a "${GTFFILE}" \
         -T ${SLURM_CPUS_PER_TASK} \
         -Q 10 \
@@ -389,7 +385,7 @@ echo "# $(date '+%F %T'): Finished section ${LOG_SECTION}" >> /dev/stderr
 LOG_SECTION="HTML.Report"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 cp -u "${BULK_RNASEQ_REPORT}" "./Report.Rmd"
-PATH=${PATH}:/panfs/roc/groups/14/msistaff/public/CHURP_Deps/v0/Supp/pandoc-2.3.1/bin Rscript -e "library(rmarkdown); rmarkdown::render('./Report.Rmd', output_file='"${OUTDIR}/Bulk_RNAseq_Report.html"', params=list(churp_version='"${CHURP_VERSION}"', outdir='"${OUTDIR}"', workdir='"${WORKDIR}"', pipeline='"${PIPE_SCRIPT}"', samplesheet='"${SampleSheet}"'))" || pipeline_error "${LOG_SECTION}"
+Rscript -e "library(rmarkdown); rmarkdown::render('./Report.Rmd', output_file='"${OUTDIR}/Bulk_RNAseq_Report.html"', params=list(churp_version='"${CHURP_VERSION}"', outdir='"${OUTDIR}"', workdir='"${WORKDIR}"', pipeline='"${PIPE_SCRIPT}"', samplesheet='"${SampleSheet}"'))" || pipeline_error "${LOG_SECTION}"
 
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Done summarizing bulk RNAseq run" >> "${LOG_FNAME}"
 
