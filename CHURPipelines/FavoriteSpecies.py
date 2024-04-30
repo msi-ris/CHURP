@@ -7,11 +7,11 @@ import CHURPipelines
 # The latest Ensembl releases pulled into bioref. Update this when bioref
 # updtaes!
 ENSEMBL_RELEASES = {
-    'main': '109',
-    'plants': '56',
+    'main': '110',
+    'plants': '58',
     'fungi': '56',
-    'metazoa': '56',
-    'protists': '56'}
+    'metazoa': '57',
+    'protists': '58'}
 
 # This is potentially a bit silly, but it hopefully makes maintaining this
 # easier. Store the ensembl division, species name (as encoded in the directory
@@ -19,11 +19,11 @@ ENSEMBL_RELEASES = {
 # These will have to be updated when bioref updates!!
 # To add a new "favorite species" add an entry to this dictionary.
 FAVE_ASM = {
-    'human': ('main', 'Homo_sapiens', 'GRCh38.p13'),
+    'human': ('main', 'Homo_sapiens', 'GRCh38.p14'),
     'mouse': ('main', 'Mus_musculus', 'GRCm39'),
     'rat': ('main', 'Rattus_norvegicus', 'mRatBN7.2'),
     'zebrafish': ('main', 'Danio_rerio', 'GRCz11'),
-    'fly': ('main', 'Drosophila_melanogaster', 'BDGP6.32'),
+    'fly': ('main', 'Drosophila_melanogaster', 'BDGP6.46'),
     'worm': ('main', 'Caenorhabditis_elegans', 'WBcel235'),
     'yeast': ('main', 'Saccharomyces_cerevisiae', 'R64-1-1'),
     'cow': ('main', 'Bos_taurus', 'ARS-UCD1.2'),
@@ -66,6 +66,11 @@ for sp in FAVE_ASM:
     # For human, there is no patch-level code on the GTF for some reason.
     if sp == 'human':
         ver_trunc = ver.split('.')[0]
+    elif sp == 'fly':
+        # This is a SUPER SHORT TERM fix -- for some reason the D. melanogaster
+        # genome ans GTF versions do not match.
+        # 2024-04-30
+        ver_trunc = 'BDGP6.32'
     else:
         ver_trunc = ver
     sp_d['gtf'] = (
