@@ -6,6 +6,7 @@ import os
 import glob
 import subprocess
 import re
+import pandas as pd
 
 import CHURPipelines
 from CHURPipelines import DieGracefully
@@ -192,16 +193,12 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
                 handle.close()
             except OSError:
                 DieGracefully.die_gracefully(DieGracefully.BAD_ADAPT)
-        if a['expr_groups']:
-            try:
-                handle = open(a['expr_groups'], 'rt')
-                handle.close()
-            except OSError:
-                DieGracefully.die_gracefully(DieGracefully.BRNASEQ_BAD_GPS)
         # Validate the FASTQ folder
         self._validate_fastq_folder(a['fq_folder'])
         # Validate the hisat2 index
         self._validate_hisat_idx(a['hisat2_idx'])
+        # Validate the experimental groups xlsx 
+        a = self._validate_groupsheet(a)
         # Sanitize the hisat2 index path
         a['hisat2_idx'] = dir_funcs.sanitize_path(
             a['hisat2_idx'], self.pipe_logger)
@@ -278,24 +275,95 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             DieGracefully.die_gracefully(DieGracefully.PE_SE_MIX, pe, se)
         ss_path = self.sheet.write_sheet(self.real_out, self.pipe_name, '|')
         return ss_path
+        
+    def _validate_groupsheet(self, args):
+        # make a stub if one was not created.
+        # @return the args with accurate args['expr_groups'] 
+        if args['expr_groups'] is None:
+            args['expr_groups'] = self._create_stub_groupsheet(args)
+        # Now do basic validation
+        groups = args['expr_groups']
+        # throw an error if the expr_groups file is not an excel file 
+        if not groups[-4:] == "xlsx" and not groups[-3:] == "xls":
+            self.sheet_logger.error(
+                'A filetype different than an excel spreadsheet was '
+                'supplied for --expr_groups. You supplied a filetype '
+                f'end in {groups[-4:]}. Please replace this with an excel '
+                'spreadsheet in which the first sheet has two columns '
+                'titled "SampleName" and "Group"')
+            DieGracefully.die_gracefully(DieGracefully.BRNASEQ_NO_SAMP_GPS)                 
+        # load the group sheet (the first sheet) from the xlsx
+        groups_sheet = pd.read_excel(groups, 
+                                     sheet_name = 0, 
+                                     keep_default_na = False)
+        # throw an error if SampleName is not a header in the group sheet
+        if not 'SampleName' in groups_sheet:
+            self.sheet_logger.error(
+                'The xlsx experimental groups first sheet must have a '
+                'column named "SampleName"')
+            DieGracefully.die_gracefully(DieGracefully.BRNASEQ_NO_SAMP_GPS)   
+        # throw an error if Group is not a header in the group sheet
+        if not 'Group' in groups_sheet:
+            self.sheet_logger.error(
+                'The xlsx experimental groups first sheet must have a '
+                'column named "Group"')
+            DieGracefully.die_gracefully(DieGracefully.BRNASEQ_NO_SAMP_GPS)
+        return(args)
 
-    def _prepare_groupsheet(self):
-        """Checks if a groupsheet has been made. If none have been made,
-        create a stub groupsheet in the outdir so that the downstream 
-        R script has something to read. Return the path. """
-        if self.valid_args["expr_groups"] is None:
-            expr_group_path = f"{self.real_out}/experimental_groups.csv"
-            # if the outdir hasn't been made, make it
-            if not os.path.isdir(self.real_out):
-                os.makedirs(self.real_out)
-            samples = self.sheet.samples
-            header = "SampleName,Group\n"
-            with open(expr_group_path, "w") as file:
-                file.write(header)
-                for sample in samples:
-                    file.write(f"{sample},NULL\n")
-            self.valid_args["expr_groups"] = os.path.realpath(expr_group_path)
-        return(self.valid_args["expr_groups"])
+    def _create_stub_groupsheet(self, args):
+        ## This produces an experimental groups xlsx with SampleNames
+        ## It requires us to figure out the sample names, which means I'm
+        ## duplicating abit of code from SampleSheet
+        samples = self._get_sample_names(args['fq_folder'])
+        samples.sort()
+        
+        # populate the group sheet with the sample names
+        groups = pd.DataFrame({'SampleName': samples,
+                    'Group': 'NULL'})
+        contrasts = pd.DataFrame({'Comparison_Name' : [],
+                      'Reference_Group' : [],
+                      'Test_Group' : []})
+        # make sure the directory exists and make the expt group path
+        expr_group_path = f'{args["outdir"]}/experimental_groups.xlsx'
+        # if the outdir hasn't been made, make it
+        if not os.path.isdir(args['outdir']):
+            os.makedirs(args['outdir'])
+        # save the group and contrast sheets
+        with pd.ExcelWriter(expr_group_path) as writer:  
+            groups.to_excel(writer, sheet_name='groups', index = False)
+            contrasts.to_excel(writer, sheet_name='contrasts', index = False)
+        # return the new path to add back to args
+        return(os.path.realpath(expr_group_path))
+
+    def _get_sample_names(self, fq_dir):
+        # Four different regexs to determine if its a fastq then grab the 
+        # sample name, for fastqs from UMGC vs. SRA
+        samp_re = re.compile(
+            r'(_S[0-9]+)?'
+            r'(_[ATCG]{4,})?'
+            r'(_L00[1-8])?'
+            r'(_R(1|2))?_001\.((fq(\.gz)?$)|(fastq(\.gz)?$))')
+        # RE to get forwards reads fq files
+        fq_re = re.compile(
+            r'^.+[^_R2]_001\.((fq(\.gz)?$)|(fastq(\.gz)?$))',
+            flags=re.I)
+        sra_re = re.compile(r'^.+_1\.((fq(\.gz)?$)|(fastq(\.gz)?$))')
+        sra_samp_re = re.compile(r'_(1|2)\.((fq(\.gz)?$)|(fastq(\.gz)?$))')
+        # iterate through contents of the fastq dir and grab the sample names
+        fq_dir_contents = os.listdir(fq_dir)
+        sample_names = []
+        for current_file in fq_dir_contents:
+            # if it is a fastq from UMGC...
+            if re.match(fq_re, current_file):
+                # Extract the samplename from the fastq name
+                sn = re.sub(samp_re, '', current_file)
+                sample_names.append(sn)
+            # if it is a fastq from SRA...
+            elif re.match(sra_re, current_file):
+                sn = re.sub(sra_samp_re, '', current_file)
+                sample_names.append(sn)
+        return(sample_names)
+
 
     def qsub(self):
         """Write the qsub command. We will need the path to the samplesheet,
@@ -303,7 +371,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         that were passed as arguments. This is defined in the subclass rather
         than in the main Pipeline class because the exact form of the qsub
         command depends on which pipeline we are running."""
-        gs = self._prepare_groupsheet()
+        gs = self.valid_args["expr_groups"]
         ss = self._prepare_samplesheet()
         # Make the qsub array key
         keyname = default_files.default_array_key(self.pipe_name)
