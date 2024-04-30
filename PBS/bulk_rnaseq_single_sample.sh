@@ -133,7 +133,7 @@ pipeline_error() {
 }
 
 # Check the major version of the pipeline. If they mismatch, then quit with an error
-PIPELINE_VERSION="0"
+PIPELINE_VERSION="1"
 SAMPLESHEET_VERSION=$(tail -n 1 "${SampleSheet}" | sed -E 's/#//g')
 if [ "${SAMPLESHEET_VERSION}" -ne "${PIPELINE_VERSION}" ]
 then
@@ -192,10 +192,10 @@ set -x
 
 # Set paths to BBDuk, seqtk, and the SILVA databases
 DEPS_DIR="/home/msistaff/public/CHURP_Deps/v${PIPELINE_VERSION}"
-SILVA_REF="${DEPS_DIR}/db/SILVA_132_LSU_SSU_Ref_Dedup_Kmers_min100.fasta.gz"
+SILVA_REF="${DEPS_DIR}/db/SILVA_138.1_LSU-SSU_NR99_Dedup_Kmers.fasta.gz"
 COLLAPSE_GTF="${DEPS_DIR}/Supp/GTEx_Pipeline/collapse_annotation.py"
 #RNASEQC="${DEPS_DIR}/Supp/RNASeQC/rnaseqc.v2.3.4.linux"
-RNASEQC="/home/msistaff/public/CHURP_Deps/v1/Supp/RNASeQC/rnaseqc.v2.4.2.linux"
+RNASEQC="${DEPS_DIR}/Supp/RNASeQC/rnaseqc.v2.4.2.linux"
 
 # Check if we are running in paired or single end mode
 if [ -z "${R2FILE}" ]
