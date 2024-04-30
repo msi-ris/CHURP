@@ -266,10 +266,9 @@ if [ ! -f bbduk.done ]; then
             ref="${SILVA_REF}" \
             stats="${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_rRNA_Stats.txt" \
             k=25 \
-            editdistance=1 \
             prealloc=t \
             threads="${SLURM_CPUS_PER_TASK}" \
-            -Xmx10g \
+            -Xmx19g \
             2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     else
         bbduk.sh \
@@ -277,10 +276,9 @@ if [ ! -f bbduk.done ]; then
             ref="${SILVA_REF}" \
             stats="${WORKDIR}/singlesamples/${SAMPLENM}/BBDuk_rRNA_Stats.txt" \
             k=25 \
-            editdistance=1 \
             prealloc=t \
             threads="${SLURM_CPUS_PER_TASK}" \
-            -Xmx10g \
+            -Xmx19g \
              2>> "${LOG_FNAME}" || pipeline_error "${LOG_SECTION}"
     fi
     touch bbduk.done

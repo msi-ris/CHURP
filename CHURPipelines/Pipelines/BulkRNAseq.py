@@ -152,7 +152,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             DieGracefully.die_gracefully(
                 DieGracefully.BAD_NUMBER, '--subsample')
         try:
-            assert a['mem'] >= 12000
+            assert a['mem'] >= 24000
             assert isinstance(a['mem'], int)
         except AssertionError:
             DieGracefully.die_gracefully(

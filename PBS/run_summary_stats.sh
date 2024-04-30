@@ -62,7 +62,7 @@ pipeline_error() {
 }
 
 # Check for PBS/Samplesheet version agreement
-PIPELINE_VERSION="0"
+PIPELINE_VERSION="1"
 SAMPLESHEET_VERSION=$(tail -n 1 "${SampleSheet}" | sed -E 's/#//g')
 if [ "${SAMPLESHEET_VERSION}" -ne "${PIPELINE_VERSION}" ]
 then

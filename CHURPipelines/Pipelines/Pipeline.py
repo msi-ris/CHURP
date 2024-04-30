@@ -86,10 +86,10 @@ class Pipeline(object):
         be between 2h and 96h; and the queues should be one of the valid queues
         on Mesabi or Mangi."""
         try:
-            assert self.ppn >= 1 and self.ppn <= 24
+            assert self.ppn >= 1 and self.ppn <= 128
         except AssertionError as e:
             self.logger.error(
-                'PPN value of %i is invalid! Please specify between 1 and 24.',
+                'PPN value of %i is invalid! Please specify between 1 and 128.',
                 self.ppn)
             DieGracefully.die_gracefully(DieGracefully.BAD_RESOURCES)
         try:
