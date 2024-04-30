@@ -154,11 +154,13 @@ edge_mat <- calcNormFactors(edge_mat)
 ############################
 
 # This is THE ONLY colorblind acceptable palette with 4 colors from colorbrewer: http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=4
-if(length(uniq_groups) > 4) {
-  write("There are more than four groups, so all groups will be colored dark blue. We plot a maximum of four colors for colorblindness and print-friendly considerations.", stderr())
-  pal <- rep("#1f78b4", length.out=length(uniq_groups))
+if(length(uniq_groups) > 8) {
+    write("There are more than eight groups, so all groups will be colored dark blue. We plot a maximum of eight colors for colorblindness considerations.", stderr())
+    pal <- rep("navy", length.out=length(uniq_groups))
 } else {
-  pal <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c')
+  # Colorblind friendly palette
+  pal <- c("#5330A0","#F21245","#1E88E5","#FFC107",
+           "#7AF3DE","#81C5E6","#004D40","#A43CB3")
 }
 col_vec <- pal[match(groups,uniq_groups)]
 
@@ -294,7 +296,10 @@ if (n_groups == 1){
 edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
 
 
-# Filter out lowly expressed features. To do so we define what the minimum CPM would be for our minimum count cut-off in the smallest library. We keep only those features that have at least as many samples with the minimum CPM as there are samples in the smallest group.
+# Filter out lowly expressed features. To do so we define what the minimum 
+# CPM would be for our minimum count cut-off in the smallest library. 
+# We keep only those features that have at least as many samples with the 
+# minimum CPM as there are samples in the smallest group.
 min_cpm <- log2((1 + as.numeric(min_cts)) / min(edge_mat$samples$lib.size) * 1e6)
 keep <- rowSums(cpm(edge_mat, log = T, prior.count = 1)) >= min(table(true_groups))
 edge_mat <- edge_mat[keep, ,keep.lib.sizes = F]
