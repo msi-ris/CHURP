@@ -649,7 +649,7 @@ if [ ! -f is_stats.done ]; then
                 '^MEDIAN_INSERT_SIZE' \
                 "${OUTDIR}/InsertSizeMetrics/${SAMPLENM}_metrics.txt" \
                 | tail -n 1 \
-                | cut -f 1,5,6,9,11,15,17 \
+                | cut -f 1,6,7,10,12,16,18 \
                 > "${WORKDIR}/singlesamples/${SAMPLENM}/IS_Stats.txt"
         else
             # Echo seven NA into the IS stats file
