@@ -1892,7 +1892,7 @@ if(!dir.exists(degdir)) {
 A subsample of 10,000 reads or read pairs were sampled from each
 sample's reads. This subsample of 10,000 reads was searched for
 contamination from ribosomal RNA using a representative rRNA sequence
-list from the SILVA database release 132. Raw reads were summarized with
+list from the SILVA database release 138. Raw reads were summarized with
 FastQC, and optionally trimmed with Trimmomatic.
 
 If trimmed, the Trimmomatic options used were:

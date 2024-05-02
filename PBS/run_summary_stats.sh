@@ -154,6 +154,7 @@ then
         -T ${SLURM_CPUS_PER_TASK} \
         -B \
         -p \
+        --countReadPairs \
         -Q 10 \
         -s "${STRAND}" \
         -o subread_counts.txt \
@@ -235,7 +236,7 @@ awk -F '\t' '$3 == "gene" {print $9}' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}
 # same type of printing
 if [ ! -s "${OUTDIR}/gene_id_gene_name_map.txt" ]
 then
-    echo "# ${PBS_JOBID} $(date '+%F %T'): gene_id_gene_name_map.txt file is empty when searching for genes. Searching for 'transcript' features instead." >> "${LOG_FNAME}"
+    echo "# ${SLURM_JOB_ID} $(date '+%F %T'): gene_id_gene_name_map.txt file is empty when searching for genes. Searching for 'transcript' features instead." >> "${LOG_FNAME}"
     awk -F '\\t' '$3 == "transcript" {print $9}' <(gzip -cd "${GTFFILE}" || cat "${GTFFILE}") \
     | awk -F ';' -v OFS='\\t' '{
         found_gene="false"
