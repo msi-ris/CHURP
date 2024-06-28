@@ -1,9 +1,6 @@
 ############################
-# Gopher pipelines version 0.1.0 bulk RNA-seq summary script
-# R version 3.5.0
-# All relevant R libraries are installed at /panfs/roc/groups/14/msistaff/public/gopher-pipelines/v0/R/
-# Usage: Rscript summarize_counts.R <out_dir> <work_dir> <sample sheet path> <merged_counts_path> <min_feature_length> <min_count> <group_sheet_loc> <comparison_sheet> &> Rout.txt
-# See run_summary_stats.pbs for additional run context.
+# CHURP 1.0.0 bulk RNA-seq summary script
+# See run_summary_stats.sh for additional run context.
 # See https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf for the edgeR user manual.
 # Contact help@msi.umn.edu for questions
 ############################
