@@ -277,14 +277,37 @@ if (n_groups == 1){
 # Subset the data object to get rid of samples with a 'NULL' group
 edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
 
+# Filter out genes wtih low expression. We employ the following filtering
+# scheme, which is similar to what edgeR's `filterByExpr()` function does, but
+# with explicit statements:
+#   1: Calculate the median library size across all samples (C)
+#   2: Calcualte the CPM (`K`, not on log scale) corresponding to `min_cts` in `C`
+#   3: Calculate the size of the smallest group (G)
+#   4: Keep genes where at least `G` samples have CPM of `K`.
+med_lib <- median(edge_mat$samples$lib.size) / 1000000
+min_cpm <- (1+as.numeric(min_cts)) / med_lib
+min_grp <- min(table(grue_groups))
+filter_low_expression <- function(gene_row, min_expr, min_samples) {
+    num_low_expr <- sum(as.numeric(gene_row) < min_expr)
+    if(sum(num_low_extr) > min_samples) {
+        return(FALSE)
+    } else {
+        return(TRUE)
+    }
+}
+keep <- apply(
+    cpm(edge_mat, normalized=TRUE, log=FALSE),
+    1,
+    filter_low_expression,
+    min_cpm,
+    min_grp)
+edge_mat <- edge_mat[keep, ,keep.lib.sizes = FALSE]
 
-# Filter out lowly expressed features. To do so we define what the minimum 
-# CPM would be for our minimum count cut-off in the smallest library. 
-# We keep only those features that have at least as many samples with the 
-# minimum CPM as there are samples in the smallest group.
-min_cpm <- log2((1 + as.numeric(min_cts)) / min(edge_mat$samples$lib.size) * 1e6)
-keep <- rowSums(cpm(edge_mat, log = T, prior.count = 1)) >= min(table(true_groups))
-edge_mat <- edge_mat[keep, ,keep.lib.sizes = F]
+# Print some diagnostic info
+print(paste("Median library size in millions: ", med_lib, sep=""))
+print(paste("Minimum CPM (not log scale): ", min_cpm, sep=""))
+print(paste("Minimum group size: ", min_grp, sep=""))
+print(paste("Number of retained genes: ", nrow(edge_mat), sep=""))
 
 # Generate the design matrix for GLM fitting and estimate common and tag-wise dispersion in one go.
 design <- model.matrix(~0+group, data = edge_mat$samples)
