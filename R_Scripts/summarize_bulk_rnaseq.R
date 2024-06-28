@@ -304,7 +304,7 @@ keep <- apply(
 edge_mat <- edge_mat[keep, ,keep.lib.sizes = FALSE]
 
 # Print some diagnostic info
-print(paste("Median library size in millions: ", med_lib, sep=""))
+print(paste("Median library size in millions of fragments: ", med_lib, sep=""))
 print(paste("Minimum CPM (not log scale): ", min_cpm, sep=""))
 print(paste("Minimum group size: ", min_grp, sep=""))
 print(paste("Number of retained genes: ", nrow(edge_mat), sep=""))
