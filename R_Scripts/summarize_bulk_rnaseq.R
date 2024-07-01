@@ -286,7 +286,7 @@ edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
 #   4: Keep genes where at least `G` samples have CPM of `K`.
 med_lib <- median(edge_mat$samples$lib.size) / 1000000
 min_cpm <- (1+as.numeric(min_cts)) / med_lib
-min_grp <- min(table(grue_groups))
+min_grp <- min(table(true_groups))
 filter_low_expression <- function(gene_row, min_expr, min_samples) {
     num_low_expr <- sum(as.numeric(gene_row) < min_expr)
     if(sum(num_low_extr) > min_samples) {
