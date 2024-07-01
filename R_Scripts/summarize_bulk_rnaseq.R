@@ -289,7 +289,7 @@ min_cpm <- (1+as.numeric(min_cts)) / med_lib
 min_grp <- min(table(true_groups))
 filter_low_expression <- function(gene_row, min_expr, min_samples) {
     num_low_expr <- sum(as.numeric(gene_row) < min_expr)
-    if(sum(num_low_extr) > min_samples) {
+    if(sum(num_low_expr) > min_samples) {
         return(FALSE)
     } else {
         return(TRUE)
