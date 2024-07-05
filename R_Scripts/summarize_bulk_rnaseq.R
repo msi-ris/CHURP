@@ -1,9 +1,6 @@
 ############################
-# Gopher pipelines version 0.1.0 bulk RNA-seq summary script
-# R version 3.5.0
-# All relevant R libraries are installed at /panfs/roc/groups/14/msistaff/public/gopher-pipelines/v0/R/
-# Usage: Rscript summarize_counts.R <out_dir> <work_dir> <sample sheet path> <merged_counts_path> <min_feature_length> <min_count> <group_sheet_loc> <comparison_sheet> &> Rout.txt
-# See run_summary_stats.pbs for additional run context.
+# CHURP 1.0.0 bulk RNA-seq summary script
+# See run_summary_stats.sh for additional run context.
 # See https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf for the edgeR user manual.
 # Contact help@msi.umn.edu for questions
 ############################
@@ -113,22 +110,7 @@ counts_plot <- paste(out_dir, "Plots/cpm_plot.pdf", sep = "/")
 counts_list <- paste(out_dir, "Counts/cpm_list.txt", sep = "/")
 hmap <- paste(out_dir, "Plots/high_variance_heatmap.pdf", sep = "/")
 
-# Filter the featureCounts matrix (read in above) on variance and feature length.
-# But, we can only apply the variance filter if there is more than one sample.
-if(length(samp_ids) > 1) {
-  # Define a vector to tag which rows to drop from the gene expression matrix
-  # on the basis of variance filtering
-  varflt <- apply(raw_mat[,seq(-1,-6)],1,var) < 1
-  # If all of these are TRUE (drop them all), then we write a message and
-  # continue
-  if(all(varflt)) {
-    write("All genes appear to be invariant. Skipping the variance filtering step. This is not an error.", stderr())
-  } else {
-    raw_mat <- raw_mat[-which(varflt),]
-  }
-} else {
-  write("There is only one sample, so we do not apply variance filtering to the raw counts. This is not an error.", stderr())
-}
+# Filter out genes that are below the length threshold
 raw_mat <- raw_mat[which(raw_mat$Length >= min_len),]
 
 # Check for any library sizes of zero and exit with 1 if found
@@ -295,14 +277,37 @@ if (n_groups == 1){
 # Subset the data object to get rid of samples with a 'NULL' group
 edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
 
+# Filter out genes wtih low expression. We employ the following filtering
+# scheme, which is similar to what edgeR's `filterByExpr()` function does, but
+# with explicit statements:
+#   1: Calculate the median library size across all samples (C)
+#   2: Calcualte the CPM (`K`, not on log scale) corresponding to `min_cts` in `C`
+#   3: Calculate the size of the smallest group (G)
+#   4: Keep genes where at least `G` samples have CPM of `K`.
+med_lib <- median(edge_mat$samples$lib.size) / 1000000
+min_cpm <- (1+as.numeric(min_cts)) / med_lib
+min_grp <- min(table(true_groups))
+filter_low_expression <- function(gene_row, min_expr, min_samples) {
+    num_low_expr <- sum(as.numeric(gene_row) < min_expr)
+    if(sum(num_low_expr) > min_samples) {
+        return(FALSE)
+    } else {
+        return(TRUE)
+    }
+}
+keep <- apply(
+    cpm(edge_mat, normalized=TRUE, log=FALSE),
+    1,
+    filter_low_expression,
+    min_cpm,
+    min_grp)
+edge_mat <- edge_mat[keep, ,keep.lib.sizes = FALSE]
 
-# Filter out lowly expressed features. To do so we define what the minimum 
-# CPM would be for our minimum count cut-off in the smallest library. 
-# We keep only those features that have at least as many samples with the 
-# minimum CPM as there are samples in the smallest group.
-min_cpm <- log2((1 + as.numeric(min_cts)) / min(edge_mat$samples$lib.size) * 1e6)
-keep <- rowSums(cpm(edge_mat, log = T, prior.count = 1)) >= min(table(true_groups))
-edge_mat <- edge_mat[keep, ,keep.lib.sizes = F]
+# Print some diagnostic info
+print(paste("Median library size in millions of fragments: ", med_lib, sep=""))
+print(paste("Minimum CPM (not log scale): ", min_cpm, sep=""))
+print(paste("Minimum group size: ", min_grp, sep=""))
+print(paste("Number of retained genes: ", nrow(edge_mat), sep=""))
 
 # Generate the design matrix for GLM fitting and estimate common and tag-wise dispersion in one go.
 design <- model.matrix(~0+group, data = edge_mat$samples)
@@ -323,7 +328,7 @@ for (i in 1:dim(comparison_sheet)[1]){
     comp <- paste0("group",test_group,"-group",ref_group)
     comp_var <- makeContrasts(comp, levels = design)
     qlf <- glmQLFTest(fit, contrast  = comp_var)
-    tags = topTags(qlf, n = nrow(qlf$genes))
+    tags <- topTags(qlf, n = nrow(qlf$genes))
     comp <- gsub("group","",comp)
     de_file <- paste(out_dir, "/DEGs/DE_", comp, "_list.txt", sep = "")
     write.table(tags$table, file = de_file, sep = '\t', quote = FALSE, row.names = FALSE)

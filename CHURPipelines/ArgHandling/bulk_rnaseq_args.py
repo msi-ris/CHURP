@@ -111,15 +111,15 @@ def add_args(ap):
         type=int,
         default=200)
     ap_opt.add_argument(
-        '--min-cpm',
+        '--min-counts',
         '-c',
-        metavar="<min CPM>",
-        dest='mincpm',
-        help=('Minimum expression value in CPM for a gene to be included in '
-              'differential expression testing. Set to 0 to disable CPM '
-              'filtering. Default: 1'),
+        metavar="<min counts>",
+        dest='mincts',
+        help=('Minimum counts below which a gene is considered not expressed. '
+              'Set to 0 to be as permissive as possible (not recommended). '
+              'Default: 10'),
         type=float,
-        default=1.0)
+        default=10)
     ap_opt.add_argument(
         '--strand',
         metavar='<library strandedness>',

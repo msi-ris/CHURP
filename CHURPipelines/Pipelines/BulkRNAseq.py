@@ -50,7 +50,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # Set the minimum gene length
         self.min_gene_len = str(valid_args['mingene'])
         # And the minimum depth
-        self.min_cpm = str(valid_args['mincpm'])
+        self.min_cts = str(valid_args['mincts'])
         # Set the subsampling level
         self.rrna_screen = str(valid_args['rrna_screen'])
         self.subsample = str(valid_args['subsample'])
@@ -134,10 +134,10 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             DieGracefully.die_gracefully(
                 DieGracefully.BAD_NUMBER, '--headcrop')
         try:
-            assert a['mincpm'] >= 0
+            assert a['mincts'] >= 0
         except AssertionError:
             DieGracefully.die_gracefully(
-                DieGracefully.BAD_NUMBER, '--min-cpm')
+                DieGracefully.BAD_NUMBER, '--min-cts')
         try:
             assert a['rrna_screen'] >= 0
             assert isinstance(a['rrna_screen'], int)
@@ -477,7 +477,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             'GroupSheet="${GROUPSHEET}"',
             'CHURP_VERSION="${CHURP_VERSION}"',
             'MINLEN="' + self.min_gene_len + '"',
-            'MINCPM="' + self.min_cpm + '"',
+            'MINCPM="' + self.min_cts + '"',
             'RSUMMARY="${DE_SCRIPT}"',
             'PIPE_SCRIPT="${PIPE_SCRIPT}"',
             'BULK_RNASEQ_REPORT="${REPORT_SCRIPT}"'])
