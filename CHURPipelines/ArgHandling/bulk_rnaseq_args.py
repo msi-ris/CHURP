@@ -119,7 +119,7 @@ def add_args(ap):
               'Set to 0 to be as permissive as possible (not recommended). '
               'Default: 10'),
         type=float,
-        default=1.0)
+        default=10)
     ap_opt.add_argument(
         '--strand',
         metavar='<library strandedness>',
