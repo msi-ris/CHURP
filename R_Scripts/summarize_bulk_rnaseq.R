@@ -281,18 +281,18 @@ edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
 # scheme, which is similar to what edgeR's `filterByExpr()` function does, but
 # with explicit statements:
 #   1: Calculate the median library size across all samples (C)
-#   2: Calcualte the CPM (`K`, not on log scale) corresponding to `min_cts` in `C`
+#   2: Calcualte the CPM (K, not on log scale) corresponding to `min_cts` in C
 #   3: Calculate the size of the smallest group (G)
-#   4: Keep genes where at least `G` samples have CPM of `K`.
+#   4: Keep genes where at least G samples have CPM of K.
 med_lib <- median(edge_mat$samples$lib.size) / 1000000
-min_cpm <- (1+as.numeric(min_cts)) / med_lib
+min_cpm <- as.numeric(min_cts) / med_lib
 min_grp <- min(table(true_groups))
 filter_low_expression <- function(gene_row, min_expr, min_samples) {
-    num_low_expr <- sum(as.numeric(gene_row) < min_expr)
-    if(sum(num_low_expr) > min_samples) {
-        return(FALSE)
-    } else {
+    num_expr <- sum(as.numeric(gene_row) >= min_expr)
+    if(sum(num_expr) >= min_samples) {
         return(TRUE)
+    } else {
+        return(FALSE)
     }
 }
 keep <- apply(
@@ -305,8 +305,8 @@ edge_mat <- edge_mat[keep, ,keep.lib.sizes = FALSE]
 
 # Print some diagnostic info
 print(paste("Median library size in millions of fragments: ", med_lib, sep=""))
-print(paste("Minimum CPM (not log scale): ", min_cpm, sep=""))
-print(paste("Minimum group size: ", min_grp, sep=""))
+print(paste("CPM threshold for 'unexpressed' (not log scale): ", min_cpm, sep=""))
+print(paste("Size of smallest group: ", min_grp, sep=""))
 print(paste("Number of retained genes: ", nrow(edge_mat), sep=""))
 
 # Generate the design matrix for GLM fitting and estimate common and tag-wise dispersion in one go.
