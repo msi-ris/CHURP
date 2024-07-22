@@ -26,12 +26,14 @@ pipeline_error() {
     "General")
         echo "${SampleSheet} is incompatible with this version of CHURP." > /dev/stderr
         echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}." > /dev/stderr
+        rm -f "${WORKDIR}/allsamples/.in_progress"
         exit 100
         ;;
     "featureCounts")
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "The featureCounts program failed to produce a counts matrix for your dataset." >> "${LOG_FNAME}"
         echo "Please check that you have permission and sufficient space to write to the output directory." >> "${LOG_FNAME}"
+        rm -f "${WORKDIR}/allsamples/.in_progress"
         exit 114
         ;;
     "edgeR")
@@ -42,6 +44,7 @@ pipeline_error() {
         echo "" >> "${LOG_FNAME}"
         cat Rout.txt >> "${LOG_FNAME}"
         echo "" >> "${LOG_FNAME}"
+        rm -f "${WORKDIR}/allsamples/.in_progress"
         exit 115
         ;;
     "HTML.Report")
@@ -49,6 +52,7 @@ pipeline_error() {
         echo "CHURP was unable to produce a summary HTML report for your run." >> "${LOG_FNAME}"
         echo "Your counts files and alignments should still be available." >> "${LOG_FNAME}"
         echo "Please send your pipeline.sh and samplesheet to help@msi.umn.edu for assistance." >> "${LOG_FNAME}"
+        rm -f "${WORKDIR}/allsamples/.in_progress"
         exit 119
         ;;
     *)
@@ -56,6 +60,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "CHURP encountered an undefined error!" >> "${LOG_FNAME}"
         echo "Please send the CHURP command, version, samplesheet, and pipeline.sh script to help@msi.umn.edu for debugging." >> "${LOG_FNAME}"
+        rm -f "${WORKDIR}/allsamples/.in_progress"
         exit 200
         ;;
     esac
