@@ -69,8 +69,8 @@ if (is.null(comparison_sheet) || nrow(comparison_sheet) == 0){
 # Because there may be cases where a subset of individuals in the samplesheet are run. We'll pull in the featureCounts matrix early and grab the relevant IDs
 raw_mat <- read.table(fc_mat, header = T, sep = '\t', comment.char = '#')
 samp_ids <- names(raw_mat)[-(1:6)]
-sample_sheet <- sample_sheet[which(make.names(sample_sheet$V1) %in% samp_ids),]
-group_sheet <- group_sheet[which(make.names(group_sheet$SampleName) %in% samp_ids),]
+sample_sheet <- sample_sheet[make.names(sample_sheet$V1) %in% samp_ids,]
+group_sheet <- group_sheet[make.names(group_sheet$SampleName) %in% samp_ids,]
 group_sheet <- group_sheet[match(samp_ids, make.names(group_sheet$SampleName)),]
 
 # Now we can proceed with group determinations. We have to call make.names()
@@ -272,9 +272,7 @@ if (n_groups == 1){
 
 
 # Subset the data object to get rid of samples with a 'NULL' group
-print(edge_mat$samples)
 edge_mat <- edge_mat[,edge_mat$samples$group %in% true_groups]
-print(edge_mat$samples)
 
 # Filter out genes wtih low expression. We employ the following filtering
 # scheme, which is similar to what edgeR's `filterByExpr()` function does, but
