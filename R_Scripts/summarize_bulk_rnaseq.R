@@ -79,8 +79,8 @@ group_sheet <- group_sheet[match(samp_ids, make.names(group_sheet$SampleName)),]
 # we have to account for in our true_groups assignments.
 groups <- make.names(as.vector(group_sheet$Group))
 uniq_groups <- unique(groups)
-true_groups <- groups[which(groups != 'NULL.')]
-n_true_groups <- length(uniq_groups[which(uniq_groups != 'NULL.')])
+true_groups <- groups[groups != 'NULL.']
+n_true_groups <- length(unique(true_groups))
 
 # We optionally allow the user to add a third column to their group sheet, which
 # is assumed to be a batch variable. Here, we check for the third column, and 
@@ -273,7 +273,7 @@ if (n_groups == 1){
 
 # Subset the data object to get rid of samples with a 'NULL' group
 print(edge_mat$samples)
-edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
+edge_mat <- edge_mat[,edge_mat$samples$group %in% true_groups]
 print(edge_mat$samples)
 
 # Filter out genes wtih low expression. We employ the following filtering
