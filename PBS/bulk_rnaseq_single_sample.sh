@@ -26,7 +26,6 @@ pipeline_error() {
     "General")
         echo "${SampleSheet} is incompatible with this version of CHURP." > /dev/stderr
         echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}." > /dev/stderr
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 100
         ;;
     "Subsampling")
@@ -34,7 +33,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "There was an error during read subsampling!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 101
         ;;
     "rRNA.Subsampling")
@@ -42,7 +40,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "There was an error during read subsampling for rRNA abundance estimation!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 102
         ;;
     "BBDuk")
@@ -50,7 +47,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "BBDuk encountered an error!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 103
         ;;
     "FastQC.Raw")
@@ -58,7 +54,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "FastQC failed on the raw FASTQ files!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 104
         ;;
     "Trimmomatic")
@@ -68,7 +63,6 @@ pipeline_error() {
         echo "Please see the error message above for details." >> "${LOG_FNAME}"
         echo "If you see a message about 'Error: Unable to detect quality encoding' then your FASTQ files do not have a standard quality encoding." >> "${LOG_FNAME}"
         echo "If you see a Java exception and you have specified custom Trimmomatic options, then this suggests a problem with your option string." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 105
         ;;
     "FastQC.Trimmed")
@@ -76,7 +70,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "FastQC failed on the trimmed FASTQ files!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 106
         ;;
     "HISAT2")
@@ -84,7 +77,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "HISAT2 encountered an error!" >> "${LOG_FNAME}"
         echo "If you specified custom options for HISAT2, then this indicates a problem with your options string." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 107
         ;;
     "MarkDuplicates")
@@ -92,7 +84,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "Picard MarkDuplicates encountered an error!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 108
         ;;
     "BAM.Filtering")
@@ -100,7 +91,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "SAMTools encountered an error while filtering the HISAT2 alignment!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 109
         ;;
     "BAM.Coord.Sort")
@@ -108,7 +98,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "SAMTools encountered an error while coordinate-sorting the HISAT2 alignment!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 110
         ;;
     "BAM.Stats")
@@ -116,7 +105,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "SAMTools encountered an error while generating summary statistics for the HISAT2 alignment!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 111
         ;;
     "InsertSizeMetrics")
@@ -124,7 +112,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "Picard InsertSizeMetrics encountered an error!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 112
         ;;
     "Alignment.Summary")
@@ -133,7 +120,6 @@ pipeline_error() {
         echo "CHURP encountered an error while extracting alignment summaries!" >> "${LOG_FNAME}"
         echo "This means the alignment summary output file from HISAT2 has gone missing." >> "${LOG_FNAME}"
         echo "Please re-run CHURP with the --purge option to rerun the pipeline from the beginning." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 113
         ;;
     *)
@@ -141,7 +127,6 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "CHURP encountered an undefined error!" >> "${LOG_FNAME}"
         echo "Please send the CHURP command, version, samplesheet, and pipeline.sh script to help@msi.umn.edu for debugging." >> "${LOG_FNAME}"
-        rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
         exit 200
         ;;
     esac
@@ -178,15 +163,6 @@ while IFS="|" read -ra OPTS; do
     STRAND=${OPTS[11]}
     GTFFILE=${OPTS[12]}
 done <<< "$IN"
-
-# Check for an 'in_progress' file in the single-sample job folder. Abort if we
-# find it
-if [ -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress" ]
-then
-    echo "Found an analysis in progress; aborting." > /dev/stderr
-    exit 201
-fi
-touch "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
 
 # Start the trace. In this case, we use file descriptor 5 to avoid clobbering
 # any other fds that are in use
@@ -730,7 +706,6 @@ touch "${SAMPLENM}.done"
 # Finally, let's clean up
 echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing HISAT2 bam, markdup/dedup bam, and raw querysort bam to reduce disk usage." >> "${LOG_FNAME}"
 rm -f "${SAMPLENM}.bam" "${SAMPLENM}_Raw_MarkDup.bam" "${SAMPLENM}_Raw_DeDup.bam" "${SAMPLENM}_Raw_QuerySort.bam"
-echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing .in_progress marker." >> "${LOG_FNAME}"
-rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
+
 # And close the file descriptor we were using for the trace
 exec 5>&-
