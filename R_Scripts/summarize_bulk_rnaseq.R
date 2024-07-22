@@ -69,8 +69,8 @@ if (is.null(comparison_sheet) || nrow(comparison_sheet) == 0){
 # Because there may be cases where a subset of individuals in the samplesheet are run. We'll pull in the featureCounts matrix early and grab the relevant IDs
 raw_mat <- read.table(fc_mat, header = T, sep = '\t', comment.char = '#')
 samp_ids <- names(raw_mat)[-(1:6)]
-sample_sheet <- sample_sheet[which(make.names(sample_sheet$V1) %in% samp_ids),]
-group_sheet <- group_sheet[which(make.names(group_sheet$SampleName) %in% samp_ids),]
+sample_sheet <- sample_sheet[make.names(sample_sheet$V1) %in% samp_ids,]
+group_sheet <- group_sheet[make.names(group_sheet$SampleName) %in% samp_ids,]
 group_sheet <- group_sheet[match(samp_ids, make.names(group_sheet$SampleName)),]
 
 # Now we can proceed with group determinations. We have to call make.names()
@@ -79,8 +79,8 @@ group_sheet <- group_sheet[match(samp_ids, make.names(group_sheet$SampleName)),]
 # we have to account for in our true_groups assignments.
 groups <- make.names(as.vector(group_sheet$Group))
 uniq_groups <- unique(groups)
-true_groups <- groups[which(groups != 'NULL.')]
-n_true_groups <- length(uniq_groups[which(uniq_groups != 'NULL.')])
+true_groups <- groups[groups != 'NULL.']
+n_true_groups <- length(unique(true_groups))
 
 # We optionally allow the user to add a third column to their group sheet, which
 # is assumed to be a batch variable. Here, we check for the third column, and 
@@ -126,9 +126,6 @@ if (any(lib_sizes == 0)){
 
 # Convert the raw matrix into a DGE object. Column 1 is Geneid, columns 7+ are the sample counts. The groups list  is generated above. 
 edge_mat <- DGEList(counts = raw_mat[,seq(-1,-6)], genes = raw_mat[,1], group = groups)
-
-# Calculate the normalization factors
-edge_mat <- calcNormFactors(edge_mat)
 
 ############################
 # Generate descriptive accounts of the data (MDS, Normalized Counts, Counts Distributions, and a Heatmap) 
@@ -275,7 +272,7 @@ if (n_groups == 1){
 
 
 # Subset the data object to get rid of samples with a 'NULL' group
-edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
+edge_mat <- edge_mat[,edge_mat$samples$group %in% true_groups]
 
 # Filter out genes wtih low expression. We employ the following filtering
 # scheme, which is similar to what edgeR's `filterByExpr()` function does, but
@@ -302,6 +299,8 @@ keep <- apply(
     min_cpm,
     min_grp)
 edge_mat <- edge_mat[keep, ,keep.lib.sizes = FALSE]
+# Calculate the normalization factors
+edge_mat <- calcNormFactors(edge_mat)
 
 # Print some diagnostic info
 print(paste("Median library size in millions of fragments: ", med_lib, sep=""))
