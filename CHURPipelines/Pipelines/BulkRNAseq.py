@@ -534,10 +534,17 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
             '1']
         # Write the logic for if the user has specified the "--summary-only"
         # option.
+        handle.write('if [ -f "${OUTDIR}/.in_progress" ]\n')
+        handle.write('then\n')
+        handle.write('    echo "Job already submitted; aborting." > /dev/stderr\n')
+        handle.write('    exit 1\n')
+        handle.write('fi')
         handle.write('if [ "${SUMMARY_ONLY}" = "true" ]\n')
         handle.write('then\n')
+        handle.write('    touch "${OUTDIR}/.in_progress"\n')
         handle.write('    summary_id=$(' + ' '.join(summary_cmd) + ')\n')
         handle.write('else\n')
+        handle.write('    touch "${OUTDIR}/.in_progress"\n')
         handle.write('    single_id=$(' + ' '.join(aln_cmd) + ')\n')
         handle.write('    summary_id=$(' + ' '.join(summary_cmd_dep) + ')\n')
         handle.write('fi\n')
