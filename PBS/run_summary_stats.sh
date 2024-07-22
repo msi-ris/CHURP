@@ -95,7 +95,7 @@ done <<< "$IN"
 # Check for an in_progress file, like we do for the single sample jobs
 if [ -f "${WORKDIR}/allsamples/.in_progress" ]
 then
-    echo "Analysis in progress; aborting." > /dev/stderr
+    echo "Found an analysis in progress; aborting." > /dev/stderr
     exit 201
 fi
 touch "${WORKDIR}/allsamples/.in_progress"
