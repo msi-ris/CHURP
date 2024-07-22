@@ -18,6 +18,13 @@ conda activate /home/msistaff/public/CHURP_Deps/v1/churp_env
 LOG_SECTION="General"
 export PS4='+[$(date "+%F %T")] [Job ${SLURM_JOB_ID}] [${LOG_SECTION}] [Line ${LINENO}]: '
 
+# Define a function to remove the .in_progress file upon interrupt/termination
+remove_hold() {
+    echo "Caught error or abort signal; removing .in_progress marker" > /dev/stderr
+    rm -f "${OUTDIR}/.in_progress"
+}
+trap remove_hold SIGINT SIGTERM SIGKILL
+
 # Define a function to report errors to the job log and give meawningful exit
 # codes. This just wraps a bunch of exit calls into a case block
 pipeline_error() {
