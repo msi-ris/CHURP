@@ -92,6 +92,14 @@ while IFS="|" read -ra OPTS; do
     GTFFILE=${OPTS[12]}
 done <<< "$IN"
 
+# Check for an in_progress file, like we do for the single sample jobs
+if [ -f "${WORKDIR}/allsamples/.in_progress" ]
+then
+    echo "Analysis in progress; aborting." > /dev/stderr
+    exit 201
+fi
+touch "${WORKDIR}/allsamples/.in_progress"
+
 # Make directories for the output files. We want to keep the outdir organized
 LOGDIR="${OUTDIR}/Logs"
 COUNTSDIR="${OUTDIR}/Counts"
@@ -387,7 +395,8 @@ LOG_SECTION="HTML.Report"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 cp -u "${BULK_RNASEQ_REPORT}" "./Report.Rmd"
 Rscript -e "library(rmarkdown); rmarkdown::render('./Report.Rmd', output_file='"${OUTDIR}/Bulk_RNAseq_Report.html"', params=list(churp_version='"${CHURP_VERSION}"', outdir='"${OUTDIR}"', workdir='"${WORKDIR}"', pipeline='"${PIPE_SCRIPT}"', samplesheet='"${SampleSheet}"'))" || pipeline_error "${LOG_SECTION}"
-
+echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing .in_progress marker." >> "${LOG_FNAME}"
+rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Done summarizing bulk RNAseq run" >> "${LOG_FNAME}"
 
 # Close the trace file descriptor

@@ -164,6 +164,15 @@ while IFS="|" read -ra OPTS; do
     GTFFILE=${OPTS[12]}
 done <<< "$IN"
 
+# Check for an 'in_progress' file in the single-sample job folder. Abort if we
+# find it
+if [ -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress" ]
+then
+    echo "Found an analysis in progress; aborting." > /dev/stderr
+    exit 201
+fi
+touch "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
+
 # Start the trace. In this case, we use file descriptor 5 to avoid clobbering
 # any other fds that are in use
 LOGDIR="${OUTDIR}/Logs"
@@ -706,5 +715,7 @@ touch "${SAMPLENM}.done"
 # Finally, let's clean up
 echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing HISAT2 bam, markdup/dedup bam, and raw querysort bam to reduce disk usage." >> "${LOG_FNAME}"
 rm -f "${SAMPLENM}.bam" "${SAMPLENM}_Raw_MarkDup.bam" "${SAMPLENM}_Raw_DeDup.bam" "${SAMPLENM}_Raw_QuerySort.bam"
+echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing .in_progress marker." >> "${LOG_FNAME}"
+rm -f "${WORKDIR}/singlesamples/${SAMPLENM}/.in_progress"
 # And close the file descriptor we were using for the trace
 exec 5>&-
