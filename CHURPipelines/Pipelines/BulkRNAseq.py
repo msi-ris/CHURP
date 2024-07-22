@@ -538,7 +538,7 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         handle.write('then\n')
         handle.write('    echo "Job already submitted; aborting." > /dev/stderr\n')
         handle.write('    exit 1\n')
-        handle.write('fi')
+        handle.write('fi\n')
         handle.write('if [ "${SUMMARY_ONLY}" = "true" ]\n')
         handle.write('then\n')
         handle.write('    touch "${OUTDIR}/.in_progress"\n')
