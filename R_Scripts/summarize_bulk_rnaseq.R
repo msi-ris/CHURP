@@ -272,7 +272,9 @@ if (n_groups == 1){
 
 
 # Subset the data object to get rid of samples with a 'NULL' group
+print(edge_mat$samples)
 edge_mat <- edge_mat[,which(edge_mat$samples$group != 'NULL')]
+print(edge_mat$samples)
 
 # Filter out genes wtih low expression. We employ the following filtering
 # scheme, which is similar to what edgeR's `filterByExpr()` function does, but
