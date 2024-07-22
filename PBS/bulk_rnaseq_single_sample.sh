@@ -20,18 +20,19 @@ export PS4='+[$(date "+%F %T")] [Job ${SLURM_JOB_ID}] [${LOG_SECTION}] [Line ${L
 
 # Define a function to remove the .in_progress file upon interrupt/termination
 remove_hold() {
-    echo "Caught error or abort signal; removing .in_progress marker" > /dev/stderr
+    echo "Caught error or abort signal; removing .in_progress marker" >> /dev/stderr
     rm -f "${OUTDIR}/.in_progress"
+    exit 200
 }
 trap remove_hold SIGINT SIGTERM SIGKILL
 
-# Define a function to report errors to the job log and give meawningful exit
+# Define a function to report errors to the job log and give meaningful exit
 # codes. This just wraps a bunch of exit calls into a case block
 pipeline_error() {
     # Take the pipeline section as a positional argument
     case "${1}" in
     "General")
-        echo "${SampleSheet} is incompatible with this version of CHURP." > /dev/stderr
+        echo "${SampleSheet} is incompatible with this version of CHURP." >> /dev/stderr
         echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}." > /dev/stderr
         rm -f "${OUTDIR}/.in_progress"
         exit 100
