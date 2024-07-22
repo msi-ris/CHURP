@@ -536,7 +536,9 @@ class BulkRNAseqPipeline(Pipeline.Pipeline):
         # option.
         handle.write('if [ -f "${OUTDIR}/.in_progress" ]\n')
         handle.write('then\n')
+        handle.write('    echo "${OUT_DIR}/.in_progress" exists: > /dev/stderr\n')
         handle.write('    echo "Job already submitted; aborting." > /dev/stderr\n')
+        handle.write('    echo "Remove this file to allow job resbumission. > /dev/stderr\n')
         handle.write('    exit 1\n')
         handle.write('fi\n')
         handle.write('touch "${OUTDIR}/.in_progress"\n')
