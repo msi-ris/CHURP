@@ -127,9 +127,6 @@ if (any(lib_sizes == 0)){
 # Convert the raw matrix into a DGE object. Column 1 is Geneid, columns 7+ are the sample counts. The groups list  is generated above. 
 edge_mat <- DGEList(counts = raw_mat[,seq(-1,-6)], genes = raw_mat[,1], group = groups)
 
-# Calculate the normalization factors
-edge_mat <- calcNormFactors(edge_mat)
-
 ############################
 # Generate descriptive accounts of the data (MDS, Normalized Counts, Counts Distributions, and a Heatmap) 
 # Note that we DO NOT apply the minimum count filters prior to these descriptive summaries.
@@ -302,6 +299,8 @@ keep <- apply(
     min_cpm,
     min_grp)
 edge_mat <- edge_mat[keep, ,keep.lib.sizes = FALSE]
+# Calculate the normalization factors
+edge_mat <- calcNormFactors(edge_mat)
 
 # Print some diagnostic info
 print(paste("Median library size in millions of fragments: ", med_lib, sep=""))
