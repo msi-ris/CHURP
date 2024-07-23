@@ -9,7 +9,7 @@ import CHURPipelines
 ENSEMBL_RELEASES = {
     'main': '110',
     'plants': '58',
-    'fungi': '56',
+    'fungi': '58',
     'metazoa': '57',
     'protists': '58'}
 
