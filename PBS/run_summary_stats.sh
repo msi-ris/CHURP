@@ -287,8 +287,9 @@ join \
 
 # Let's make a subset of the counts matrix for inclusion in the HTML report
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Removing transcript-specific information in subread_counts.txt" >> "${LOG_FNAME}"
-awk -v OFS='\\t' '
+awk '
 NR<=2 {
+    OFS="\t"
     print $0
 }
 NR>2 {
@@ -302,6 +303,7 @@ NR>2 {
     $4=ends[1]
     $5=strands[1]
 
+    OFS="\t"
     print $0
 }' "${COUNTSDIR}/subread_counts.txt" > "${COUNTSDIR}/subread_counts.trimmed.txt"
 
