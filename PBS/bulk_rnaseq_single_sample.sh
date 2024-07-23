@@ -18,14 +18,23 @@ conda activate /home/msistaff/public/CHURP_Deps/v1/churp_env
 LOG_SECTION="General"
 export PS4='+[$(date "+%F %T")] [Job ${SLURM_JOB_ID}] [${LOG_SECTION}] [Line ${LINENO}]: '
 
-# Define a function to report errors to the job log and give meawningful exit
+# Define a function to remove the .in_progress file upon interrupt/termination
+remove_hold() {
+    echo "Caught error or abort signal; removing .in_progress marker" >> /dev/stderr
+    rm -f "${OUTDIR}/.in_progress"
+    exit 200
+}
+trap remove_hold SIGINT SIGTERM SIGKILL
+
+# Define a function to report errors to the job log and give meaningful exit
 # codes. This just wraps a bunch of exit calls into a case block
 pipeline_error() {
     # Take the pipeline section as a positional argument
     case "${1}" in
     "General")
-        echo "${SampleSheet} is incompatible with this version of CHURP." > /dev/stderr
+        echo "${SampleSheet} is incompatible with this version of CHURP." >> /dev/stderr
         echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}." > /dev/stderr
+        rm -f "${OUTDIR}/.in_progress"
         exit 100
         ;;
     "Subsampling")
@@ -33,6 +42,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "There was an error during read subsampling!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 101
         ;;
     "rRNA.Subsampling")
@@ -40,6 +50,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "There was an error during read subsampling for rRNA abundance estimation!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 102
         ;;
     "BBDuk")
@@ -47,6 +58,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "BBDuk encountered an error!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 103
         ;;
     "FastQC.Raw")
@@ -54,6 +66,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "FastQC failed on the raw FASTQ files!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 104
         ;;
     "Trimmomatic")
@@ -63,6 +76,7 @@ pipeline_error() {
         echo "Please see the error message above for details." >> "${LOG_FNAME}"
         echo "If you see a message about 'Error: Unable to detect quality encoding' then your FASTQ files do not have a standard quality encoding." >> "${LOG_FNAME}"
         echo "If you see a Java exception and you have specified custom Trimmomatic options, then this suggests a problem with your option string." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 105
         ;;
     "FastQC.Trimmed")
@@ -70,6 +84,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "FastQC failed on the trimmed FASTQ files!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 106
         ;;
     "HISAT2")
@@ -77,13 +92,14 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "HISAT2 encountered an error!" >> "${LOG_FNAME}"
         echo "If you specified custom options for HISAT2, then this indicates a problem with your options string." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 107
         ;;
     "MarkDuplicates")
         echo "" >> "${LOG_FNAME}"
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "Picard MarkDuplicates encountered an error!" >> "${LOG_FNAME}"
-        echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        echo "Please see the error messages above for details." >> "${LOG_FNAME}"ç
         exit 108
         ;;
     "BAM.Filtering")
@@ -91,6 +107,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "SAMTools encountered an error while filtering the HISAT2 alignment!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 109
         ;;
     "BAM.Coord.Sort")
@@ -98,6 +115,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "SAMTools encountered an error while coordinate-sorting the HISAT2 alignment!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 110
         ;;
     "BAM.Stats")
@@ -105,6 +123,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "SAMTools encountered an error while generating summary statistics for the HISAT2 alignment!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 111
         ;;
     "InsertSizeMetrics")
@@ -112,6 +131,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "Picard InsertSizeMetrics encountered an error!" >> "${LOG_FNAME}"
         echo "Please see the error messages above for details." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 112
         ;;
     "Alignment.Summary")
@@ -120,6 +140,7 @@ pipeline_error() {
         echo "CHURP encountered an error while extracting alignment summaries!" >> "${LOG_FNAME}"
         echo "This means the alignment summary output file from HISAT2 has gone missing." >> "${LOG_FNAME}"
         echo "Please re-run CHURP with the --purge option to rerun the pipeline from the beginning." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 113
         ;;
     *)
@@ -127,6 +148,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "CHURP encountered an undefined error!" >> "${LOG_FNAME}"
         echo "Please send the CHURP command, version, samplesheet, and pipeline.sh script to help@msi.umn.edu for debugging." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 200
         ;;
     esac
@@ -706,5 +728,6 @@ touch "${SAMPLENM}.done"
 # Finally, let's clean up
 echo "# ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} $(date '+%F %T'): Removing HISAT2 bam, markdup/dedup bam, and raw querysort bam to reduce disk usage." >> "${LOG_FNAME}"
 rm -f "${SAMPLENM}.bam" "${SAMPLENM}_Raw_MarkDup.bam" "${SAMPLENM}_Raw_DeDup.bam" "${SAMPLENM}_Raw_QuerySort.bam"
+
 # And close the file descriptor we were using for the trace
 exec 5>&-

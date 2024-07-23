@@ -18,20 +18,30 @@ conda activate /home/msistaff/public/CHURP_Deps/v1/churp_env
 LOG_SECTION="General"
 export PS4='+[$(date "+%F %T")] [Job ${SLURM_JOB_ID}] [${LOG_SECTION}] [Line ${LINENO}]: '
 
-# Define a function to report errors to the job log and give meawningful exit
+# Define a function to remove the .in_progress file upon interrupt/termination
+remove_hold() {
+    echo "Caught error or abort signal; removing .in_progress marker" >> /dev/stderr
+    rm -f "${OUTDIR}/.in_progress"
+    exit 200
+}
+trap remove_hold SIGINT SIGTERM SIGKILL
+
+# Define a function to report errors to the job log and give meaningful exit
 # codes. This just wraps a bunch of exit calls into a case block
 pipeline_error() {
     # Take the pipeline section as a positional argument
     case "${1}" in
     "General")
-        echo "${SampleSheet} is incompatible with this version of CHURP." > /dev/stderr
+        echo "${SampleSheet} is incompatible with this version of CHURP." >> /dev/stderr
         echo "${SampleSheet} was generated with version ${SAMPLESHEET_VERSION}, and this script requires ${PIPELINE_VERSION}." > /dev/stderr
+        rm -f "${OUTDIR}/.in_progress"
         exit 100
         ;;
     "featureCounts")
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "The featureCounts program failed to produce a counts matrix for your dataset." >> "${LOG_FNAME}"
         echo "Please check that you have permission and sufficient space to write to the output directory." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 114
         ;;
     "edgeR")
@@ -42,6 +52,7 @@ pipeline_error() {
         echo "" >> "${LOG_FNAME}"
         cat Rout.txt >> "${LOG_FNAME}"
         echo "" >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 115
         ;;
     "HTML.Report")
@@ -49,6 +60,7 @@ pipeline_error() {
         echo "CHURP was unable to produce a summary HTML report for your run." >> "${LOG_FNAME}"
         echo "Your counts files and alignments should still be available." >> "${LOG_FNAME}"
         echo "Please send your pipeline.sh and samplesheet to help@msi.umn.edu for assistance." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 119
         ;;
     *)
@@ -56,6 +68,7 @@ pipeline_error() {
         echo "#### CHURP caught an error #####" >> "${LOG_FNAME}"
         echo "CHURP encountered an undefined error!" >> "${LOG_FNAME}"
         echo "Please send the CHURP command, version, samplesheet, and pipeline.sh script to help@msi.umn.edu for debugging." >> "${LOG_FNAME}"
+        rm -f "${OUTDIR}/.in_progress"
         exit 200
         ;;
     esac
@@ -276,6 +289,7 @@ join \
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Removing transcript-specific information in subread_counts.txt" >> "${LOG_FNAME}"
 awk '
 NR<=2 {
+    OFS="\t"
     print $0
 }
 NR>2 {
@@ -387,7 +401,7 @@ LOG_SECTION="HTML.Report"
 echo "# $(date '+%F %T'): Entering section ${LOG_SECTION}" >> /dev/stderr
 cp -u "${BULK_RNASEQ_REPORT}" "./Report.Rmd"
 Rscript -e "library(rmarkdown); rmarkdown::render('./Report.Rmd', output_file='"${OUTDIR}/Bulk_RNAseq_Report.html"', params=list(churp_version='"${CHURP_VERSION}"', outdir='"${OUTDIR}"', workdir='"${WORKDIR}"', pipeline='"${PIPE_SCRIPT}"', samplesheet='"${SampleSheet}"'))" || pipeline_error "${LOG_SECTION}"
-
+rm -f "${OUTDIR}/.in_progress"
 echo "# ${SLURM_JOB_ID} $(date '+%F %T'): Done summarizing bulk RNAseq run" >> "${LOG_FNAME}"
 
 # Close the trace file descriptor
