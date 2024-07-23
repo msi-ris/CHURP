@@ -26,7 +26,8 @@ submissions of the same pipeline.
 
   These are only applied to the expression data before differential gene
   expression testing. The raw counts are not modified and will contain data
-  from all samples.
+  from all samples. The thresholds used for filtering can be found in the
+  `${WORKDIR}/allsamples/Rout.txt` file.
 - Bioref release versions have been updated.
 - Tabs are now used in the header of `subread_counts.trimmed.txt`
 
