@@ -1,5 +1,76 @@
 # CHURP Changelog
-2023-11-27
+2024-07-23
+
+## [1.0.1] 2024-07-23
+Patch-level release of CHURP and PURR. This update adds new gene filtering
+routines and an "in-progress" job marker to avoid issues due to multiple job
+submissions of the same pipeline.
+
+### Added
+- `.in_progress` markers for jobs that have been submitted. These files are
+  removed upon job exit or error.
+
+### Modified
+- Gene filtering routines have been adjusted to make them consistent with the
+  current edgeR recommendations:
+    1. Genes shorter than some length threshold are removed (default: 200bp).
+    2. Samples with a `NULL` group identifier are removed.
+    3. The median library size is calculated.
+    4. The CPM (`C`) corresponding to a user-specified raw counts value
+       (default: 10 reads) in this median library is calculated. This is
+       **not** on a log2 scale, so there is **no pseudocount** added.
+    5. The size of the smallest group (`K`) is identified.
+    6. CPMs are calculated (again, not on log2 scale).
+    7. Genes where at least `K` samples have at least `C` expression level are
+       retained.
+
+  These are only applied to the expression data before differential gene
+  expression testing. The raw counts are not modified and will contain data
+  from all samples.
+- Bioref release versions have been updated.
+- Tabs are now used in the header of `subread_counts.trimmed.txt`
+
+### Removed
+- Mesabi partition names have been removed from the list of allowed submission
+  targets
+
+### Bugs Fixed
+- #146: Jobs do not submit if a `.in_progress` file is found in the output
+  directory.
+- #130: `NULL` samples are removed entirely before DEG routines.
+- #145: `subread_counts.trimmed.txt` now uses tabs for separating the header.
+
+## [1.0.0] 2024-04-30
+Major version increment due to a dependencies refresh for an operating system
+upgrade on MSI systems. Note that code in this release is
+**not backwards compatible** with previous CHURP releases.
+
+Also note that major version 0 is **not supported** by MSI anymore because it
+depends on software that will not work on CentOS7.
+
+### Added
+- Ability to specify pairwise comparisons for DEG testing
+- New output format for `group_template` (Excel sheet)
+  `--summary-only` option for PURR to submit only the summary job (mostly for
+  expert usage)
+
+### Modified
+- Dependencies updated for Rocky8
+- `group_template` outputs an **Excel sheet** for both group assignment and
+- pairwise DEG testing in PURR
+- Updated paths for `bioref` so that the `-r` option for PURR works again
+- Adjusted CPU/memory limits set within CHURP package
+- Adjusted color palette for plots to allow up to 8 groups
+- Output report reorganized
+
+### Removed
+- Nothing
+
+### Bugs Fixed
+- #142: updated paths in `bioref`
+- #138: expanded color palette
+- #132: fixed sample name handling
+
 
 ## [0.2.5] 2023-12-07
 Patch-level release of CHURP and PURR. This update fixes an issue with the
